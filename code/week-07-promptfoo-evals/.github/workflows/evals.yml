@@ -1,0 +1,78 @@
+name: LLM Evals
+
+on:
+  pull_request:
+    paths:
+      - "prompts/**"
+      - "promptfooconfig.yaml"
+      - "tests/**"
+      - ".github/workflows/evals.yml"
+  workflow_dispatch:
+
+# Prevent concurrent eval runs on the same PR
+concurrency:
+  group: evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install promptfoo
+        run: npm install -g promptfoo@latest
+
+      - name: Run evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          promptfoo eval \
+            --config promptfooconfig.yaml \
+            --max-concurrency 3 \
+            --no-progress-bar \
+            --output results.json
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ github.run_id }}
+          path: |
+            results.json
+            promptfoo-output.html
+          retention-days: 30
+
+      - name: Regression check
+        if: github.event_name == 'pull_request'
+        run: node ci-regression-check.js
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              "## ❌ LLM evals regressed on this PR",
+              "",
+              "Download the `eval-results-${{ github.run_id }}` artifact to see detailed failures.",
+              "",
+              "Common fixes:",
+              "- Adjust the prompt to address failing cases",
+              "- If the regression is expected, update the baseline in main after review",
+            ].join("\n");
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

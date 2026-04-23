@@ -1,0 +1,53 @@
+# Secrets — NEVER commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+ANTHROPIC_API_KEY
+**/secrets.json
+
+# Dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+.venv/
+__pycache__/
+*.pyc
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Eval outputs
+results.json
+promptfoo-output.html
+.promptfoo/
+
+# LLM traces / agent state (local only)
+.healer/
+.langfuse/
+traces/
+*.trace.json
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Docker
+*.log

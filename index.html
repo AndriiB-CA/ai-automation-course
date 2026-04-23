@@ -1,0 +1,1772 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#f5efe2" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#14131a" media="(prefers-color-scheme: dark)" />
+<title>QA → AI Automation Engineer · Course Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /*
+    DESIGN DIRECTION
+    Laboratory notebook meets terminal. Warm cream paper with a subtle grid.
+    Serif display (Fraunces) for authority, sans body (Instrument) for clarity,
+    mono (JetBrains) for data. Oxide-rust accent. Moss for progress.
+    Dark mode inverts to deep navy + warm amber.
+  */
+
+  :root {
+    --paper: #f5efe2;
+    --paper-line: rgba(26, 24, 29, 0.065);
+    --ink: #1a181d;
+    --ink-mute: #6b6862;
+    --ink-soft: #8a867f;
+    --rust: #c44a2a;
+    --rust-soft: #e87f5f;
+    --moss: #596f3e;
+    --moss-soft: #a6bc86;
+    --amber: #c7892a;
+    --card: #fbf7ed;
+    --card-shadow: 0 1px 0 rgba(26, 24, 29, 0.04), 0 1px 2px rgba(26, 24, 29, 0.06);
+    --stroke: rgba(26, 24, 29, 0.14);
+    --stroke-soft: rgba(26, 24, 29, 0.08);
+
+    --font-display: "Fraunces", ui-serif, Georgia, serif;
+    --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 16px;
+
+    --content-max: 68rem;
+  }
+
+  [data-theme="dark"] {
+    --paper: #14131a;
+    --paper-line: rgba(235, 228, 216, 0.04);
+    --ink: #ebe4d8;
+    --ink-mute: #8f887d;
+    --ink-soft: #6b655c;
+    --rust: #e67a56;
+    --rust-soft: #a2432a;
+    --moss: #9eb884;
+    --moss-soft: #5b6f44;
+    --amber: #e3b060;
+    --card: #1c1b24;
+    --card-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.5);
+    --stroke: rgba(235, 228, 216, 0.14);
+    --stroke-soft: rgba(235, 228, 216, 0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100svh;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--paper-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 32px 32px, 32px 32px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* A decorative top-of-page stripe in rust — feels like a notebook spine. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: var(--rust);
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    body::before { width: 4px; }
+  }
+
+  ::selection { background: var(--rust); color: var(--paper); }
+
+  a { color: var(--rust); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+  a:hover { border-bottom-color: var(--rust); }
+
+  code, kbd { font-family: var(--font-mono); font-size: 0.92em; }
+
+  /* ============ LAYOUT ============ */
+
+  .shell {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 6rem 2.25rem;
+  }
+  @media (min-width: 768px) {
+    .shell { padding: 2.5rem 3rem 6rem 4rem; }
+  }
+
+  /* ============ TOP BAR ============ */
+
+  header.topbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--stroke);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+    letter-spacing: -0.01em;
+  }
+  .brand .mark {
+    color: var(--rust);
+    font-style: italic;
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex-wrap: wrap;
+  }
+  .nav-tabs button {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--ink-mute);
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font: inherit;
+    transition: all 0.15s;
+  }
+  .nav-tabs button:hover { color: var(--ink); }
+  .nav-tabs button[aria-current="page"] {
+    color: var(--paper);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  [data-theme="dark"] .nav-tabs button[aria-current="page"] {
+    color: var(--paper);
+    background: var(--ink);
+  }
+  .theme-toggle {
+    background: transparent;
+    border: 1px solid var(--stroke);
+    color: var(--ink);
+    padding: 0.35rem 0.6rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+
+  /* ============ HERO (dashboard) ============ */
+
+  .hero {
+    margin-bottom: 3rem;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--rust);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
+    font-variation-settings: "SOFT" 40, "WONK" 1;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--rust);
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 2.3vw, 1.2rem);
+    color: var(--ink-mute);
+    max-width: 52ch;
+    margin: 0;
+  }
+
+  /* ============ STATS STRIP ============ */
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--stroke);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .stat {
+    background: var(--card);
+    padding: 1rem 1.25rem;
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    margin-top: 0.35rem;
+  }
+  .stat-accent { color: var(--rust); }
+
+  /* ============ CARDS ============ */
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.25rem;
+  }
+  @media (min-width: 768px) { .card { padding: 2rem; } }
+
+  .card h2, .section-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+    font-size: 1.75rem;
+  }
+  .card h3 { font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; margin: 1.25rem 0 0.5rem; }
+
+  .card-lead {
+    color: var(--ink-mute);
+    margin-bottom: 1rem;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  /* ============ CURRENT WEEK SPOTLIGHT ============ */
+
+  .spotlight {
+    border-left: 3px solid var(--rust);
+    padding-left: 1.25rem;
+    margin: 1.5rem 0;
+  }
+  .spotlight-label {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--rust);
+    font-weight: 600;
+  }
+  .spotlight-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0.25rem 0 0.5rem;
+  }
+  .spotlight-goal {
+    color: var(--ink-mute);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ============ TASK LIST ============ */
+
+  .tasks { list-style: none; padding: 0; margin: 0; }
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed var(--stroke-soft);
+  }
+  .task:last-child { border-bottom: none; }
+  .task-check {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    margin-top: 0.15rem;
+    border: 1.5px solid var(--stroke);
+    border-radius: 4px;
+    background: var(--paper);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .task-check:hover { border-color: var(--ink-mute); }
+  .task-check:checked {
+    background: var(--moss);
+    border-color: var(--moss);
+  }
+  .task-check:checked::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--paper);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .task-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+  .task-check:checked + .task-label {
+    color: var(--ink-soft);
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-soft);
+  }
+  .task-meta {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-left: 0.5rem;
+  }
+
+  /* ============ ROADMAP GRID ============ */
+
+  .roadmap-phases {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .phase {
+    border-top: 1px solid var(--stroke);
+    padding-top: 1.25rem;
+  }
+  .phase-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink-mute);
+    font-size: 1.1rem;
+    letter-spacing: 0;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .phase-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--rust);
+    background: var(--paper);
+    border: 1px solid var(--rust);
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+    font-style: normal;
+  }
+
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+  }
+  .week {
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    color: inherit;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .week:hover {
+    border-color: var(--rust);
+    transform: translateY(-1px);
+  }
+  .week[data-status="current"] {
+    border-color: var(--rust);
+    box-shadow: 0 0 0 1px var(--rust);
+  }
+  .week[data-status="done"] {
+    border-color: var(--moss-soft);
+    background: color-mix(in srgb, var(--moss) 8%, var(--card));
+  }
+  .week[data-status="done"] .week-num { color: var(--moss); }
+  .week-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    display: block;
+  }
+  .week[data-status="current"] .week-num { color: var(--rust); }
+  .week-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.2;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    letter-spacing: -0.005em;
+  }
+  .week-progress {
+    height: 2px;
+    background: var(--stroke-soft);
+    margin-top: 0.65rem;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .week-progress-bar {
+    height: 100%;
+    background: var(--moss);
+    transition: width 0.3s;
+  }
+
+  /* ============ LIBRARY ============ */
+
+  .library-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .lib {
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    transition: transform 0.15s, border-color 0.15s;
+    display: block;
+    color: inherit;
+    border-bottom: 1px solid var(--stroke); /* override <a> styling */
+  }
+  .lib:hover {
+    transform: translateY(-2px);
+    border-color: var(--rust);
+  }
+  .lib-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--rust);
+  }
+  .lib-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    margin: 0.3rem 0 0.4rem;
+  }
+  .lib-desc {
+    font-size: 0.9rem;
+    color: var(--ink-mute);
+    margin: 0;
+  }
+
+  /* ============ WEEK DETAIL OVERLAY ============ */
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--ink) 40%, transparent);
+    backdrop-filter: blur(4px);
+    z-index: 90;
+    display: none;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+  .overlay[data-open="true"] { display: flex; }
+  .overlay-panel {
+    background: var(--paper);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-lg);
+    max-width: 44rem;
+    margin: auto;
+    padding: 2rem;
+    width: 100%;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+    position: relative;
+  }
+  @media (max-width: 640px) {
+    .overlay { padding: 0; }
+    .overlay-panel { border-radius: 0; padding: 1.5rem; min-height: 100vh; }
+  }
+  .overlay-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: 1px solid var(--stroke);
+    color: var(--ink);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.1rem;
+  }
+
+  /* ============ RESOURCE LIST ============ */
+
+  .rlist { list-style: none; padding: 0; margin: 0; }
+  .rlist li {
+    padding: 0.65rem 0;
+    border-bottom: 1px dashed var(--stroke-soft);
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+  }
+  .rlist li:last-child { border-bottom: none; }
+  .rlist .kind {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    flex-shrink: 0;
+    width: 60px;
+  }
+  .rlist .kind.video { color: var(--rust); }
+  .rlist .kind.read { color: var(--amber); }
+  .rlist .kind.build { color: var(--moss); }
+
+  /* ============ TODAY BADGE ============ */
+
+  .today-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--moss);
+    background: color-mix(in srgb, var(--moss) 14%, transparent);
+    padding: 0.3rem 0.7rem;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+  }
+  .today-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--moss);
+    border-radius: 50%;
+  }
+
+  /* ============ BUTTONS ============ */
+
+  button.btn, a.btn {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+  }
+  a.btn { border-bottom: 1px solid var(--ink); }
+  button.btn.secondary, a.btn.secondary {
+    background: transparent;
+    color: var(--ink);
+  }
+  button.btn.danger {
+    background: transparent;
+    color: var(--rust);
+    border-color: var(--rust);
+  }
+  button.btn:hover, a.btn:hover { opacity: 0.85; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  /* ============ FOOTER ============ */
+
+  footer.foot {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--stroke);
+    color: var(--ink-mute);
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+  }
+
+  /* ============ SCROLL-IN ANIMATION ============ */
+
+  .view { display: none; animation: fadeIn 0.25s ease-out; }
+  .view[data-active="true"] { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* A little typographic touch: pull-quote mark */
+  .pullquote::before {
+    content: "❝";
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--rust);
+    float: left;
+    line-height: 1;
+    margin: 0.1em 0.3em 0 -0.1em;
+  }
+
+  /* Visually hidden for a11y */
+  .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+</style>
+</head>
+<body>
+
+<div class="shell" id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      QA <span class="mark">→</span> AI Automation Engineer
+    </div>
+    <nav class="nav-tabs" role="tablist">
+      <button role="tab" aria-current="page" data-view="dashboard">Dashboard</button>
+      <button role="tab" data-view="roadmap">Roadmap</button>
+      <button role="tab" data-view="library">Library</button>
+      <button role="tab" data-view="settings">Settings</button>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">◐</button>
+  </header>
+
+  <!-- ============ DASHBOARD VIEW ============ -->
+  <section class="view" data-view="dashboard" data-active="true">
+
+    <div class="hero">
+      <span class="hero-eyebrow" id="dashEyebrow">Week — of 24</span>
+      <h1 class="hero-title">Your <em>main roadmap.</em><br>In one place.</h1>
+      <p class="hero-sub" id="dashSubtitle">
+        A 24-week, 5–7 hours/week plan from Playwright/TypeScript QA engineer to AI Automation Engineer.
+        Capstone: ship an open-source AI-powered Playwright test healer.
+      </p>
+    </div>
+
+    <div class="stats" id="statsStrip"></div>
+
+    <div class="card" id="currentWeekCard">
+      <span class="today-badge">This Week</span>
+      <div id="currentWeekContent"></div>
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">Today's 15-minute micro-task</span>
+      <h2 class="section-title">Daily practice</h2>
+      <p class="card-lead" id="dailyIntro">Pick one based on what day it is — don't skip, don't overdo it.</p>
+      <div id="dailyTask"></div>
+      <div class="btn-row">
+        <a class="btn secondary" href="daily-tasks/DAILY_PRACTICE.md">All daily tasks →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">Where you are now</span>
+      <h2 class="section-title">Next 3 milestones</h2>
+      <ul class="rlist" id="nextMilestones"></ul>
+    </div>
+
+  </section>
+
+  <!-- ============ ROADMAP VIEW ============ -->
+  <section class="view" data-view="roadmap">
+    <h1 class="hero-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">The 24-week <em>roadmap</em></h1>
+    <p class="hero-sub" style="margin-bottom: 2rem;">
+      Click a week to see its reading, videos, tasks, and project.
+      Tick tasks in the detail view — your progress is saved locally.
+    </p>
+
+    <div class="roadmap-phases" id="roadmapPhases"></div>
+  </section>
+
+  <!-- ============ LIBRARY VIEW ============ -->
+  <section class="view" data-view="library">
+    <h1 class="hero-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">Library</h1>
+    <p class="hero-sub" style="margin-bottom: 2rem;">
+      Every file, module, resource, and code example in one index.
+    </p>
+
+    <h2 class="section-title">📖 Modules</h2>
+    <div class="library-grid" id="moduleGrid" style="margin-bottom: 3rem;"></div>
+
+    <h2 class="section-title">💻 Code examples</h2>
+    <div class="library-grid" id="codeGrid" style="margin-bottom: 3rem;"></div>
+
+    <h2 class="section-title">📚 Resources</h2>
+    <div class="library-grid" id="resourceGrid"></div>
+  </section>
+
+  <!-- ============ SETTINGS VIEW ============ -->
+  <section class="view" data-view="settings">
+    <h1 class="hero-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">Settings</h1>
+    <p class="hero-sub" style="margin-bottom: 2rem;">Adjust your progress manually, export your data, or reset.</p>
+
+    <div class="card">
+      <span class="eyebrow">Current week</span>
+      <h2 class="section-title">Where are you in the course?</h2>
+      <p class="card-lead">This determines the dashboard spotlight. Change it if you've skipped ahead or fallen behind.</p>
+      <label>
+        Current week:
+        <input type="number" id="weekInput" min="1" max="24" style="margin-left:0.5rem; font-family: var(--font-mono); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--stroke); background: var(--paper); color: var(--ink); width: 80px;" />
+      </label>
+      <div class="btn-row">
+        <button class="btn" id="saveWeekBtn">Save</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">Start date</span>
+      <h2 class="section-title">When did you begin?</h2>
+      <p class="card-lead" id="startDateDisplay"></p>
+      <div class="btn-row">
+        <button class="btn secondary" id="setStartBtn">Reset start to today</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">Your data</span>
+      <h2 class="section-title">Export / Import</h2>
+      <p class="card-lead">Progress is stored in <code>localStorage</code>. Export a JSON backup to move between devices.</p>
+      <div class="btn-row">
+        <button class="btn secondary" id="exportBtn">Export progress (JSON)</button>
+        <button class="btn secondary" id="importBtn">Import progress</button>
+        <input type="file" id="importFile" accept=".json" hidden />
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">Danger zone</span>
+      <h2 class="section-title">Reset everything</h2>
+      <p class="card-lead">Wipes checkboxes, week, start date, journal. Cannot be undone.</p>
+      <div class="btn-row">
+        <button class="btn danger" id="resetBtn">Reset all progress</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <blockquote class="pullquote">
+        Shipping is not a one-time event — it's a practice. Those habits are the career, not the skills.
+      </blockquote>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>Built for the QA → AI Automation transition · MIT license · Progress stored in your browser only</div>
+    <div style="margin-top: 0.5rem;">
+      <a href="README.md">README</a> ·
+      <a href="ROADMAP.md">ROADMAP</a> ·
+      <a href="SETUP.md">SETUP</a> ·
+      <a href="resources/COMMUNITIES.md">Communities</a>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ============ OVERLAY FOR WEEK DETAIL ============ -->
+<div class="overlay" id="weekOverlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+  <div class="overlay-panel">
+    <button class="overlay-close" aria-label="Close" id="overlayClose">×</button>
+    <div id="overlayBody"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   COURSE DATA — the whole 24-week structure embedded inline.
+   Edit this to customize. Progress keys use these task IDs.
+============================================================================ */
+
+const COURSE = {
+  phases: [
+    { num: 1, title: "Foundations", weeks: [1,2,3,4,5,6,7,8] },
+    { num: 2, title: "Build", weeks: [9,10,11,12,13,14,15,16,17,18,19] },
+    { num: 3, title: "Ship", weeks: [20,21,22,23,24] }
+  ],
+  weeks: [
+    {
+      n: 1, module: 0, moduleTitle: "Orientation",
+      title: "Orientation & Setup",
+      goal: "Everything installed, first API call succeeds, mental model in place",
+      phase: 1,
+      tasks: [
+        { id: "w1-read", label: "Read README + ROADMAP end to end", time: "30m" },
+        { id: "w1-setup", label: "Walk through SETUP.md completely", time: "90m" },
+        { id: "w1-keys", label: "Get Anthropic API key, set spend cap to $25/mo", time: "15m" },
+        { id: "w1-smoke", label: "Pass the smoke test (print 'It works.')", time: "10m" },
+        { id: "w1-karp", label: "Watch Karpathy — Intro to LLMs (1h)", time: "60m" },
+        { id: "w1-journal", label: "Start a private journal.md with baseline self-rating", time: "15m" },
+        { id: "w1-bookmark", label: "Bookmark this portal on phone + desktop", time: "5m" }
+      ],
+      resources: [
+        { kind: "read", label: "SETUP.md", url: "SETUP.md" },
+        { kind: "read", label: "Building Effective Agents (Anthropic)", url: "https://www.anthropic.com/research/building-effective-agents" },
+        { kind: "video", label: "Intro to LLMs — Karpathy (1h)", url: "https://www.youtube.com/watch?v=zjkBMFhNj_g" }
+      ],
+      project: "Screenshot of a successful anthropic.messages.create response",
+      module_link: "modules/00-orientation.md"
+    },
+    {
+      n: 2, module: 1, moduleTitle: "LLM API Fundamentals",
+      title: "Your First Real API Call",
+      goal: "Understand tokens, temperature, streaming, system prompts",
+      phase: 1,
+      tasks: [
+        { id: "w2-msgs", label: "Read Anthropic Messages API docs", time: "30m" },
+        { id: "w2-pricing", label: "Memorize Haiku/Sonnet/Opus pricing ballpark", time: "10m" },
+        { id: "w2-cli", label: "Build summarize-url CLI with streaming", time: "2h" },
+        { id: "w2-tone", label: "Add --tone flag (formal/casual/snarky)", time: "30m" },
+        { id: "w2-cost", label: "Print cost per run using usage tokens", time: "30m" }
+      ],
+      resources: [
+        { kind: "build", label: "Starter code: week-02-first-api-call", url: "code/week-02-first-api-call/" },
+        { kind: "read", label: "Anthropic Messages API reference", url: "https://docs.claude.com/en/api/messages" },
+        { kind: "video", label: "Prompt Engineering Overview (30m)", url: "https://www.youtube.com/watch?v=T9aRN5JkmL8" }
+      ],
+      project: "A CLI that summarizes a URL in 3 bullets with tone control and cost printout",
+      module_link: "modules/01-llm-fundamentals.md"
+    },
+    {
+      n: 3, module: 1, moduleTitle: "LLM API Fundamentals",
+      title: "Structured Outputs with Zod",
+      goal: "Force the LLM to emit valid JSON against a strict schema, with retry",
+      phase: 1,
+      tasks: [
+        { id: "w3-zod", label: "Learn Zod object schemas", time: "45m" },
+        { id: "w3-tool", label: "Read: tool use for structured JSON", time: "30m" },
+        { id: "w3-parser", label: "Build bug-report-parser (messy text → structured JSON)", time: "2.5h" },
+        { id: "w3-retry", label: "Add 3-attempt retry-with-validation-feedback loop", time: "1h" }
+      ],
+      resources: [
+        { kind: "build", label: "Starter: bug-parser.ts", url: "code/week-06-structured-tools/" },
+        { kind: "read", label: "Extracting structured data with Claude", url: "https://docs.claude.com/en/docs/build-with-claude/extracting-structured-data" },
+        { kind: "read", label: "Zod docs — Object schemas", url: "https://zod.dev/?id=objects" }
+      ],
+      project: "A parser that transforms messy bug reports into validated ticket JSON",
+      module_link: "modules/01-llm-fundamentals.md"
+    },
+    {
+      n: 4, module: 1, moduleTitle: "LLM API Fundamentals",
+      title: "Tool Use / Function Calling",
+      goal: "LLM can call your TypeScript functions and chain tool calls iteratively",
+      phase: 1,
+      tasks: [
+        { id: "w4-toolread", label: "Read: Tool use with Claude (full doc)", time: "45m" },
+        { id: "w4-react", label: "Read: ReAct paper (abstract + section 2)", time: "30m" },
+        { id: "w4-repo", label: "Build repo-assistant with 3 tools", time: "3h" },
+        { id: "w4-loop", label: "Cap the agent loop at 10 iterations + total tokens", time: "30m" }
+      ],
+      resources: [
+        { kind: "read", label: "Tool use with Claude", url: "https://docs.claude.com/en/docs/build-with-claude/tool-use" },
+        { kind: "read", label: "Anthropic cookbook — tool_use", url: "https://github.com/anthropics/anthropic-cookbook/tree/main/tool_use" },
+        { kind: "video", label: "Function Calling Explained (AI Jason, 20m)", url: "https://www.youtube.com/watch?v=0lOSvOoF2to" }
+      ],
+      project: "Natural-language Q&A over a GitHub repo via 3 tools with capped iteration",
+      module_link: "modules/01-llm-fundamentals.md"
+    },
+    {
+      n: 5, module: 2, moduleTitle: "Prompt Engineering + Evals",
+      title: "Prompt Engineering Patterns",
+      goal: "Fluent with zero-shot, few-shot, CoT, XML tags, prefill, role prompting",
+      phase: 1,
+      tasks: [
+        { id: "w5-guide", label: "Read Anthropic's prompt engineering guide in full", time: "45m" },
+        { id: "w5-tutorial", label: "Do every chapter of the prompt-eng interactive tutorial", time: "3h" },
+        { id: "w5-upgrade", label: "Upgrade Week 4 agent with XML tags + few-shot + CoT", time: "2h" },
+        { id: "w5-measure", label: "Manually score 4 prompt versions on 10 identical inputs", time: "1h" }
+      ],
+      resources: [
+        { kind: "read", label: "Anthropic Prompt Engineering", url: "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview" },
+        { kind: "read", label: "Interactive Prompt Tutorial (GitHub)", url: "https://github.com/anthropics/prompt-eng-interactive-tutorial" },
+        { kind: "read", label: "Lilian Weng — Prompt Engineering", url: "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/" }
+      ],
+      project: "Side-by-side manual comparison of 4 prompt variants for your repo-assistant",
+      module_link: "modules/02-prompts-evals.md"
+    },
+    {
+      n: 6, module: 2, moduleTitle: "Prompt Engineering + Evals",
+      title: "System Prompts, Personas, Refusals",
+      goal: "Craft system prompts that are testable and survive adversarial inputs",
+      phase: 1,
+      tasks: [
+        { id: "w6-char", label: "Read Claude character & system prompt posts", time: "30m" },
+        { id: "w6-inject", label: "Read 5 Simon Willison posts on prompt injection", time: "45m" },
+        { id: "w6-pr", label: "Build PR review bot with strict refusals", time: "2.5h" },
+        { id: "w6-redteam", label: "Red-team your own bot with 5+ adversarial inputs", time: "1h" }
+      ],
+      resources: [
+        { kind: "read", label: "Claude system prompts (Anthropic)", url: "https://docs.claude.com/en/release-notes/system-prompts" },
+        { kind: "read", label: "Prompt injection tag (Simon Willison)", url: "https://simonwillison.net/tags/prompt-injection/" },
+        { kind: "read", label: "Awesome Claude Prompts", url: "https://github.com/langgptai/awesome-claude-prompts" }
+      ],
+      project: "PR review bot that stays in character under adversarial inputs",
+      module_link: "modules/02-prompts-evals.md"
+    },
+    {
+      n: 7, module: 2, moduleTitle: "Prompt Engineering + Evals",
+      title: "Evals 101 with Promptfoo ⭐",
+      goal: "Every LLM feature gets evals-gated CI before merge. Your QA superpower moment.",
+      phase: 1,
+      tasks: [
+        { id: "w7-install", label: "Install promptfoo globally", time: "5m" },
+        { id: "w7-hamel", label: "Read Hamel Husain: Your AI product needs evals (twice)", time: "45m" },
+        { id: "w7-yaml", label: "Write promptfooconfig.yaml with 15+ tests, 6 assertion types", time: "3h" },
+        { id: "w7-ci", label: "Wire to GitHub Actions, see it run on a PR", time: "1h" },
+        { id: "w7-break", label: "Intentionally break the prompt, watch CI fail, then fix", time: "15m" }
+      ],
+      resources: [
+        { kind: "build", label: "Starter: week-07-promptfoo-evals", url: "code/week-07-promptfoo-evals/" },
+        { kind: "read", label: "Promptfoo Getting Started", url: "https://www.promptfoo.dev/docs/getting-started/" },
+        { kind: "read", label: "Hamel Husain — Evals", url: "https://hamel.dev/blog/posts/evals/" }
+      ],
+      project: "Eval suite for PR review bot + CI pipeline that blocks regressions",
+      module_link: "modules/02-prompts-evals.md"
+    },
+    {
+      n: 8, module: 2, moduleTitle: "Prompt Engineering + Evals",
+      title: "Golden Datasets & LLM Regression",
+      goal: "Treat prompts like selectors — versioned, tested, reproducible",
+      phase: 1,
+      tasks: [
+        { id: "w8-judge", label: "Read: LLM-as-judge patterns (Eugene Yan)", time: "45m" },
+        { id: "w8-dataset", label: "Curate 25-case golden dataset across 5 categories", time: "1.5h" },
+        { id: "w8-judgeset", label: "Add llm-rubric judge assertions to 10 tests", time: "1h" },
+        { id: "w8-threshold", label: "Wire regression check: fail PR if pass rate drops >5%", time: "1h" },
+        { id: "w8-mapping", label: "Write the QA→LLM mapping table — pin it somewhere", time: "30m" }
+      ],
+      resources: [
+        { kind: "read", label: "Eugene Yan — LLM evaluators", url: "https://eugeneyan.com/writing/llm-evaluators/" },
+        { kind: "read", label: "LLM-as-Judge paper", url: "https://arxiv.org/abs/2306.05685" },
+        { kind: "read", label: "Hamel — Creating a benchmark", url: "https://hamel.dev/blog/posts/evals-faq/" }
+      ],
+      project: "Golden dataset + regression gate wired to CI",
+      module_link: "modules/02-prompts-evals.md"
+    },
+    {
+      n: 9, module: 3, moduleTitle: "RAG Systems",
+      title: "Embeddings from Scratch",
+      goal: "Understand embeddings well enough to debug them",
+      phase: 2,
+      tasks: [
+        { id: "w9-visual", label: "Read The Illustrated Transformer", time: "45m" },
+        { id: "w9-embed", label: "Embed 100 of your own texts, measure cosine sim", time: "2h" },
+        { id: "w9-cluster", label: "Run t-SNE / UMAP, label clusters by hand", time: "1.5h" },
+        { id: "w9-break", label: "Try to break it: negation, synonyms, code-switching", time: "45m" }
+      ],
+      resources: [
+        { kind: "read", label: "The Illustrated Transformer (Jay Alammar)", url: "https://jalammar.github.io/illustrated-transformer/" },
+        { kind: "read", label: "What are embeddings? (Cohere)", url: "https://cohere.com/blog/what-are-embeddings" },
+        { kind: "video", label: "Embeddings — Cohere (20m)", url: "https://www.youtube.com/watch?v=OATCgQtNX2o" }
+      ],
+      project: "Embedding explorer with hand-labeled clusters + 3 failure cases",
+      module_link: "modules/03-rag.md"
+    },
+    {
+      n: 10, module: 3, moduleTitle: "RAG Systems",
+      title: "Vector DBs with pgvector",
+      goal: "Postgres + pgvector locally, ingest & query 500 docs",
+      phase: 2,
+      tasks: [
+        { id: "w10-compose", label: "Docker-compose Postgres + pgvector", time: "30m" },
+        { id: "w10-schema", label: "Design schema with HNSW index", time: "30m" },
+        { id: "w10-ingest", label: "Ingest 500 real documents", time: "1.5h" },
+        { id: "w10-search", label: "Write semanticSearch(q, k) query", time: "1h" },
+        { id: "w10-recall", label: "Measure Recall@5 on 20 labeled queries", time: "1.5h" }
+      ],
+      resources: [
+        { kind: "read", label: "pgvector README", url: "https://github.com/pgvector/pgvector" },
+        { kind: "read", label: "Supabase pgvector guide", url: "https://supabase.com/docs/guides/ai/vector-embeddings" },
+        { kind: "read", label: "IVFFlat vs HNSW (Tembo)", url: "https://tembo.io/blog/vector-indexes-in-pgvector" }
+      ],
+      project: "Search CLI over 500 docs with retrieval quality metrics",
+      module_link: "modules/03-rag.md"
+    },
+    {
+      n: 11, module: 3, moduleTitle: "RAG Systems",
+      title: "Chunking + Retrieval Strategies",
+      goal: "Know when fixed, recursive, or semantic chunking wins",
+      phase: 2,
+      tasks: [
+        { id: "w11-read", label: "Read Pinecone chunking guide + hybrid search explainer", time: "1h" },
+        { id: "w11-three", label: "Implement 3 chunking strategies", time: "2h" },
+        { id: "w11-measure", label: "Measure Precision@5 / Recall@5 / MRR for each", time: "1.5h" },
+        { id: "w11-hybrid", label: "Add tsvector for hybrid search, blend scores", time: "1h" },
+        { id: "w11-report", label: "Write markdown report with a recommendation", time: "30m" }
+      ],
+      resources: [
+        { kind: "read", label: "Chunking Strategies (Pinecone)", url: "https://www.pinecone.io/learn/chunking-strategies/" },
+        { kind: "read", label: "Hybrid search explained (Weaviate)", url: "https://weaviate.io/blog/hybrid-search-explained" },
+        { kind: "read", label: "The RAG Triad (TruLens)", url: "https://www.trulens.org/trulens_eval/core_concepts_rag_triad/" }
+      ],
+      project: "Bench report comparing 3 chunking strategies on real data",
+      module_link: "modules/03-rag.md"
+    },
+    {
+      n: 12, module: 3, moduleTitle: "RAG Systems",
+      title: "Ship a RAG App 🚀",
+      goal: "A deployed URL you can share. Real data, real users.",
+      phase: 2,
+      tasks: [
+        { id: "w12-scope", label: "Pick a dataset you care about", time: "30m" },
+        { id: "w12-next", label: "Scaffold Next.js + Vercel AI SDK app", time: "1.5h" },
+        { id: "w12-rag", label: "Wire Supabase pgvector retrieval", time: "1.5h" },
+        { id: "w12-ui", label: "Streaming UI with citations + 'I don't know' handling", time: "1.5h" },
+        { id: "w12-deploy", label: "Deploy to Vercel, add rate limiting", time: "1h" },
+        { id: "w12-evals", label: "Run RAG Triad evals, add /evals page", time: "1.5h" }
+      ],
+      resources: [
+        { kind: "read", label: "Vercel AI SDK RAG guide", url: "https://sdk.vercel.ai/docs/guides/rag-chatbot" },
+        { kind: "read", label: "Supabase pgvector", url: "https://supabase.com/docs/guides/ai/vector-embeddings" }
+      ],
+      project: "Public URL — RAG chatbot over your chosen dataset with RAG Triad evals",
+      module_link: "modules/03-rag.md"
+    },
+    {
+      n: 13, module: 4, moduleTitle: "Agents & MCP",
+      title: "Agent Architectures",
+      goal: "Distinguish ReAct / Plan-and-Execute / Reflexion in principle and practice",
+      phase: 2,
+      tasks: [
+        { id: "w13-read", label: "Read Building Effective Agents (Anthropic)", time: "1h" },
+        { id: "w13-react", label: "Skim ReAct + Plan-and-Solve papers", time: "45m" },
+        { id: "w13-impl", label: "Implement ReAct loop in <200 lines, no framework", time: "3h" }
+      ],
+      resources: [
+        { kind: "read", label: "Building Effective Agents (Anthropic) ⭐", url: "https://www.anthropic.com/research/building-effective-agents" },
+        { kind: "video", label: "Agentic Design Patterns — Andrew Ng", url: "https://www.youtube.com/watch?v=sal78ACtGTc" },
+        { kind: "read", label: "ReAct paper", url: "https://arxiv.org/abs/2210.03629" }
+      ],
+      project: "Minimal ReAct agent with 3 tools, from scratch, under 200 lines",
+      module_link: "modules/04-agents.md"
+    },
+    {
+      n: 14, module: 4, moduleTitle: "Agents & MCP",
+      title: "Model Context Protocol (MCP)",
+      goal: "Ship a custom MCP server; wire it to Claude Desktop",
+      phase: 2,
+      tasks: [
+        { id: "w14-docs", label: "Read MCP docs & spec", time: "1.5h" },
+        { id: "w14-browse", label: "Browse official MCP servers repo", time: "30m" },
+        { id: "w14-build", label: "Build a custom MCP server with 3+ tools", time: "3h" },
+        { id: "w14-wire", label: "Wire it to Claude Desktop, verify tools appear", time: "45m" }
+      ],
+      resources: [
+        { kind: "build", label: "Starter: week-15-mcp-agent", url: "code/week-15-mcp-agent/" },
+        { kind: "read", label: "MCP docs", url: "https://modelcontextprotocol.io/" },
+        { kind: "read", label: "Official MCP servers", url: "https://github.com/modelcontextprotocol/servers" }
+      ],
+      project: "MCP server exposing test-run or filesystem tools, live in Claude Desktop",
+      module_link: "modules/04-agents.md"
+    },
+    {
+      n: 15, module: 4, moduleTitle: "Agents & MCP",
+      title: "Multi-Tool Agents",
+      goal: "Agent with 5+ tools, memory, error handling, budget caps",
+      phase: 2,
+      tasks: [
+        { id: "w15-fw", label: "Pick framework (Mastra recommended for TS), read docs", time: "1.5h" },
+        { id: "w15-impl", label: "Research agent with 5 tools + retry logic", time: "3h" },
+        { id: "w15-mem", label: "Add persistent memory (SQLite/JSON)", time: "1h" },
+        { id: "w15-cap", label: "Budget cap + rate limit per task", time: "45m" }
+      ],
+      resources: [
+        { kind: "read", label: "Mastra docs", url: "https://mastra.ai/docs" },
+        { kind: "read", label: "Vercel AI SDK Agents", url: "https://sdk.vercel.ai/docs/ai-sdk-core" }
+      ],
+      project: "Research agent that handles a '500 word note with 5 sources' task end-to-end",
+      module_link: "modules/04-agents.md"
+    },
+    {
+      n: 16, module: 4, moduleTitle: "Agents & MCP",
+      title: "Observability for Agents",
+      goal: "Every call, cost, and decision path visible in a dashboard",
+      phase: 2,
+      tasks: [
+        { id: "w16-lf", label: "Set up Langfuse (cloud free tier or self-host)", time: "45m" },
+        { id: "w16-wire", label: "Instrument agent with full tracing", time: "1.5h" },
+        { id: "w16-run", label: "Run 20 tasks across varied topics", time: "1.5h" },
+        { id: "w16-insight", label: "Find and document 2 optimization opportunities", time: "1h" }
+      ],
+      resources: [
+        { kind: "read", label: "Langfuse tracing docs", url: "https://langfuse.com/docs/tracing" },
+        { kind: "read", label: "Langfuse integrations", url: "https://langfuse.com/docs/integrations/overview" }
+      ],
+      project: "Dashboard screenshot showing cost, latency, and tool-use distribution",
+      module_link: "modules/04-agents.md"
+    },
+    {
+      n: 17, module: 5, moduleTitle: "Browser Agents",
+      title: "Playwright Meets LLMs",
+      goal: "Claude drives Playwright via natural language through tool use",
+      phase: 2,
+      tasks: [
+        { id: "w17-stagehand", label: "Read Stagehand docs", time: "45m" },
+        { id: "w17-cu", label: "Skim Anthropic Computer Use overview", time: "30m" },
+        { id: "w17-build", label: "Build appointment-booker agent (5+ step flow)", time: "3h" },
+        { id: "w17-verify", label: "Add LLM-based action verification step", time: "1h" }
+      ],
+      resources: [
+        { kind: "build", label: "Starter: week-18-browser-agent", url: "code/week-18-browser-agent/" },
+        { kind: "read", label: "Stagehand docs", url: "https://docs.stagehand.dev/" },
+        { kind: "read", label: "Computer Use overview (Anthropic)", url: "https://www.anthropic.com/news/3-5-models-and-computer-use" }
+      ],
+      project: "Agent that completes a 5-step browser task with self-verification",
+      module_link: "modules/05-browser-agents.md"
+    },
+    {
+      n: 18, module: 5, moduleTitle: "Browser Agents",
+      title: "Vision-Based Automation",
+      goal: "Screenshot + coordinates as an alternative to selectors",
+      phase: 2,
+      tasks: [
+        { id: "w18-read", label: "Read Claude vision capabilities + Computer Use ref impl", time: "1h" },
+        { id: "w18-vision", label: "Rebuild agent with screenshots + coords (no selectors)", time: "3h" },
+        { id: "w18-compare", label: "Compare 10 runs: selector vs vision (cost, reliability, time)", time: "1.5h" },
+        { id: "w18-writeup", label: "Write a comparison report (blog-post material)", time: "1h" }
+      ],
+      resources: [
+        { kind: "read", label: "Claude vision docs", url: "https://docs.claude.com/en/docs/build-with-claude/vision" },
+        { kind: "read", label: "Computer Use reference impl", url: "https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo" }
+      ],
+      project: "Side-by-side comparison of selector vs vision-based automation",
+      module_link: "modules/05-browser-agents.md"
+    },
+    {
+      n: 19, module: 5, moduleTitle: "Browser Agents",
+      title: "Production Browser Agents",
+      goal: "Headless at scale, with recovery, observability, and security",
+      phase: 2,
+      tasks: [
+        { id: "w19-docker", label: "Dockerize with non-root user", time: "1h" },
+        { id: "w19-parallel", label: "Run 10 tasks in parallel with timeouts", time: "1.5h" },
+        { id: "w19-retry", label: "Retry + exponential backoff per task", time: "1h" },
+        { id: "w19-mon", label: "GitHub Action: 3 canary tasks every 6h, issue on failure", time: "1.5h" },
+        { id: "w19-sec", label: "Red-team the agent against a crafted page with injection", time: "1h" }
+      ],
+      resources: [
+        { kind: "read", label: "Playwright in Docker", url: "https://playwright.dev/docs/docker" },
+        { kind: "read", label: "Browserbase docs", url: "https://docs.browserbase.com/" }
+      ],
+      project: "Dockerized browser agent running on a schedule with synthetic monitoring",
+      module_link: "modules/05-browser-agents.md"
+    },
+    {
+      n: 20, module: 6, moduleTitle: "AI-Powered QA",
+      title: "AI-Powered Test Generation ⭐",
+      goal: "CLI: npx ai-testgen <url> → valid Playwright spec that runs green",
+      phase: 3,
+      tasks: [
+        { id: "w20-cc", label: "Read Claude Code docs + Playwright best practices", time: "1h" },
+        { id: "w20-a11y", label: "Use page.accessibility.snapshot() instead of raw HTML", time: "45m" },
+        { id: "w20-gen", label: "Build generator with Zod-validated TestSpec schema", time: "2.5h" },
+        { id: "w20-cache", label: "Add prompt caching on system prompt + best-practices", time: "45m" },
+        { id: "w20-retry", label: "Self-heal on first run: if fails, retry with error", time: "1h" },
+        { id: "w20-bench", label: "Benchmark on 5 public sites, record pass rate & cost", time: "1h" }
+      ],
+      resources: [
+        { kind: "build", label: "Starter: week-20-ai-test-generator", url: "code/week-20-ai-test-generator/" },
+        { kind: "read", label: "Playwright Best Practices", url: "https://playwright.dev/docs/best-practices" },
+        { kind: "read", label: "Prompt caching", url: "https://docs.claude.com/en/docs/build-with-claude/prompt-caching" }
+      ],
+      project: "CLI tool that generates valid Playwright specs from URLs",
+      module_link: "modules/06-ai-qa.md"
+    },
+    {
+      n: 21, module: 6, moduleTitle: "AI-Powered QA",
+      title: "Self-Healing Selectors ⭐",
+      goal: "On test failure, LLM proposes a fix → PR auto-opens",
+      phase: 3,
+      tasks: [
+        { id: "w21-wrap", label: "Build HealingLocator wrapper with confidence threshold", time: "2.5h" },
+        { id: "w21-emit", label: "Emit JSON diff records with before/after + screenshot", time: "1h" },
+        { id: "w21-pr", label: "Octokit integration: open PR per heal record", time: "2h" },
+        { id: "w21-eval", label: "Synthetic-mutation eval: target ≥70% auto-fix rate", time: "2h" }
+      ],
+      resources: [
+        { kind: "build", label: "Starter: capstone-playwright-healer", url: "code/capstone-playwright-healer/" },
+        { kind: "read", label: "Octokit.js", url: "https://github.com/octokit/octokit.js" }
+      ],
+      project: "Self-healing locator wrapper + GitHub Action that opens heal PRs",
+      module_link: "modules/06-ai-qa.md"
+    },
+    {
+      n: 22, module: 7, moduleTitle: "Production & Cost",
+      title: "Production & Cost Engineering",
+      goal: ">50% cost reduction on an existing project, still passing evals",
+      phase: 3,
+      tasks: [
+        { id: "w22-cache", label: "Read prompt caching docs thoroughly", time: "45m" },
+        { id: "w22-base", label: "Benchmark pre-optimization on 50 real requests", time: "30m" },
+        { id: "w22-model", label: "Try Haiku for each step; keep if evals hold", time: "1h" },
+        { id: "w22-prompt", label: "Apply prompt caching to large system prefixes", time: "1h" },
+        { id: "w22-resp", label: "Add exact-match + semantic response cache layer", time: "1.5h" },
+        { id: "w22-report", label: "Write before/after delta report", time: "30m" }
+      ],
+      resources: [
+        { kind: "read", label: "Prompt caching (Anthropic)", url: "https://docs.claude.com/en/docs/build-with-claude/prompt-caching" },
+        { kind: "read", label: "Batch API (Anthropic)", url: "https://docs.claude.com/en/docs/build-with-claude/batch-processing" },
+        { kind: "read", label: "LLM caching (Pinecone)", url: "https://www.pinecone.io/learn/series/vector-databases-in-production-for-busy-engineers/llm-caching/" }
+      ],
+      project: "Before/after report showing ≥50% cost reduction + evals still green",
+      module_link: "modules/07-production.md"
+    },
+    {
+      n: 23, module: 8, moduleTitle: "AI Security",
+      title: "AI Security Deep Dive 🛡️",
+      goal: "You know the OWASP LLM Top 10; your agents survive 10 real attacks",
+      phase: 3,
+      tasks: [
+        { id: "w23-owasp", label: "Read OWASP LLM Top 10 in full", time: "1h" },
+        { id: "w23-sw", label: "Read Simon Willison prompt-injection primer", time: "45m" },
+        { id: "w23-red", label: "Red-team your agent with 10 attacks from the checklist", time: "2h" },
+        { id: "w23-mit", label: "Ship mitigations for every attack that worked", time: "2h" },
+        { id: "w23-doc", label: "Write RED_TEAM_REPORT.md and commit it", time: "45m" }
+      ],
+      resources: [
+        { kind: "read", label: "OWASP LLM Top 10", url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/" },
+        { kind: "read", label: "Prompt injection primer", url: "https://simonwillison.net/2023/May/2/prompt-injection-explained/" },
+        { kind: "video", label: "AI Red Teaming — Anthropic", url: "https://www.youtube.com/watch?v=-vK8WpDXFLI" }
+      ],
+      project: "RED_TEAM_REPORT.md documenting 10 attacks and mitigations",
+      module_link: "modules/08-security.md"
+    },
+    {
+      n: 24, module: 9, moduleTitle: "Capstone",
+      title: "CAPSTONE: Playwright Healer 🚀",
+      goal: "Public repo. Published to npm. Blog post. LinkedIn post. Shipped.",
+      phase: 3,
+      tasks: [
+        { id: "w24-repo", label: "Create public GitHub repo, import all capstone components", time: "1h" },
+        { id: "w24-readme", label: "Write README with demo GIF, architecture diagram, costs", time: "1.5h" },
+        { id: "w24-tests", label: "Tool's own test coverage ≥80% + CI green", time: "1h" },
+        { id: "w24-evals", label: "Healer quality evals in CI", time: "1h" },
+        { id: "w24-security", label: "Security section + RED_TEAM_REPORT.md in repo", time: "30m" },
+        { id: "w24-npm", label: "Publish to npm as v0.1.0", time: "30m" },
+        { id: "w24-blog", label: "Write & publish 1,500–2,500 word blog post", time: "2h" },
+        { id: "w24-announce", label: "LinkedIn post + Show HN submission", time: "30m" }
+      ],
+      resources: [
+        { kind: "build", label: "Starter: capstone-playwright-healer", url: "code/capstone-playwright-healer/" },
+        { kind: "read", label: "Keep a Changelog", url: "https://keepachangelog.com/" }
+      ],
+      project: "🚀 Public release of Playwright Healer v0.1.0",
+      module_link: "modules/09-capstone.md"
+    }
+  ],
+  modules: [
+    { num: 0, title: "Orientation & Mindset", weeks: "1", file: "modules/00-orientation.md" },
+    { num: 1, title: "LLM API Fundamentals", weeks: "2–4", file: "modules/01-llm-fundamentals.md" },
+    { num: 2, title: "Prompt Engineering + Evals", weeks: "5–8", file: "modules/02-prompts-evals.md" },
+    { num: 3, title: "RAG Systems", weeks: "9–12", file: "modules/03-rag.md" },
+    { num: 4, title: "Agents & MCP", weeks: "13–16", file: "modules/04-agents.md" },
+    { num: 5, title: "Browser Agents", weeks: "17–19", file: "modules/05-browser-agents.md" },
+    { num: 6, title: "AI-Powered QA", weeks: "20–21", file: "modules/06-ai-qa.md" },
+    { num: 7, title: "Production & Cost", weeks: "22", file: "modules/07-production.md" },
+    { num: 8, title: "AI Security", weeks: "23", file: "modules/08-security.md" },
+    { num: 9, title: "Capstone", weeks: "24", file: "modules/09-capstone.md" }
+  ],
+  code: [
+    { tag: "Week 2", title: "First API Call", desc: "Streaming URL summarizer with cost tracking", url: "code/week-02-first-api-call/" },
+    { tag: "Week 3", title: "Structured Outputs", desc: "Zod-validated bug report parser with retry", url: "code/week-06-structured-tools/" },
+    { tag: "Week 7", title: "Promptfoo Evals", desc: "Full config with 15 tests + CI + regression check", url: "code/week-07-promptfoo-evals/" },
+    { tag: "Week 10", title: "RAG with pgvector", desc: "Docker + Postgres + embeddings + search", url: "code/week-10-rag-pgvector/" },
+    { tag: "Week 15", title: "MCP Agent", desc: "Custom MCP server + multi-tool agent", url: "code/week-15-mcp-agent/" },
+    { tag: "Week 18", title: "Browser Agent", desc: "Stagehand + Playwright LLM automation", url: "code/week-18-browser-agent/" },
+    { tag: "Week 20", title: "AI Test Generator", desc: "URL → valid Playwright spec", url: "code/week-20-ai-test-generator/" },
+    { tag: "Capstone", title: "Playwright Healer", desc: "Self-healing test framework", url: "code/capstone-playwright-healer/" }
+  ],
+  resources: [
+    { tag: "Videos", title: "Curated Video Library", desc: "Every talk, tutorial, and podcast worth your time", url: "resources/VIDEOS.md" },
+    { tag: "Tools", title: "Tools Cheat Sheet", desc: "Every SDK, framework, DB, and platform you'll touch", url: "resources/TOOLS.md" },
+    { tag: "Communities", title: "Communities", desc: "Where AI engineers actually hang out", url: "resources/COMMUNITIES.md" },
+    { tag: "Next Steps", title: "After the Capstone", desc: "5 career paths + habits to keep", url: "resources/NEXT_STEPS.md" },
+    { tag: "Practice", title: "Daily 15-min Tasks", desc: "Mon–Fri micro-practices rotated by module", url: "daily-tasks/DAILY_PRACTICE.md" }
+  ]
+};
+
+/* ============================================================================
+   STATE: localStorage-backed progress tracking
+============================================================================ */
+
+const STATE_KEY = "ai-course-progress-v1";
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STATE_KEY);
+    if (!raw) return defaultState();
+    return Object.assign(defaultState(), JSON.parse(raw));
+  } catch (e) {
+    return defaultState();
+  }
+}
+function defaultState() {
+  return {
+    currentWeek: 1,
+    completedTasks: {},
+    startDate: null,
+    theme: null // null = follow system
+  };
+}
+function saveState(state) {
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { console.warn("Could not save state", e); }
+}
+
+let STATE = loadState();
+if (!STATE.startDate) { STATE.startDate = new Date().toISOString().slice(0,10); saveState(STATE); }
+
+/* ============================================================================
+   DERIVED HELPERS
+============================================================================ */
+
+function weekByNum(n) { return COURSE.weeks.find(w => w.n === n); }
+
+function weekCompletion(w) {
+  if (!w.tasks.length) return 0;
+  const done = w.tasks.filter(t => STATE.completedTasks[t.id]).length;
+  return done / w.tasks.length;
+}
+
+function totalCompletion() {
+  const totalTasks = COURSE.weeks.reduce((s, w) => s + w.tasks.length, 0);
+  const done = Object.values(STATE.completedTasks).filter(Boolean).length;
+  return { done, total: totalTasks, pct: Math.round((done / totalTasks) * 100) };
+}
+
+function daysSinceStart() {
+  const start = new Date(STATE.startDate);
+  const now = new Date();
+  return Math.max(0, Math.floor((now - start) / 86_400_000));
+}
+
+function weekStatus(w) {
+  if (weekCompletion(w) >= 1) return "done";
+  if (w.n === STATE.currentWeek) return "current";
+  if (w.n < STATE.currentWeek) return "past";
+  return "future";
+}
+
+function dayOfWeek() {
+  // Returns mon/tue/.../fri for weekdays or null for weekends
+  const d = new Date().getDay(); // 0 Sun ... 6 Sat
+  return [null, "mon", "tue", "wed", "thu", "fri", null][d];
+}
+
+const DAILY_TASKS = {
+  mon: { title: "Monday — Read", hint: "One blog post or doc. Don't take notes, just read." },
+  tue: { title: "Tuesday — Experiment", hint: "Open a REPL. Try one new param or assertion." },
+  wed: { title: "Wednesday — Refactor", hint: "Improve one existing prompt or one existing tool description." },
+  thu: { title: "Thursday — Explore", hint: "One new tool, blog, or paper. 15 minutes, no more." },
+  fri: { title: "Friday — Review", hint: "Look back at the week. Note one insight in your journal." }
+};
+
+/* ============================================================================
+   RENDERING
+============================================================================ */
+
+function render() {
+  renderDashboard();
+  renderRoadmap();
+  renderLibrary();
+  renderSettings();
+  applyTheme();
+}
+
+function renderDashboard() {
+  const current = weekByNum(STATE.currentWeek) || weekByNum(1);
+  document.getElementById("dashEyebrow").textContent = `Week ${current.n} of 24 · ${current.moduleTitle}`;
+
+  const stats = totalCompletion();
+  const days = daysSinceStart();
+  const weeksDone = COURSE.weeks.filter(w => weekCompletion(w) >= 1).length;
+  const hoursEst = stats.done * 0.5; // rough estimate
+
+  document.getElementById("statsStrip").innerHTML = `
+    <div class="stat"><div class="stat-num stat-accent">${stats.pct}%</div><div class="stat-label">Progress</div></div>
+    <div class="stat"><div class="stat-num">${stats.done}<span style="color:var(--ink-soft);font-size:1rem;">/${stats.total}</span></div><div class="stat-label">Tasks done</div></div>
+    <div class="stat"><div class="stat-num">${weeksDone}<span style="color:var(--ink-soft);font-size:1rem;">/24</span></div><div class="stat-label">Weeks complete</div></div>
+    <div class="stat"><div class="stat-num">${days}</div><div class="stat-label">Days since start</div></div>
+  `;
+
+  const pct = Math.round(weekCompletion(current) * 100);
+  document.getElementById("currentWeekContent").innerHTML = `
+    <div class="spotlight">
+      <div class="spotlight-label">Week ${current.n} · ${current.moduleTitle}</div>
+      <h2 class="spotlight-title">${escapeHtml(current.title)}</h2>
+      <div class="spotlight-goal">${escapeHtml(current.goal)}</div>
+      <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--ink-mute); margin-bottom:0.75rem;">
+        ${pct}% of tasks complete
+      </div>
+      <div class="week-progress"><div class="week-progress-bar" style="width:${pct}%"></div></div>
+    </div>
+    ${renderTaskList(current)}
+    <div class="btn-row">
+      ${current.module_link ? `<a class="btn secondary" href="${current.module_link}">Full module →</a>` : ""}
+      <button class="btn secondary" data-open-week="${current.n}">Week detail</button>
+      ${STATE.currentWeek < 24 ? `<button class="btn" id="advanceWeek">Advance to Week ${STATE.currentWeek + 1}</button>` : ""}
+    </div>
+  `;
+  document.getElementById("currentWeekContent").querySelectorAll(".task-check").forEach(cb => {
+    cb.addEventListener("change", onTaskToggle);
+  });
+  const openBtn = document.getElementById("currentWeekContent").querySelector("[data-open-week]");
+  if (openBtn) openBtn.addEventListener("click", () => openWeekDetail(current.n));
+  const advanceBtn = document.getElementById("advanceWeek");
+  if (advanceBtn) advanceBtn.addEventListener("click", () => {
+    STATE.currentWeek = Math.min(24, STATE.currentWeek + 1);
+    saveState(STATE);
+    render();
+  });
+
+  // Daily task
+  const day = dayOfWeek();
+  const dailyEl = document.getElementById("dailyTask");
+  if (day && DAILY_TASKS[day]) {
+    dailyEl.innerHTML = `
+      <div style="border-left:3px solid var(--amber); padding-left:1rem;">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--amber);">
+          ${DAILY_TASKS[day].title}
+        </div>
+        <p style="margin:0.25rem 0 0; color:var(--ink);">${DAILY_TASKS[day].hint}</p>
+      </div>
+    `;
+  } else {
+    dailyEl.innerHTML = `
+      <div style="border-left:3px solid var(--moss); padding-left:1rem;">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--moss);">Weekend</div>
+        <p style="margin:0.25rem 0 0; color:var(--ink);">
+          Your 3–4 hour focus session. This is where real learning compounds. Open the current week's card above.
+        </p>
+      </div>
+    `;
+  }
+
+  // Next 3 milestones
+  const upcoming = [];
+  for (const w of COURSE.weeks) {
+    for (const t of w.tasks) {
+      if (!STATE.completedTasks[t.id]) {
+        upcoming.push({ ...t, week: w.n, weekTitle: w.title });
+        if (upcoming.length >= 3) break;
+      }
+    }
+    if (upcoming.length >= 3) break;
+  }
+  document.getElementById("nextMilestones").innerHTML =
+    upcoming.map(t => `
+      <li>
+        <span class="kind">W${t.week}</span>
+        <span>${escapeHtml(t.label)} <span class="task-meta" style="color:var(--ink-soft);">· ${t.weekTitle}</span></span>
+      </li>
+    `).join("") || '<li style="color:var(--ink-mute);">All tasks complete — ship the capstone! 🚀</li>';
+}
+
+function renderTaskList(week) {
+  return `
+    <ul class="tasks">
+      ${week.tasks.map(t => `
+        <li class="task">
+          <input type="checkbox" class="task-check" id="check-${t.id}" data-task="${t.id}" ${STATE.completedTasks[t.id] ? "checked" : ""}>
+          <label for="check-${t.id}" class="task-label">
+            ${escapeHtml(t.label)}
+            <span class="task-meta">${t.time}</span>
+          </label>
+        </li>
+      `).join("")}
+    </ul>
+  `;
+}
+
+function renderRoadmap() {
+  const container = document.getElementById("roadmapPhases");
+  container.innerHTML = COURSE.phases.map(phase => `
+    <div class="phase">
+      <div class="phase-title">
+        <span class="phase-num">Phase ${phase.num}</span>
+        ${phase.title} · Weeks ${phase.weeks[0]}–${phase.weeks[phase.weeks.length-1]}
+      </div>
+      <div class="week-grid">
+        ${phase.weeks.map(n => {
+          const w = weekByNum(n);
+          const status = weekStatus(w);
+          const pct = Math.round(weekCompletion(w) * 100);
+          return `
+            <button class="week" data-status="${status}" data-open-week="${n}" aria-label="Open week ${n}">
+              <span class="week-num">Week ${n} · Mod ${w.module}</span>
+              <div class="week-title">${escapeHtml(w.title)}</div>
+              <div class="week-progress"><div class="week-progress-bar" style="width:${pct}%"></div></div>
+            </button>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `).join("");
+
+  container.querySelectorAll("[data-open-week]").forEach(btn => {
+    btn.addEventListener("click", () => openWeekDetail(parseInt(btn.dataset.openWeek, 10)));
+  });
+}
+
+function openWeekDetail(n) {
+  const w = weekByNum(n);
+  if (!w) return;
+  const pct = Math.round(weekCompletion(w) * 100);
+  document.getElementById("overlayBody").innerHTML = `
+    <div class="spotlight-label">Week ${w.n} · ${w.moduleTitle}</div>
+    <h2 id="overlayTitle" class="spotlight-title" style="font-size:clamp(1.5rem, 4vw, 2rem);">${escapeHtml(w.title)}</h2>
+    <p style="color:var(--ink-mute); margin-top:0.25rem;">${escapeHtml(w.goal)}</p>
+
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; font-family:var(--font-mono); font-size:0.8rem; color:var(--ink-mute); margin:1rem 0;">
+      <span>🎯 ${escapeHtml(w.project)}</span>
+      <span>· ${pct}% complete</span>
+    </div>
+
+    <h3 style="font-family:var(--font-display); margin-top:1.5rem;">Tasks</h3>
+    ${renderTaskList(w)}
+
+    <h3 style="font-family:var(--font-display); margin-top:1.5rem;">Resources</h3>
+    <ul class="rlist">
+      ${w.resources.map(r => `
+        <li>
+          <span class="kind ${r.kind}">${r.kind}</span>
+          <a href="${r.url}" target="${r.url.startsWith("http") ? "_blank" : "_self"}" rel="noopener">${escapeHtml(r.label)}</a>
+        </li>
+      `).join("")}
+    </ul>
+
+    ${w.module_link ? `
+      <div class="btn-row">
+        <a class="btn" href="${w.module_link}" target="_self">Full module notes →</a>
+        ${w.n === STATE.currentWeek ? "" : `<button class="btn secondary" data-set-current="${w.n}">Set as current week</button>`}
+      </div>
+    ` : ""}
+  `;
+  document.getElementById("weekOverlay").dataset.open = "true";
+  document.body.style.overflow = "hidden";
+
+  document.getElementById("overlayBody").querySelectorAll(".task-check").forEach(cb => {
+    cb.addEventListener("change", (e) => { onTaskToggle(e); renderDashboard(); renderRoadmap(); });
+  });
+  const setCurrent = document.getElementById("overlayBody").querySelector("[data-set-current]");
+  if (setCurrent) setCurrent.addEventListener("click", () => {
+    STATE.currentWeek = parseInt(setCurrent.dataset.setCurrent, 10);
+    saveState(STATE);
+    closeOverlay();
+    render();
+  });
+}
+
+function closeOverlay() {
+  document.getElementById("weekOverlay").dataset.open = "false";
+  document.body.style.overflow = "";
+}
+
+function renderLibrary() {
+  document.getElementById("moduleGrid").innerHTML = COURSE.modules.map(m => `
+    <a class="lib" href="${m.file}" target="_self">
+      <div class="lib-tag">Module ${m.num} · Weeks ${m.weeks}</div>
+      <div class="lib-title">${escapeHtml(m.title)}</div>
+      <p class="lib-desc">Full module notes with reading, videos, project spec, and security callouts.</p>
+    </a>
+  `).join("");
+
+  document.getElementById("codeGrid").innerHTML = COURSE.code.map(c => `
+    <a class="lib" href="${c.url}" target="_self">
+      <div class="lib-tag">${c.tag}</div>
+      <div class="lib-title">${escapeHtml(c.title)}</div>
+      <p class="lib-desc">${escapeHtml(c.desc)}</p>
+    </a>
+  `).join("");
+
+  document.getElementById("resourceGrid").innerHTML = COURSE.resources.map(r => `
+    <a class="lib" href="${r.url}" target="_self">
+      <div class="lib-tag">${r.tag}</div>
+      <div class="lib-title">${escapeHtml(r.title)}</div>
+      <p class="lib-desc">${escapeHtml(r.desc)}</p>
+    </a>
+  `).join("");
+}
+
+function renderSettings() {
+  document.getElementById("weekInput").value = STATE.currentWeek;
+  document.getElementById("startDateDisplay").textContent =
+    `You started on ${STATE.startDate}. That was ${daysSinceStart()} days ago.`;
+}
+
+/* ============================================================================
+   EVENT HANDLERS
+============================================================================ */
+
+function onTaskToggle(e) {
+  const id = e.target.dataset.task;
+  if (!id) return;
+  STATE.completedTasks[id] = e.target.checked;
+  saveState(STATE);
+  // Only rerender if it affects visible summary stats
+  if (document.querySelector("[data-view='dashboard'][data-active='true']")) renderDashboard();
+  if (document.querySelector("[data-view='roadmap'][data-active='true']")) renderRoadmap();
+}
+
+document.querySelectorAll(".nav-tabs button").forEach(btn => {
+  btn.addEventListener("click", () => switchView(btn.dataset.view));
+});
+function switchView(view) {
+  document.querySelectorAll(".nav-tabs button").forEach(b => {
+    b.toggleAttribute("aria-current", b.dataset.view === view);
+    if (b.dataset.view === view) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+  });
+  document.querySelectorAll(".view").forEach(v => {
+    v.dataset.active = (v.dataset.view === view) ? "true" : "false";
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* Overlay close */
+document.getElementById("overlayClose").addEventListener("click", closeOverlay);
+document.getElementById("weekOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "weekOverlay") closeOverlay();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeOverlay(); });
+
+/* Theme */
+function applyTheme() {
+  const theme = STATE.theme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.documentElement.dataset.theme = theme;
+}
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const cur = document.documentElement.dataset.theme || "light";
+  STATE.theme = cur === "dark" ? "light" : "dark";
+  saveState(STATE);
+  applyTheme();
+});
+
+/* Settings handlers */
+document.getElementById("saveWeekBtn").addEventListener("click", () => {
+  const v = parseInt(document.getElementById("weekInput").value, 10);
+  if (v >= 1 && v <= 24) {
+    STATE.currentWeek = v;
+    saveState(STATE);
+    render();
+  }
+});
+document.getElementById("setStartBtn").addEventListener("click", () => {
+  if (!confirm("Reset your start date to today?")) return;
+  STATE.startDate = new Date().toISOString().slice(0, 10);
+  saveState(STATE);
+  render();
+});
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(STATE, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `ai-course-progress-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("importBtn").addEventListener("click", () => {
+  document.getElementById("importFile").click();
+});
+document.getElementById("importFile").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (confirm("Replace current progress with imported data?")) {
+        STATE = Object.assign(defaultState(), parsed);
+        saveState(STATE);
+        render();
+      }
+    } catch (err) {
+      alert("Invalid JSON file.");
+    }
+  };
+  reader.readAsText(file);
+});
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if (!confirm("Wipe all progress? This cannot be undone.")) return;
+  if (!confirm("Really? Everything gone. Last chance.")) return;
+  localStorage.removeItem(STATE_KEY);
+  STATE = loadState();
+  if (!STATE.startDate) STATE.startDate = new Date().toISOString().slice(0,10);
+  saveState(STATE);
+  render();
+});
+
+/* ============================================================================
+   UTILITIES
+============================================================================ */
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+
+/* ============================================================================
+   BOOT
+============================================================================ */
+
+render();
+
+</script>
+</body>
+</html>
