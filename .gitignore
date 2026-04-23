@@ -51,3 +51,8 @@ playwright/.cache/
 
 # Docker
 *.log
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
