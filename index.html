@@ -1621,7 +1621,7 @@ function closeOverlay() {
 
 function renderLibrary() {
   document.getElementById("moduleGrid").innerHTML = COURSE.modules.map(m => `
-    <a class="lib" href="${m.file}" target="_self">
+    <a class="lib" href="viewer.html?file=${m.file}" target="_self">
       <div class="lib-tag">Module ${m.num} · Weeks ${m.weeks}</div>
       <div class="lib-title">${escapeHtml(m.title)}</div>
       <p class="lib-desc">Full module notes with reading, videos, project spec, and security callouts.</p>
@@ -1637,7 +1637,7 @@ function renderLibrary() {
   `).join("");
 
   document.getElementById("resourceGrid").innerHTML = COURSE.resources.map(r => `
-    <a class="lib" href="${r.url}" target="_self">
+    <a class="lib" href="${r.url.startsWith("http") ? r.url : "viewer.html?file=" + r.url}" target="${r.url.startsWith("http") ? "_blank" : "_self"}">
       <div class="lib-tag">${r.tag}</div>
       <div class="lib-title">${escapeHtml(r.title)}</div>
       <p class="lib-desc">${escapeHtml(r.desc)}</p>
