@@ -716,7 +716,7 @@
       <p class="card-lead" id="dailyIntro">Pick one based on what day it is — don't skip, don't overdo it.</p>
       <div id="dailyTask"></div>
       <div class="btn-row">
-        <a class="btn secondary" href="daily-tasks/DAILY_PRACTICE.md">All daily tasks →</a>
+        <a class="btn secondary" href="viewer.html?file=daily-tasks/DAILY_PRACTICE.md">All daily tasks →</a>
       </div>
     </div>
 
@@ -813,10 +813,10 @@
   <footer class="foot">
     <div>Built for the QA → AI Automation transition · MIT license · Progress stored in your browser only</div>
     <div style="margin-top: 0.5rem;">
-      <a href="README.md">README</a> ·
-      <a href="ROADMAP.md">ROADMAP</a> ·
-      <a href="SETUP.md">SETUP</a> ·
-      <a href="resources/COMMUNITIES.md">Communities</a>
+      <a href="viewer.html?file=README.md">README</a> ·
+      <a href="viewer.html?file=ROADMAP.md">ROADMAP</a> ·
+      <a href="viewer.html?file=SETUP.md">SETUP</a> ·
+      <a href="viewer.html?file=resources/COMMUNITIES.md">Communities</a>
     </div>
   </footer>
 
@@ -1459,7 +1459,7 @@ function renderDashboard() {
     </div>
     ${renderTaskList(current)}
     <div class="btn-row">
-      ${current.module_link ? `<a class="btn secondary" href="${current.module_link}">Full module →</a>` : ""}
+      ${current.module_link ? `<a class="btn secondary" href="viewer.html?file=${current.module_link}">Full module →</a>` : ""}
       <button class="btn secondary" data-open-week="${current.n}">Week detail</button>
       ${STATE.currentWeek < 24 ? `<button class="btn" id="advanceWeek">Advance to Week ${STATE.currentWeek + 1}</button>` : ""}
     </div>
@@ -1594,7 +1594,7 @@ function openWeekDetail(n) {
 
     ${w.module_link ? `
       <div class="btn-row">
-        <a class="btn" href="${w.module_link}" target="_self">Full module notes →</a>
+        <a class="btn" href="viewer.html?file=${w.module_link}" target="_self">Full module notes →</a>
         ${w.n === STATE.currentWeek ? "" : `<button class="btn secondary" data-set-current="${w.n}">Set as current week</button>`}
       </div>
     ` : ""}
