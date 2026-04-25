@@ -320,10 +320,45 @@
         const title = h1 ? h1.textContent : file.split("/").pop().replace(".md", "");
         document.title = title + " · QA → AI Course";
         topbarTitle.textContent = title;
+        fixLinks();
       })
       .catch(err => {
         content.innerHTML = `<div class="state-msg"><strong>Could not load file</strong>${err.message}</div>`;
       });
+  }
+
+  function fixLinks() {
+    // Base directory of the markdown file, resolved against the page origin.
+    // e.g. file = "modules/00-orientation.md" → fileDir = "<origin>/…/modules/"
+    const pageDir = location.href.split("?")[0].replace(/[^/]+$/, "");
+    const fileDir = new URL(file, pageDir).href.replace(/[^/]+$/, "");
+
+    content.querySelectorAll("a[href]").forEach(a => {
+      const href = a.getAttribute("href");
+      if (!href || href.startsWith("#")) return;
+
+      if (/^https?:\/\//.test(href)) {
+        // External — open in new tab
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        return;
+      }
+
+      // Resolve relative to the markdown file's directory
+      const resolved = new URL(href, fileDir);
+      // Make it relative to the page again so it works on any host
+      const relToPage = resolved.href.startsWith(pageDir)
+        ? resolved.href.slice(pageDir.length)
+        : resolved.href;
+
+      if (relToPage.endsWith(".md")) {
+        a.href = "viewer.html?file=" + relToPage;
+        a.target = "_self";
+      } else {
+        a.href = relToPage;
+        a.target = "_self";
+      }
+    });
   }
 </script>
 </body>
