@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#f5efe2" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#14131a" media="(prefers-color-scheme: dark)" />
+<title>Loading… · QA → AI Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root {
+    --paper: #f5efe2;
+    --paper-line: rgba(26, 24, 29, 0.065);
+    --ink: #1a181d;
+    --ink-mute: #6b6862;
+    --ink-soft: #8a867f;
+    --rust: #c44a2a;
+    --rust-soft: #e87f5f;
+    --moss: #596f3e;
+    --moss-soft: #a6bc86;
+    --amber: #c7892a;
+    --card: #fbf7ed;
+    --card-shadow: 0 1px 0 rgba(26, 24, 29, 0.04), 0 1px 2px rgba(26, 24, 29, 0.06);
+    --stroke: rgba(26, 24, 29, 0.14);
+    --stroke-soft: rgba(26, 24, 29, 0.08);
+    --font-display: "Fraunces", ui-serif, Georgia, serif;
+    --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --content-max: 52rem;
+  }
+
+  [data-theme="dark"] {
+    --paper: #14131a;
+    --paper-line: rgba(235, 228, 216, 0.04);
+    --ink: #ebe4d8;
+    --ink-mute: #8f887d;
+    --ink-soft: #6b655c;
+    --rust: #e67a56;
+    --rust-soft: #a2432a;
+    --moss: #9eb884;
+    --moss-soft: #5b6f44;
+    --amber: #e3b060;
+    --card: #1c1b24;
+    --card-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.5);
+    --stroke: rgba(235, 228, 216, 0.14);
+    --stroke-soft: rgba(235, 228, 216, 0.06);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100svh;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--paper-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 32px 32px, 32px 32px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: var(--rust);
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) { body::before { width: 4px; } }
+
+  /* ── Top bar ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--paper) 90%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--stroke-soft);
+    padding: 0.65rem 1.5rem 0.65rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .back-link {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--rust);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+  .back-link:hover { opacity: 0.75; }
+
+  .topbar-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink-mute);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topbar-theme {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-sm);
+    color: var(--ink-mute);
+    cursor: pointer;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    flex-shrink: 0;
+  }
+  .topbar-theme:hover { color: var(--ink); border-color: var(--stroke); }
+
+  /* ── Article ── */
+  .article-wrap {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem 2.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .article-wrap { padding: 2rem 1.25rem 4rem 1.5rem; }
+  }
+
+  /* ── Markdown content ── */
+  .md-body h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: var(--ink);
+  }
+  .md-body h2 {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-weight: 600;
+    margin: 2.5rem 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--stroke-soft);
+    color: var(--ink);
+  }
+  .md-body h3 {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 1.75rem 0 0.5rem;
+    color: var(--ink);
+  }
+  .md-body h4, .md-body h5, .md-body h6 {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 1.25rem 0 0.35rem;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .md-body p {
+    margin: 0 0 1rem;
+    max-width: 68ch;
+  }
+  .md-body a {
+    color: var(--rust);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .md-body a:hover { opacity: 0.75; }
+  .md-body ul, .md-body ol {
+    padding-left: 1.5rem;
+    margin: 0 0 1rem;
+  }
+  .md-body li { margin-bottom: 0.35rem; }
+  .md-body li > ul, .md-body li > ol { margin-top: 0.25rem; margin-bottom: 0; }
+  .md-body blockquote {
+    margin: 1.5rem 0;
+    padding: 0.75rem 1.25rem;
+    border-left: 3px solid var(--rust);
+    background: color-mix(in srgb, var(--rust) 6%, transparent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--ink-mute);
+    font-style: italic;
+  }
+  .md-body blockquote p { margin: 0; max-width: none; }
+  .md-body code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+  }
+  .md-body pre {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    border: 1px solid var(--stroke-soft);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin: 1.25rem 0;
+  }
+  .md-body pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .md-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+  .md-body th {
+    text-align: left;
+    font-weight: 700;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid var(--stroke);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-mute);
+  }
+  .md-body td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--stroke-soft);
+    vertical-align: top;
+  }
+  .md-body tr:last-child td { border-bottom: none; }
+  .md-body hr {
+    border: none;
+    border-top: 1px solid var(--stroke-soft);
+    margin: 2.5rem 0;
+  }
+  .md-body img {
+    max-width: 100%;
+    border-radius: var(--radius);
+  }
+
+  /* ── States ── */
+  .state-msg {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--ink-mute);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+  .state-msg strong { display: block; color: var(--rust); margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back-link" href="index.html">← Portal</a>
+  <span class="topbar-title" id="topbarTitle"></span>
+  <button class="topbar-theme" id="themeToggle" aria-label="Toggle theme">☀︎</button>
+</div>
+
+<main class="article-wrap">
+  <div class="md-body" id="content">
+    <div class="state-msg">Loading…</div>
+  </div>
+</main>
+
+<script>
+  // ── Theme ──
+  const saved = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const theme = saved || (prefersDark ? "dark" : "light");
+  document.documentElement.dataset.theme = theme;
+  document.getElementById("themeToggle").textContent = theme === "dark" ? "☀︎" : "☾";
+
+  document.getElementById("themeToggle").addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem("theme", next);
+    document.getElementById("themeToggle").textContent = next === "dark" ? "☀︎" : "☾";
+  });
+
+  // ── Load & render markdown ──
+  const params = new URLSearchParams(location.search);
+  const file = params.get("file");
+  const content = document.getElementById("content");
+  const topbarTitle = document.getElementById("topbarTitle");
+
+  if (!file) {
+    content.innerHTML = '<div class="state-msg"><strong>No file specified</strong>Add ?file=path/to/file.md to the URL.</div>';
+  } else {
+    fetch(file)
+      .then(res => {
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        return res.text();
+      })
+      .then(md => {
+        content.innerHTML = marked.parse(md);
+        const h1 = content.querySelector("h1");
+        const title = h1 ? h1.textContent : file.split("/").pop().replace(".md", "");
+        document.title = title + " · QA → AI Course";
+        topbarTitle.textContent = title;
+      })
+      .catch(err => {
+        content.innerHTML = `<div class="state-msg"><strong>Could not load file</strong>${err.message}</div>`;
+      });
+  }
+</script>
+</body>
+</html>
