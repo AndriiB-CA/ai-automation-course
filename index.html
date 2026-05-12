@@ -840,7 +840,8 @@ const COURSE = {
   phases: [
     { num: 1, title: "Foundations", weeks: [1,2,3,4,5,6,7,8] },
     { num: 2, title: "Build", weeks: [9,10,11,12,13,14,15,16,17,18,19] },
-    { num: 3, title: "Ship", weeks: [20,21,22,23,24] }
+    { num: 3, title: "Ship", weeks: [20,21,22,23,24] },
+    { num: 4, title: "Bonus", weeks: [25,26] }
   ],
   weeks: [
     {
@@ -1310,6 +1311,46 @@ const COURSE = {
       ],
       project: "🚀 Public release of Playwright Healer v0.1.0",
       module_link: "modules/09-capstone.md"
+    },
+    {
+      n: 25, module: 10, moduleTitle: "n8n Automation",
+      title: "n8n Fundamentals + Claude Integration",
+      goal: "Self-host n8n, call Claude from a workflow, build Slack → AI → Slack bot",
+      phase: 4,
+      tasks: [
+        { id: "w25-spin", label: "Spin up n8n with Docker Compose", time: "30m" },
+        { id: "w25-docs", label: "Read HTTP Request node + expressions docs", time: "45m" },
+        { id: "w25-slack", label: "Build Slack → Claude classifier → Slack workflow", time: "2h" },
+        { id: "w25-error", label: "Add error-handling workflow with Slack alert", time: "45m" },
+        { id: "w25-creds", label: "Move all secrets to n8n credential vault", time: "20m" }
+      ],
+      resources: [
+        { kind: "read", label: "n8n Getting Started", url: "https://docs.n8n.io/getting-started/" },
+        { kind: "read", label: "HTTP Request node", url: "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/" },
+        { kind: "video", label: "n8n in 15 minutes (official)", url: "https://www.youtube.com/watch?v=1MwSoB0gnM4" }
+      ],
+      project: "Slack bot that classifies QA alerts via Claude and posts verdicts back to thread",
+      module_link: "modules/10-n8n.md"
+    },
+    {
+      n: 26, module: 10, moduleTitle: "n8n Automation",
+      title: "n8n + Your QA Stack",
+      goal: "Wire n8n to your test runner, eval DB, and MCP tools",
+      phase: 4,
+      tasks: [
+        { id: "w26-triage", label: "Build CI failure triage pipeline (GitHub → Claude → Jira + Slack)", time: "2h" },
+        { id: "w26-api", label: "Wrap MCP tools in a thin HTTP API with auth", time: "1.5h" },
+        { id: "w26-webhook", label: "n8n webhook → trigger test suite → post results", time: "1.5h" },
+        { id: "w26-digest", label: "Nightly AI quality digest (Langfuse + evals → Claude → Slack)", time: "1h" },
+        { id: "w26-boundary", label: "Document your personal n8n-vs-code-agent decision criteria", time: "20m" }
+      ],
+      resources: [
+        { kind: "read", label: "n8n Webhook node", url: "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/" },
+        { kind: "read", label: "n8n community templates", url: "https://n8n.io/workflows/" },
+        { kind: "read", label: "n8n AI agent nodes", url: "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/" }
+      ],
+      project: "Test triage pipeline + nightly quality digest running on schedule",
+      module_link: "modules/10-n8n.md"
     }
   ],
   modules: [
@@ -1322,7 +1363,8 @@ const COURSE = {
     { num: 6, title: "AI-Powered QA", weeks: "20–21", file: "modules/06-ai-qa.md" },
     { num: 7, title: "Production & Cost", weeks: "22", file: "modules/07-production.md" },
     { num: 8, title: "AI Security", weeks: "23", file: "modules/08-security.md" },
-    { num: 9, title: "Capstone", weeks: "24", file: "modules/09-capstone.md" }
+    { num: 9, title: "Capstone", weeks: "24", file: "modules/09-capstone.md" },
+    { num: 10, title: "n8n Automation (Bonus)", weeks: "25–26", file: "modules/10-n8n.md" }
   ],
   code: [
     { tag: "Week 2", title: "First API Call", desc: "Streaming URL summarizer with cost tracking", url: "code/week-02-first-api-call/" },
