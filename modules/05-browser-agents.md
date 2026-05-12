@@ -42,13 +42,18 @@ Your job in this module: combine what you already know (Playwright, waits, trace
 Week 17 focuses on **Pattern B**. You'll build Pattern A in Module 6.
 
 ### Libraries you'll compare
-- **Stagehand** (Browserbase) — TypeScript-first, the cleanest abstraction for this pattern
-- **Browser-Use** (Python) — reference implementation, worth reading even if you stay in TS
-- **Anthropic Computer Use** — vision-based, needs a VM
+- **Stagehand** (Browserbase) — TypeScript-first, DOM-driven AI augmentation on Playwright. Cleanest abstraction for this pattern.
+- **Browser Use** — 50k+ GitHub stars, fastest-growing AI browser project in 2025–26. Self-hosted, works with any LLM. Worth knowing even if you stay in TS.
+- **Playwright Agents** (v1.56+, Oct 2025) — natural-language test generation and self-healing built directly into Playwright. If you're already using Playwright, start here.
+- **Anthropic Computer Use** — vision-based, needs a VM. Use when DOM access is unavailable.
+
+**Architectural rule of thumb (2026 data):** DOM-driven stacks (Stagehand, Playwright Agents) are 12–17 percentage points more reliable than pure vision stacks for common form/navigation tasks. Use DOM for the predictable 80%, vision for the stubborn 20%.
 
 ### Reading (90 min)
 - [Stagehand docs](https://docs.stagehand.dev/)
 - [Browserbase blog — Stagehand design](https://www.browserbase.com/blog/introducing-stagehand)
+- [Playwright Agents — official docs](https://playwright.dev/docs/playwright-agents) (v1.56+)
+- [Browser Use — GitHub](https://github.com/browser-use/browser-use)
 - [Anthropic Computer Use overview](https://www.anthropic.com/news/3-5-models-and-computer-use)
 
 ### Video (45 min)
@@ -151,7 +156,8 @@ Defenses layered:
 
 **Dockerize** your Week 17 agent:
 ```dockerfile
-FROM mcr.microsoft.com/playwright:v1.55.0-noble
+# Use the current Playwright version — check https://playwright.dev/docs/docker for latest tag
+FROM mcr.microsoft.com/playwright:v1.50.0-noble
 
 WORKDIR /app
 COPY package.json package-lock.json ./

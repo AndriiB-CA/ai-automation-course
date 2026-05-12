@@ -92,6 +92,15 @@ Prompt injection is an unsolved problem. Layered defense (sanitize inputs, const
 
 ## Week 7 — Evals 101 with Promptfoo ⭐
 
+### The eval platform landscape (2026)
+The ecosystem has matured. Pick based on your use case:
+- **Promptfoo** — best for **red teaming and security testing** (prompt injection, PII leak scanning, adversarial inputs). The tool you'll use in Week 8. Node.js-native.
+- **Braintrust** — best all-in-one platform for teams who want CI-gated quality with production tracing connected. Paid.
+- **DeepEval** — Python-native, pytest-style. Best if your stack is Python-heavy. Strong RAGAS integration.
+- **LangSmith** — natural choice if your stack uses LangChain/LangGraph.
+
+This week we use **Promptfoo** because it's the fastest to wire to CI and has the best assertion library.
+
 ### Install & first eval (30 min)
 ```bash
 npm install -g promptfoo

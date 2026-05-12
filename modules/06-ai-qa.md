@@ -54,7 +54,7 @@ Outputs a valid `login.spec.ts` that:
            │ structured page state
            ▼
 ┌──────────────────────┐
-│  Claude (Sonnet 4.7) │
+│  Claude (Sonnet 4.6) │
 │  system: testgen     │
 │  user: {page, task}  │
 │  tool: emit_test     │
@@ -201,7 +201,7 @@ You have just built something real QA teams at every company struggle with. Comp
 
 ## Daily 15-min tasks
 
-- **Mon:** Take one failing test from your job or a past project. Can your healer fix it? Why/why not?
+- **Mon:** Take one failing test from your job or a past project. Can your healer fix it? Why or why not?
 - **Tue:** Read one [Cypress / Playwright blog post on flaky tests](https://playwright.dev/docs/test-retries) — bring QA craft into your AI tool
 - **Wed:** Refine your testgen system prompt by 10% (shorter, clearer)
 - **Thu:** Look at [testrigor](https://testrigor.com/) or [Mabl](https://www.mabl.com/) — what do they do you don't? What don't they do that you could?

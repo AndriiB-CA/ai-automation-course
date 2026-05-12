@@ -39,7 +39,7 @@ You paid for Sonnet and Haiku has the same capability for your task. Always ask:
 For repeated system prompts, examples, and context windows:
 ```ts
 const msg = await client.messages.create({
-  model: "claude-sonnet-4-5",
+  model: "claude-sonnet-4-6",
   max_tokens: 1024,
   system: [
     {
@@ -69,7 +69,10 @@ When users ask the same (or semantically similar) question:
 - Exact-match cache: simple hash of prompt → response (Redis, KV store)
 - Semantic cache: embed the query, if a cached query is ≥0.95 similar, return its response
 
-Redis + `RedisVL` or `langchain-cache` both work. Cuts cost dramatically on public-facing RAG.
+Redis LangCache or a simple pgvector-backed cache both work. Semantic caching delivers up to 73% cost reduction on high-repetition workloads; cache hits return in milliseconds.
+
+### 5. Model routing
+Route simple queries to cheaper models automatically. Haiku 4.5 handles 60–80% of typical production queries with identical user-perceived quality. Teams that implement routing report 40–60% reduction in total token spend. Simple heuristic: if the query is under N tokens and contains no code/structured data, try Haiku first; fall back to Sonnet on validation failure.
 
 ---
 
@@ -159,7 +162,7 @@ Know your use case. Don't stream reflexively.
 
 ## Self-check
 
-- [ ] You can quote the pricing of Haiku, Sonnet, Opus within 20%
+- [ ] You can quote the pricing of Haiku 4.5, Sonnet 4.6, Opus 4.7 within 20%
 - [ ] You've measured a >50% cost reduction on one of your projects
 - [ ] You have a cost alert set in the Anthropic console
 - [ ] Your main projects have a response cache layer
