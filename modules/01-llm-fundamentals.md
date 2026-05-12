@@ -23,7 +23,7 @@ By the end of this module you will:
 
 ### Reading (90 min, spread across weekdays)
 1. [Anthropic Messages API reference](https://docs.claude.com/en/api/messages) — skim the params, then focus on `system`, `messages`, `max_tokens`, `temperature`, `stream`
-2. [Anthropic Pricing page](https://www.anthropic.com/pricing) — memorize roughly: Opus = expensive, Sonnet = balanced, Haiku = cheap-and-fast
+2. [Anthropic Pricing page](https://www.anthropic.com/pricing) — memorize roughly: Opus 4.7 = flagship/expensive, Sonnet 4.6 = balanced workhorse, Haiku 4.5 = fast/cheap. These are the active Claude 4.x models as of 2026.
 3. Blog post: [A Brief Intro to LLM Inference (Chip Huyen)](https://huyenchip.com/2024/01/16/sampling.html)
 
 ### Videos (pick one, ~1 hour)
@@ -137,6 +137,7 @@ You should be able to, **without Googling**:
 - [ ] Define a Zod schema for a nested object with optional fields
 - [ ] Sketch the tool-use loop (receive → execute → send back → repeat)
 - [ ] Guess the cost of a 2,000-token input / 500-token output call to Sonnet 4.6 within 20%
+- [ ] Know what "extended thinking" is and when to use it (Opus 4.7 with `effort: "high"` for hard reasoning tasks; Sonnet 4.6 for most production use)
 - [ ] Explain why streaming matters for UX even when total latency is unchanged
 
 If any of these are fuzzy, spend a weekday revisiting before moving to Module 2.

@@ -71,6 +71,8 @@ Starter in [`/code/week-15-mcp-agent/react-agent.ts`](../code/week-15-mcp-agent/
 
 Before MCP, every AI client had its own tool plugin system. You wrote the same tool 5 times for 5 different products. With MCP, you write it once, it runs everywhere.
 
+**MCP is now the industry standard (2026).** Anthropic donated the spec to the Linux Foundation in December 2025. OpenAI, Google, and Microsoft all ship MCP support. There are 9,400+ active MCP servers in the public registry and 78% of enterprise AI teams report at least one MCP-backed agent in production. This is no longer "emerging" — teach it as the default integration layer.
+
 ### Reading (2 hours)
 - ⭐ [Model Context Protocol — official docs](https://modelcontextprotocol.io/)
 - [MCP specification](https://modelcontextprotocol.io/specification) — skim, reference later
@@ -128,16 +130,19 @@ MCP servers run with *your* permissions. If an LLM can call your `run_shell_comm
 ## Week 15 — Multi-Tool Agents in Production
 
 ### Pick one framework (TypeScript-first)
-- **Vercel AI SDK** — the lowest-level, most explicit. Good if you liked Week 13's manual ReAct.
-- **Mastra** — TypeScript-native agent framework, MCP-aware, well-documented for 2026 patterns
-- **LangGraph.js** — more complex but ecosystem-heavy
+- **Mastra v1.0** — TypeScript-native, MCP-aware, 22k+ GitHub stars, 1.8M monthly downloads, used by PayPal/Adobe/Docker. Its `Workflow` primitive maps cleanly to test orchestration. **Recommended for this track.**
+- **OpenAI Agents SDK** — lightweight and provider-agnostic (works with Claude, Gemini, etc.); built-in handoffs, guardrails, tracing. Good second choice.
+- **Vercel AI SDK** — lowest-level, most explicit. Good if you want maximum control.
+- **LangGraph.js** — complex stateful workflows; best for intricate multi-agent pipelines.
+- **Claude Agent SDK** (September 2025) — Anthropic's own SDK, built on the same infrastructure that powers Claude Code. Best for Claude-only pipelines.
 
 For your QA track, I recommend **Mastra** — its `Workflow` primitive maps cleanly to test orchestration.
 
 ### Reading (90 min)
-- [Mastra docs — Getting Started](https://mastra.ai/docs/getting-started/installation)
+- [Mastra v1.0 docs — Getting Started](https://mastra.ai/docs/getting-started/installation)
 - [Mastra Agents & Tools](https://mastra.ai/docs/agents/overview)
 - Browse: [Mastra examples](https://github.com/mastra-ai/mastra/tree/main/examples)
+- [Claude Agent SDK — Building Agents](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk)
 
 ### Weekend project (5 hours)
 

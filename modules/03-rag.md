@@ -35,7 +35,7 @@ An embedding is a function that maps text → a vector of floats (e.g., 1024 num
 
 **Build:** An embedding explorer.
 1. Pick 100 texts you care about — Slack messages, tweets, past bug reports, journal entries (local only 🛡️)
-2. Embed them using `voyage-3` (Anthropic-recommended) or OpenAI's `text-embedding-3-small`
+2. Embed them using `voyage-3-large` or `voyage-3.5-lite` (best accuracy/cost ratio per 2026 MTEB — Anthropic-recommended); OpenAI's `text-embedding-3-large` is a solid alternative
 3. Calculate cosine similarity of each pair → heatmap
 4. Run t-SNE or UMAP → plot in 2D → manually label the clusters
 5. Try to break it: craft two texts that mean the same thing in different words. Do they land near each other? Craft two that look similar but mean opposite things. Do they land apart?
@@ -77,6 +77,7 @@ Because 90% of teams already have Postgres. You don't need Pinecone, Weaviate, o
      created_at TIMESTAMPTZ DEFAULT NOW()
    );
    CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops);
+   -- pgvector 0.8.0+ (April 2025): 5.7× faster filtered queries via iterative index scanning
    ```
 3. Ingest 500 real documents (your past blog posts, your company's public docs, a subreddit export, a GitHub repo's issues)
 4. Write a query function: `semanticSearch(query: string, k: number) → Chunk[]`
@@ -120,13 +121,16 @@ For each strategy:
 
 Deliverable: a markdown report with a table of results + a recommendation for your dataset.
 
-### Bonus: Hybrid search
-Most production systems combine vector search with BM25 (keyword). In Postgres, add:
+### Hybrid search — now the production default
+Pure vector similarity is no longer considered sufficient. Every production team in 2026 combines vector search with BM25 (keyword). In Postgres:
 ```sql
 ALTER TABLE chunks ADD COLUMN content_tsvector tsvector GENERATED ALWAYS AS (to_tsvector('english', content)) STORED;
 CREATE INDEX ON chunks USING GIN(content_tsvector);
 ```
-Then blend scores: `final_score = 0.7 * vector_score + 0.3 * bm25_score`. Measure again.
+Blend scores: `final_score = 0.7 * vector_score + 0.3 * bm25_score`. Include this in your benchmark — teams consistently see 10–20% recall improvement over pure vector.
+
+### Advanced: GraphRAG
+For document corpora with complex entity relationships (e.g., legal docs, codebases, research papers), consider **GraphRAG** (open-sourced by Microsoft): it extracts entity-relationship graphs and builds community summaries for multi-hop reasoning. Overkill for simple Q&A, powerful for "who approved X and why?" queries. [GraphRAG docs](https://microsoft.github.io/graphrag/).
 
 ---
 
