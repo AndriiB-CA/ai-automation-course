@@ -22,14 +22,14 @@ npx playwright install chromium
 │ CLI: url + out │
 └───────┬────────┘
         ▼
-┌───────────────────┐
+┌──────────────────┐
 │ Playwright visits │
 │ URL; extracts a11y │
 │ snapshot          │
 └───────┬───────────┘
         ▼
 ┌─────────────────────┐
-│ Claude Sonnet 4.7   │
+│ Claude Sonnet 4.6   │
 │ • cached system prompt (Playwright best practices) │
 │ • user: { a11y tree, url, task? } │
 │ • tool: emit_spec    │
