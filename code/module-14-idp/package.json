@@ -1,0 +1,22 @@
+{
+  "name": "module-14-idp",
+  "version": "0.1.0",
+  "description": "Intelligent Document Processing pipeline for invoices and receipts",
+  "type": "module",
+  "scripts": {
+    "process": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "dotenv": "^16.4.5",
+    "glob": "^11.0.0",
+    "pdf-parse": "^1.1.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pdf-parse": "^1.1.4",
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4"
+  }
+}
