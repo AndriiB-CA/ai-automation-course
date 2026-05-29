@@ -50,7 +50,7 @@ The default assertions (`contains`, `javascript`) are deterministic. For fuzzy q
     1. Flag any SQL injection pattern as severity='high' or 'critical'
     2. Provide a specific code fix, not generic advice
     3. Stay under 500 tokens total
-  provider: anthropic:messages:claude-opus-4-7
+  provider: anthropic:messages:claude-opus-4-8
 ```
 
 This uses a **stronger model to judge a weaker model** — a common eval pattern.

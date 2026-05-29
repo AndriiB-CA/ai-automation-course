@@ -173,7 +173,7 @@ ${ariaSnapshot.slice(0, 4000)}
 Propose a new locator.`;
 
     const msg = await this.anthropic.messages.create({
-      model: this.config.model ?? "claude-sonnet-4-5",
+      model: this.config.model ?? "claude-sonnet-4-6",
       max_tokens: 600,
       system: [
         { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },

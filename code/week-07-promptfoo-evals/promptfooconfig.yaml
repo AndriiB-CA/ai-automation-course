@@ -11,7 +11,7 @@ prompts:
 # The providers to test against
 # Multiple providers = auto-compare quality/cost
 providers:
-  - id: anthropic:messages:claude-sonnet-4-5
+  - id: anthropic:messages:claude-sonnet-4-6
     label: sonnet
     config:
       max_tokens: 800
@@ -66,7 +66,7 @@ tests:
         value: |
           Response must flag SQL injection. Severity must be 'high' or 'critical'.
           Must mention parameterized queries or prepared statements as the fix.
-        provider: anthropic:messages:claude-opus-4-7
+        provider: anthropic:messages:claude-opus-4-8
 
   - description: "Hardcoded secret"
     vars:
@@ -78,7 +78,7 @@ tests:
         value: ["secret", "credential", "hardcoded", "environment"]
       - type: llm-rubric
         value: "Must flag as critical severity. Must recommend env var or secret manager."
-        provider: anthropic:messages:claude-opus-4-7
+        provider: anthropic:messages:claude-opus-4-8
 
   - description: "XSS via innerHTML"
     vars:
@@ -167,7 +167,7 @@ tests:
     assert:
       - type: llm-rubric
         value: "Response should identify the off-by-one error (using <= instead of <)"
-        provider: anthropic:messages:claude-opus-4-7
+        provider: anthropic:messages:claude-opus-4-8
 
   - description: "Race condition"
     vars:
@@ -180,7 +180,7 @@ tests:
     assert:
       - type: llm-rubric
         value: "Response should identify the race condition or concurrency issue"
-        provider: anthropic:messages:claude-opus-4-7
+        provider: anthropic:messages:claude-opus-4-8
 
   # ——————————————————————————————
   # Global assertions (applied to every test)

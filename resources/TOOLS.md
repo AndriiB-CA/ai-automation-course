@@ -9,7 +9,7 @@
 | Tool | What it is | Cost | When you need it |
 |---|---|---|---|
 | **Anthropic API** | Claude access | Pay-per-use, ~$20 lasts weeks | From Week 2 onward |
-| **OpenAI API** | GPT-4/5 access for comparison | Pay-per-use | Optional but useful |
+| **OpenAI API** | GPT-5.x access for comparison | Pay-per-use | Optional but useful |
 | **Node.js 20+** | JavaScript runtime | Free | Daily |
 | **uv** | Modern Python package manager | Free | Module 3+ |
 | **Docker** | Containers | Free | Module 3+ |
@@ -39,7 +39,8 @@
 | **Promptfoo** | Open-source eval framework, YAML-configured | Local + cloud |
 | **Langfuse** | Traces + evals + prompt management | Self-host free / cloud free tier |
 | **LangSmith** | LangChain's observability | Cloud (free tier) |
-| **Braintrust** | Eval + dataset management | Cloud paid |
+| **Braintrust** | All-in-one eval + dataset + tracing, CI-gated | Cloud paid |
+| **DeepEval** | Pytest-style eval framework, strong RAGAS integration | Python (local) |
 | **Arize Phoenix** | OSS LLM observability | Self-host free |
 | **TruLens** | RAG-focused evals | OSS |
 
@@ -58,7 +59,19 @@
 | **Weaviate** | Great hybrid search, multi-modal |
 | **Chroma** | Simplest for local prototyping |
 
-**Recommendation for course:** Start with pgvector in Docker. If building a deployed app, use Supabase.
+**Recommendation for course:** Start with pgvector in Docker (0.8.0+ gives ~5.7× faster filtered queries via iterative index scanning). If building a deployed app, use Supabase. In 2026, **hybrid search (vector + BM25) is the production default**, not a bonus.
+
+---
+
+## Embedding models
+
+| Model | Notes |
+|---|---|
+| **voyage-3-large / voyage-3.5-lite** | 2026 MTEB leaders for accuracy/cost; Anthropic-recommended |
+| **text-embedding-3-large** (OpenAI) | Solid, widely available alternative |
+| **Cohere embed v3** | Strong multilingual + native reranking pairing |
+
+**Recommendation:** `voyage-3.5-lite` for cost-sensitive workloads, `voyage-3-large` when retrieval quality is the bottleneck.
 
 ---
 
@@ -67,7 +80,9 @@
 | Framework | Language | Style | Notes |
 |---|---|---|---|
 | **Vercel AI SDK** | TS | Low-level, explicit | Start here — teaches you patterns |
-| **Mastra** | TS | Medium, MCP-native | Best fit for 2026 TS-first building |
+| **Mastra v1.0** | TS | Medium, MCP-native | Best fit for 2026 TS-first building (used by PayPal/Adobe/Docker) |
+| **OpenAI Agents SDK** | TS / Python | Provider-agnostic | Handoffs, guardrails, tracing built in — works with Claude too |
+| **Claude Agent SDK** | TS / Python | Anthropic-native | Same engine that powers Claude Code; best for Claude-only pipelines |
 | **LangGraph.js** | TS | Higher-level, graph-based | Powerful but steep learning |
 | **LangChain.js** | TS | Batteries-included | Massive but opinionated |
 | **CrewAI** | Python | Multi-agent roles | Python-only, good for multi-agent exploration |
@@ -82,6 +97,7 @@
 | Tool | Approach | Best for |
 |---|---|---|
 | **Playwright** (raw) | Selectors + API | Your existing superpower |
+| **Playwright Agents** | NL test-gen + self-healing built into Playwright (v1.56+) | If you already use Playwright, start here |
 | **Stagehand** | LLM-driven wrapper over Playwright | Week 17's starting point |
 | **Browser-Use** | Python, LLM-first | Reference reading |
 | **Anthropic Computer Use** | Vision + coordinates | When selectors fail entirely |
@@ -98,6 +114,20 @@
 - **[Python SDK](https://github.com/modelcontextprotocol/python-sdk)**
 - **[Official servers](https://github.com/modelcontextprotocol/servers)** — GitHub, Slack, Postgres, Puppeteer, filesystem, …
 - **[Awesome MCP servers](https://github.com/punkpeye/awesome-mcp-servers)** — community catalog
+
+> **2026 status:** MCP is now an industry standard — the spec was donated to the Linux Foundation (Dec 2025), and OpenAI, Google, and Microsoft all ship MCP support. Teach it as the default integration layer, not an experiment.
+
+---
+
+## Workflow automation (the no-code glue layer)
+
+| Tool | What it is | When to use |
+|---|---|---|
+| **n8n** | Self-hostable, code-extensible workflow automation | Connect AI pipelines to Slack/Jira/Sheets/CI without hand-writing integrations (Module 10) |
+| **Temporal / Inngest** | Durable, fault-tolerant workflow execution in code | The step up from n8n when you need code-grade reliability + retries |
+| **Zapier / Make** | Hosted no-code automation | Quick personal automations; avoid for anything touching secrets or code |
+
+**Recommendation:** Self-host **n8n** for anything that touches your code, test runners, or credentials. Reach for a code agent (not n8n) the moment the LLM needs to decide what to do next.
 
 ---
 

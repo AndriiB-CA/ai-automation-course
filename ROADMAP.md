@@ -17,6 +17,9 @@
   │                            │                                │
   │  PHASE 3  ──  SHIP (Weeks 20–24)                            │
   │  AI-powered QA → Production → Security → CAPSTONE           │
+  │                            │                                │
+  │  PHASE 4  ──  BONUS (Weeks 25–26)                          │
+  │  n8n Automation → wire your AI pipelines to real tooling   │
   └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -191,7 +194,7 @@
 ### 🟥 Week 24 — CAPSTONE: AI-Powered Playwright Healer 🚀
 **Goal:** Public GitHub repo + blog post + LinkedIn announcement.
 
-See [`modules/08-capstone.md`](./modules/08-capstone.md) for the full spec.
+See [`modules/09-capstone.md`](./modules/09-capstone.md) for the full spec.
 
 **Success criteria:**
 - [ ] Repo has README with clear setup steps
@@ -201,6 +204,23 @@ See [`modules/08-capstone.md`](./modules/08-capstone.md) for the full spec.
 - [ ] Evals for the healer itself (meta!)
 - [ ] Blog post explaining the architecture published
 - [ ] LinkedIn post announcing it
+
+---
+
+## Phase 4 — Bonus (Weeks 25–26)
+
+> Optional, but high-leverage. The capstone proves you can build AI tools in code. This phase makes them usable by your whole team.
+
+### 🟫 Week 25 — n8n Fundamentals + Claude Integration
+**Goal:** Self-host n8n, call Claude from a workflow, ship a Slack → AI → Slack bot.
+- Full module: [`modules/10-n8n.md`](./modules/10-n8n.md)
+- Read: [n8n Getting Started](https://docs.n8n.io/getting-started/) + [HTTP Request node](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/)
+- **Project:** A Slack bot that classifies QA alerts via Claude (Haiku) and posts verdicts back to the thread, with an error-handling workflow.
+
+### 🟫 Week 26 — n8n + Your QA Stack
+**Goal:** Wire n8n to the tools you built in Weeks 1–24 so non-engineers can trigger them.
+- **Project:** A CI failure triage pipeline (GitHub → Claude → Jira + Slack), an MCP-tools HTTP wrapper callable from a webhook, and a nightly AI quality digest.
+- 🧭 **The boundary:** if a business analyst could draw the flowchart and it's under ~15 steps, n8n wins; if the LLM must decide what to do next, write a code agent.
 
 ---
 

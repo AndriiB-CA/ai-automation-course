@@ -49,6 +49,7 @@ By the end of this roadmap you will have:
 | 7 | 22 | **Production & Observability** | Tracing, cost, caching, versioning |
 | 8 | 23 | **AI Security** | Prompt injection, OWASP LLM Top 10 |
 | 9 | 24 | **Capstone Ship** | Public release + writeup |
+| Bonus | 25–26 | **n8n Automation** | Wire your AI pipelines to Slack/Jira/CI — the no-code glue layer |
 
 👉 Full breakdown: [**ROADMAP.md**](./ROADMAP.md)
 
@@ -102,7 +103,7 @@ Total: ~5–7 hrs. Sustainable indefinitely.
 
 ## 🛡️ Cybersecurity thread
 
-AI security isn't a bolt-on at the end — it runs through every module as a 🛡️ callout. The full deep dive is [Module 7](./modules/07-security.md), but expect red-team exercises starting Week 2.
+AI security isn't a bolt-on at the end — it runs through every module as a 🛡️ callout. The full deep dive is [Module 8](./modules/08-security.md), but expect red-team exercises starting Week 2.
 
 ---
 

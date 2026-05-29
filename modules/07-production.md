@@ -162,7 +162,7 @@ Know your use case. Don't stream reflexively.
 
 ## Self-check
 
-- [ ] You can quote the pricing of Haiku 4.5, Sonnet 4.6, Opus 4.7 within 20%
+- [ ] You can quote the pricing of Haiku 4.5, Sonnet 4.6, Opus 4.8 within 20%
 - [ ] You've measured a >50% cost reduction on one of your projects
 - [ ] You have a cost alert set in the Anthropic console
 - [ ] Your main projects have a response cache layer
