@@ -1,0 +1,22 @@
+{
+  "name": "week-10-rag-pgvector",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "ingest": "tsx src/ingest.ts",
+    "search": "tsx src/search.ts",
+    "eval": "tsx src/eval.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "dotenv": "^16.4.5",
+    "pg": "^8.12.0",
+    "voyageai": "^0.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/pg": "^8.11.6",
+    "tsx": "^4.15.7",
+    "typescript": "^5.5.2"
+  }
+}

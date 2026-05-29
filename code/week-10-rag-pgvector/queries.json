@@ -1,0 +1,14 @@
+[
+  {
+    "query": "What is Retrieval-Augmented Generation and why is it useful?",
+    "expected_document_ids": ["sample.md"]
+  },
+  {
+    "query": "How does pgvector store and query embeddings in Postgres?",
+    "expected_document_ids": ["sample.md"]
+  },
+  {
+    "query": "How is Recall@K used to evaluate a retrieval system?",
+    "expected_document_ids": ["sample.md"]
+  }
+]
