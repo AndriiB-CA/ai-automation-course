@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { TestSpec } from "./schemas.js";
 
-// ── Constants ─────────────────────────────────────────────────────
+// ── Constants ───────────────────────────────────────────────────────────────────────────────
 
 const MODEL = "claude-sonnet-4-6";
 
@@ -25,7 +25,7 @@ const PRICE_CACHE_WRITE_PER_M = 3.75;
 const PRICE_CACHE_READ_PER_M = 0.3;
 const PRICE_OUTPUT_PER_M = 15.0;
 
-// ── Types ────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────────────────
 
 export interface GenerateInput {
   url: string;
@@ -46,21 +46,18 @@ export interface GenerateResult {
   usage: UsageStats;
 }
 
-// ── Helpers ───────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────────────────
 
-/** Resolve a path relative to this file (works in both src/ and dist/). */
 function relPath(...parts: string[]): string {
   const __dirname = dirname(fileURLToPath(import.meta.url));
   return resolve(__dirname, ...parts);
 }
 
-/** Load the cached system prompt text from prompts/system.md. */
 function loadSystemPrompt(): string {
   const promptPath = relPath("..", "prompts", "system.md");
   return readFileSync(promptPath, "utf-8");
 }
 
-/** Calculate estimated cost from raw usage counters. */
 function calcCost(usage: {
   input_tokens: number;
   output_tokens: number;
@@ -78,37 +75,20 @@ function calcCost(usage: {
     (cacheReadTokens / 1_000_000) * PRICE_CACHE_READ_PER_M +
     (outputTokens / 1_000_000) * PRICE_OUTPUT_PER_M;
 
-  return {
-    inputTokens,
-    outputTokens,
-    cacheWriteTokens,
-    cacheReadTokens,
-    estimatedCostUSD,
-  };
+  return { inputTokens, outputTokens, cacheWriteTokens, cacheReadTokens, estimatedCostUSD };
 }
 
-// ── Tool definition ───────────────────────────────────────────────
+// ── Tool definition ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * The `emit_spec` tool schema mirrors the TestSpec Zod schema.
- * Claude is required to call this tool to return structured output.
- */
 const EMIT_SPEC_TOOL: Anthropic.Tool = {
   name: "emit_spec",
-  description:
-    "Emit a structured Playwright test specification based on the page analysis.",
+  description: "Emit a structured Playwright test specification based on the page analysis.",
   input_schema: {
     type: "object" as const,
     required: ["title", "url", "steps"],
     properties: {
-      title: {
-        type: "string",
-        description: "The test() title — describes the user behavior under test.",
-      },
-      url: {
-        type: "string",
-        description: "The canonical URL being tested.",
-      },
+      title: { type: "string", description: "The test() title — describes the user behavior under test." },
+      url: { type: "string", description: "The canonical URL being tested." },
       steps: {
         type: "array",
         minItems: 3,
@@ -118,60 +98,26 @@ const EMIT_SPEC_TOOL: Anthropic.Tool = {
           type: "object",
           required: ["description", "action"],
           properties: {
-            description: {
-              type: "string",
-              description: "Human-readable description of the step.",
-            },
-            action: {
-              type: "string",
-              enum: ["goto", "click", "fill", "press", "expect"],
-              description: "The Playwright action to perform.",
-            },
-            selector: {
-              type: "string",
-              description:
-                "Selector hint: role[name], testid[id], or text[content].",
-            },
-            value: {
-              type: "string",
-              description: "Text to fill, key to press, or URL to navigate to.",
-            },
-            assertion: {
-              type: "string",
-              enum: ["visible", "hidden", "haveText", "haveURL"],
-              description: "Assertion type for expect steps.",
-            },
-            expected: {
-              type: "string",
-              description: "Expected value for assertion steps.",
-            },
+            description: { type: "string" },
+            action: { type: "string", enum: ["goto", "click", "fill", "press", "expect"] },
+            selector: { type: "string" },
+            value: { type: "string" },
+            assertion: { type: "string", enum: ["visible", "hidden", "haveText", "haveURL"] },
+            expected: { type: "string" },
           },
         },
       },
-      imports: {
-        type: "array",
-        items: { type: "string" },
-        description: "Extra ES import lines (usually empty).",
-        default: [],
-      },
+      imports: { type: "array", items: { type: "string" }, default: [] },
     },
   },
 };
 
-// ── Main export ────────────────────────────────────────────────────
+// ── Main export ─────────────────────────────────────────────────────────────────────────────────
 
-/**
- * Generate a validated TestSpec for the given URL/a11y snapshot.
- *
- * The system prompt is sent with `cache_control: { type: "ephemeral" }` so
- * that Anthropic caches it across repeated calls, drastically reducing cost.
- */
 export async function generate(input: GenerateInput): Promise<GenerateResult> {
-  const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
-
+  const client = new Anthropic();
   const systemText = loadSystemPrompt();
 
-  // Build the user message
   const userContent = [
     `URL: ${input.url}`,
     input.task ? `Task: ${input.task}` : "",
@@ -182,14 +128,11 @@ export async function generate(input: GenerateInput): Promise<GenerateResult> {
     "```",
     "",
     "Analyse the page and emit a test spec using the emit_spec tool.",
-  ]
-    .filter((line) => line !== undefined)
-    .join("\n");
+  ].filter((line) => line !== undefined).join("\n");
 
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 2048,
-    // Cache the (large) system prompt — cache_control marks the last block
     system: [
       {
         type: "text",
@@ -199,23 +142,16 @@ export async function generate(input: GenerateInput): Promise<GenerateResult> {
       },
     ],
     tools: [EMIT_SPEC_TOOL],
-    // Force Claude to call emit_spec — no free-text response needed
     tool_choice: { type: "tool", name: "emit_spec" },
     messages: [{ role: "user", content: userContent }],
   });
 
-  // Extract the tool_use block
   const toolUse = response.content.find((block) => block.type === "tool_use");
   if (!toolUse || toolUse.type !== "tool_use") {
-    throw new Error(
-      "Claude did not call the emit_spec tool. Response:\n" +
-        JSON.stringify(response.content, null, 2),
-    );
+    throw new Error("Claude did not call the emit_spec tool. Response:\n" + JSON.stringify(response.content, null, 2));
   }
 
-  // Validate with Zod (throws ZodError with a clear message if invalid)
   const spec = TestSpec.parse(toolUse.input);
-
   const usage = calcCost(response.usage);
 
   return { spec, usage };
