@@ -22,7 +22,7 @@ npx playwright install chromium
 │ CLI: url + out │
 └───────┬────────┘
         ▼
-┌──────────────────┐
+┌───────────────────┐
 │ Playwright visits │
 │ URL; extracts a11y │
 │ snapshot          │

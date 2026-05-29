@@ -50,6 +50,7 @@ By the end of this roadmap you will have:
 | 8 | 23 | **AI Security** | Prompt injection, OWASP LLM Top 10 |
 | 9 | 24 | **Capstone Ship** | Public release + writeup |
 | Bonus | 25–26 | **n8n Automation** | Wire your AI pipelines to Slack/Jira/CI — the no-code glue layer |
+| Bonus | 27–28 | **Evaluating Agents** | Trajectory + safety evals — the production gap almost nobody fills |
 
 👉 Full breakdown: [**ROADMAP.md**](./ROADMAP.md)
 
