@@ -118,10 +118,6 @@ server.registerTool(
 // Tool: list_failing_tests
 // ---------------------------------------------------------------------------
 
-/**
- * Minimal shape of Playwright's JSON reporter output we care about.
- * Full schema: https://playwright.dev/docs/test-reporters#json-reporter
- */
 interface PlaywrightJsonReport {
   suites?: Suite[];
 }
@@ -167,7 +163,6 @@ server.registerTool(
   },
   async ({ report_path }) => {
     try {
-      // Security: keep path within cwd
       const cwd = process.cwd();
       const resolvedPath = safeResolve(cwd, report_path);
 
@@ -202,7 +197,6 @@ server.registerTool(
 // Tool: get_test_source
 // ---------------------------------------------------------------------------
 
-/** Recursively collect all .spec.ts / .test.ts files under a directory. */
 function findSpecFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true });
   const files: string[] = [];
@@ -231,8 +225,6 @@ server.registerTool(
   },
   async ({ test_name }) => {
     try {
-      // Security: we only ever look inside the fixed ./tests directory.
-      // The user-supplied test_name is treated as a search string, never as a path.
       const testsBase = resolve(process.cwd(), "tests");
 
       let specFiles: string[];
@@ -252,7 +244,6 @@ server.registerTool(
       }
 
       for (const filePath of specFiles) {
-        // Double-check: every resolved path must stay within testsBase
         const rel = relative(testsBase, filePath);
         if (rel.startsWith("..")) continue;
 

@@ -8,7 +8,7 @@
 
 import { z } from "zod";
 
-// ── Step ─────────────────────────────────────────────────────────
+// ── Step ───────────────────────────────────────────────────────────────────────────────
 
 export const Step = z.object({
   /** Human-readable description of what this step does. */
@@ -47,7 +47,7 @@ export const Step = z.object({
 
 export type Step = z.infer<typeof Step>;
 
-// ── TestSpec ────────────────────────────────────────────────────
+// ── TestSpec ─────────────────────────────────────────────────────────────────────────────────
 
 export const TestSpec = z.object({
   /** The `test('…', async ({ page }) => {})` title. */
