@@ -1059,7 +1059,8 @@ const COURSE = {
         { kind: "read", label: "The RAG Triad (TruLens)", url: "https://www.trulens.org/trulens_eval/core_concepts_rag_triad/" }
       ],
       project: "Bench report comparing 3 chunking strategies on real data",
-      module_link: "modules/03-rag.md"
+      module_link: "modules/03-rag.md",
+      companion: { label: "Module 14 — Intelligent Document Processing", file: "modules/14-document-processing.md", note: "Now that you have RAG + structured outputs, this is the #1 real-world automation use case — do it as an extra weekend project." }
     },
     {
       n: 12, module: 3, moduleTitle: "RAG Systems",
@@ -1079,7 +1080,8 @@ const COURSE = {
         { kind: "read", label: "Supabase pgvector", url: "https://supabase.com/docs/guides/ai/vector-embeddings" }
       ],
       project: "Public URL — RAG chatbot over your chosen dataset with RAG Triad evals",
-      module_link: "modules/03-rag.md"
+      module_link: "modules/03-rag.md",
+      companion: { label: "Module 14 — Intelligent Document Processing", file: "modules/14-document-processing.md", note: "The IDP pipeline (invoice → validated JSON) is a flagship portfolio piece for automation roles. Build it now or after Week 19." }
     },
     {
       n: 13, module: 4, moduleTitle: "Agents & MCP",
@@ -1134,7 +1136,8 @@ const COURSE = {
         { kind: "read", label: "Vercel AI SDK Agents", url: "https://sdk.vercel.ai/docs/ai-sdk-core" }
       ],
       project: "Research agent that handles a '500 word note with 5 sources' task end-to-end",
-      module_link: "modules/04-agents.md"
+      module_link: "modules/04-agents.md",
+      companion: { label: "Module 12 — Multi-Agent Orchestration & the Claude Agent SDK", file: "modules/12-multi-agent-orchestration.md", note: "The biggest 2026 skill upgrade: manager/worker systems, Constrained Autonomy, Claude Agent SDK, framework landscape. Its weekend project upgrades this agent into a multi-agent system." }
     },
     {
       n: 16, module: 4, moduleTitle: "Agents & MCP",
@@ -1247,7 +1250,8 @@ const COURSE = {
         { kind: "read", label: "Octokit.js", url: "https://github.com/octokit/octokit.js" }
       ],
       project: "Self-healing locator wrapper + GitHub Action that opens heal PRs",
-      module_link: "modules/06-ai-qa.md"
+      module_link: "modules/06-ai-qa.md",
+      companion: { label: "Module 12 — Multi-Agent Orchestration", file: "modules/12-multi-agent-orchestration.md", note: "Tip: a manager/worker split (one agent locates the broken element, one proposes + validates the fix) makes the healer notably more robust." }
     },
     {
       n: 22, module: 7, moduleTitle: "Production & Cost",
@@ -1310,7 +1314,8 @@ const COURSE = {
         { kind: "read", label: "Keep a Changelog", url: "https://keepachangelog.com/" }
       ],
       project: "🚀 Public release of Playwright Healer v0.1.0",
-      module_link: "modules/09-capstone.md"
+      module_link: "modules/09-capstone.md",
+      companion: { label: "Module 13 — Business Translation", file: "modules/13-business-translation.md", note: "Before you start: add a quantified Impact section to your capstone README (heal success rate, cost/heal, time saved). This is what hiring managers screen for." }
     },
     {
       n: 25, module: 10, moduleTitle: "n8n Automation",
@@ -1404,7 +1409,11 @@ const COURSE = {
     { num: 8, title: "AI Security", weeks: "23", file: "modules/08-security.md" },
     { num: 9, title: "Capstone", weeks: "24", file: "modules/09-capstone.md" },
     { num: 10, title: "n8n Automation (Bonus)", weeks: "25–26", file: "modules/10-n8n.md" },
-    { num: 11, title: "Evaluating Agents (Bonus)", weeks: "27–28", file: "modules/11-agent-evals.md" }
+    { num: 11, title: "Evaluating Agents (Bonus)", weeks: "27–28", file: "modules/11-agent-evals.md" },
+    { num: 12, title: "Multi-Agent Orchestration (Companion)", weeks: "15+", file: "modules/12-multi-agent-orchestration.md" },
+    { num: 13, title: "Business Translation (Career)", weeks: "throughout", file: "modules/13-business-translation.md" },
+    { num: 14, title: "Intelligent Document Processing (Companion)", weeks: "11–12", file: "modules/14-document-processing.md" },
+    { num: 15, title: "Interview Prep & System Design (Career)", weeks: "after 24", file: "modules/15-interview-prep.md" }
   ],
   code: [
     { tag: "Week 2", title: "First API Call", desc: "Streaming URL summarizer with cost tracking", url: "code/week-02-first-api-call/" },
@@ -1673,6 +1682,14 @@ function openWeekDetail(n) {
         </li>
       `).join("")}
     </ul>
+
+    ${w.companion ? `
+      <div style="margin-top:1.25rem; padding:0.85rem 1rem; background:var(--surface2); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0;">
+        <div style="font-size:0.78rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.3rem;">📎 Companion module</div>
+        <a href="viewer.html?file=${w.companion.file}" target="_self" style="font-weight:600; color:var(--ink);">${escapeHtml(w.companion.label)}</a>
+        <p style="margin:0.3rem 0 0; font-size:0.85rem; color:var(--ink-mute);">${escapeHtml(w.companion.note)}</p>
+      </div>
+    ` : ""}
 
     ${w.module_link ? `
       <div class="btn-row">
