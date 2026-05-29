@@ -2,6 +2,8 @@
 
 > Watching without building is a trap. Use these to reinforce what you've already tried in code, or as a first pass before a hands-on session.
 
+> **Freshness (mid-2026):** The mental-model classics (Karpathy, 3Blue1Brown) are evergreen — start there. For fast-moving tooling (MCP, agent SDKs, Playwright Agents, GraphRAG), prefer official channels and docs over older tutorials; tool-specific videos age out within months, so treat anything pre-2025 as "concepts only."
+
 ---
 
 ## Part 1 — Foundations
@@ -25,6 +27,7 @@
 - [**How to evaluate LLM apps — Hamel Husain**](https://hamel.dev/blog/posts/evals/) (embedded video ~30m) — **mandatory**
 - [**Jason Liu — Instructor & Structured Outputs**](https://www.youtube.com/watch?v=yj-wSRJwrrc) (45m)
 - [**Eugene Yan — Evaluating LLMs in production**](https://eugeneyan.com/writing/llm-evaluators/) (article with embedded video)
+- 🆕 **2026 platforms:** once Hamel's fundamentals click, skim [Braintrust](https://www.braintrust.dev/) (all-in-one, CI-gated) and [DeepEval](https://github.com/confident-ai/deepeval) (pytest-style) walkthroughs to see how teams operationalize evals
 
 ---
 
@@ -34,6 +37,7 @@
 - [**Building Production RAG — LangChain Academy**](https://academy.langchain.com/courses/intro-to-langchain) (free, multi-hour)
 - [**Embeddings — What they are and why they matter — Cohere**](https://www.youtube.com/watch?v=OATCgQtNX2o) (20m)
 - [**pgvector explained — Supabase**](https://www.youtube.com/watch?v=ibzlEQmgPPY) (15m)
+- 🆕 [**GraphRAG — Microsoft Research**](https://www.microsoft.com/en-us/research/project/graphrag/) (project page + talks) — entity-graph RAG for multi-hop "who approved X and why?" questions on complex corpora
 
 ---
 
@@ -43,6 +47,8 @@
 - [**Building Effective Agents — Anthropic**](https://www.anthropic.com/research/building-effective-agents) (blog with embedded video)
 - [**MCP Explained — Anthropic**](https://www.youtube.com/watch?v=7j1t3UZA1TY) (30m)
 - [**Mastra Framework deep dive**](https://www.youtube.com/@mastra-ai) (channel, multiple tutorials)
+- 🆕 [**Building Agents with the Claude Agent SDK — Anthropic**](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk) (engineering post + demo) — the same engine that powers Claude Code
+- 🆕 **2026 note:** MCP is now a Linux Foundation standard with OpenAI/Google/Microsoft support — prioritize current MCP content over 2024 explainers
 
 ---
 
@@ -50,7 +56,8 @@
 
 - [**Building Browser Agents with Stagehand — Browserbase**](https://www.youtube.com/@browserbasehq) (channel)
 - [**Claude Computer Use — official demo**](https://www.youtube.com/watch?v=vh9tDq1EZBU) (15m)
-- [**Browser-Use walkthrough**](https://www.youtube.com/watch?v=rz51-dCzKQA) (25m) — Python reference impl
+- [**Browser-Use walkthrough**](https://www.youtube.com/watch?v=rz51-dCzKQA) (25m) — Python reference impl (50k+ stars)
+- 🆕 [**Playwright Agents — official docs & talks**](https://playwright.dev/docs/playwright-agents) (v1.56+) — NL test-gen + self-healing built directly into Playwright; start here if you already use it
 
 ---
 

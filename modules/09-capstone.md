@@ -128,6 +128,19 @@ Starter code structure in [`/code/capstone-playwright-healer/`](../code/capstone
 
 ---
 
+## Optional extension — operationalize with n8n (Module 10)
+
+If you completed the [n8n bonus](./10-n8n.md), wire the healer into a workflow so it runs without anyone sitting at a terminal. This is the difference between "a CLI on my GitHub" and "a tool my team operates":
+
+- **Trigger:** GitHub webhook on a failed `workflow_run`
+- **Heal:** n8n calls your healer's HTTP endpoint (wrap the CLI with the thin tools-API pattern from Module 10)
+- **Review:** auto-open the heal PR (you already built this) and post a one-line summary to Slack
+- **Digest:** a scheduled nightly workflow reporting heal success rate, cost per heal, and any PRs awaiting human review
+
+Add a short **"Operations"** section to your README with the workflow diagram. In interviews, "here's the CLI, and here's how it runs unattended in CI with human-in-the-loop PR review" is a markedly stronger story than the CLI alone.
+
+---
+
 ## Blog post template
 
 **Title ideas:**
