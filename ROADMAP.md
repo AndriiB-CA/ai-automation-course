@@ -8,7 +8,7 @@
 ## How the phases fit together
 
 ```
-  ┌─────────────────────────────────────────────────────────────┐
+  ┌───────────────────────────────────────────────────────────────┐
   │  PHASE 1  ──  FOUNDATIONS (Weeks 1–8)                       │
   │  API calls → structured outputs → tool use → prompts → EVALS│
   │                            │                                │
@@ -18,9 +18,9 @@
   │  PHASE 3  ──  SHIP (Weeks 20–24)                            │
   │  AI-powered QA → Production → Security → CAPSTONE           │
   │                            │                                │
-  │  PHASE 4  ──  BONUS (Weeks 25–26)                          │
-  │  n8n Automation → wire your AI pipelines to real tooling   │
-  └─────────────────────────────────────────────────────────────┘
+  │  PHASE 4  ──  BONUS (Weeks 25–28)                          │
+  │  n8n Automation → Evaluating Agents (trajectory + safety)  │
+  └───────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -145,19 +145,19 @@
 
 ---
 
-### 🟪 Week 17 — Playwright Meets LLMs
+### 🟥 Week 17 — Playwright Meets LLMs
 **Goal:** Make Claude drive a browser via Playwright through natural language.
 - Code along: [`/code/week-18-browser-agent`](./code/week-18-browser-agent/)
 - Read: [Stagehand docs (Browserbase)](https://docs.stagehand.dev/)
 - **Project:** "Book an appointment" agent. Given a URL and a task description, it navigates, fills forms, and reports success/failure.
 
-### 🟪 Week 18 — Vision-Based Automation
+### 🟥 Week 18 — Vision-Based Automation
 **Goal:** Use Claude's vision capability to interact with pages that resist selectors.
 - Read: [Anthropic Computer Use overview](https://www.anthropic.com/news/3-5-models-and-computer-use)
 - Explore: [Browser-Use (Python)](https://github.com/browser-use/browser-use) as reference
 - **Project:** Rebuild last week's agent but use screenshots + coordinates instead of selectors. Compare reliability.
 
-### 🟪 Week 19 — Production Browser Agents
+### 🟥 Week 19 — Production Browser Agents
 **Goal:** Headless at scale, with recovery, with observability.
 - Topics: sandboxing, timeouts, rate limits, captcha realism
 - 🛡️ **Security:** Read [Simon Willison on LLMs driving browsers](https://simonwillison.net/tags/ai-agents/) — understand the attack surface before you expose one publicly
@@ -207,20 +207,31 @@ See [`modules/09-capstone.md`](./modules/09-capstone.md) for the full spec.
 
 ---
 
-## Phase 4 — Bonus (Weeks 25–26)
+## Phase 4 — Bonus (Weeks 25–28)
 
 > Optional, but high-leverage. The capstone proves you can build AI tools in code. This phase makes them usable by your whole team.
 
-### 🟫 Week 25 — n8n Fundamentals + Claude Integration
+### 🟥 Week 25 — n8n Fundamentals + Claude Integration
 **Goal:** Self-host n8n, call Claude from a workflow, ship a Slack → AI → Slack bot.
 - Full module: [`modules/10-n8n.md`](./modules/10-n8n.md)
 - Read: [n8n Getting Started](https://docs.n8n.io/getting-started/) + [HTTP Request node](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/)
 - **Project:** A Slack bot that classifies QA alerts via Claude (Haiku) and posts verdicts back to the thread, with an error-handling workflow.
 
-### 🟫 Week 26 — n8n + Your QA Stack
+### 🟥 Week 26 — n8n + Your QA Stack
 **Goal:** Wire n8n to the tools you built in Weeks 1–24 so non-engineers can trigger them.
 - **Project:** A CI failure triage pipeline (GitHub → Claude → Jira + Slack), an MCP-tools HTTP wrapper callable from a webhook, and a nightly AI quality digest.
 - 🧭 **The boundary:** if a business analyst could draw the flowchart and it's under ~15 steps, n8n wins; if the LLM must decide what to do next, write a code agent.
+
+### 🟥 Week 27 — Trajectory & Outcome Evaluation
+**Goal:** Grade an agent's *path*, not just its final answer — and report pass-rate over N runs.
+- Full module: [`modules/11-agent-evals.md`](./modules/11-agent-evals.md)
+- Read: [Evaluating agents — LangSmith](https://docs.smith.langchain.com/evaluation/concepts), [τ-bench](https://github.com/sierra-research/tau-bench), [BFCL](https://gorilla.cs.berkeley.edu/leaderboard.html)
+- **Project:** An eval harness for your Week 15 agent — a 15-task golden set with success criteria + budgets, trajectory assertions (tool selection, step/cost), and an LLM-as-judge over the path, run at N=3–5.
+
+### 🟥 Week 28 — Adversarial & Safety Evals 🛡️
+**Goal:** Turn the Module 8 red-team into repeatable, CI-gated safety evals.
+- Read: [OWASP Top 10 for Agentic AI (2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/), [Promptfoo red teaming](https://www.promptfoo.dev/docs/red-team/)
+- **Project:** An adversarial suite mapped to OWASP Agentic risks with **zero-tolerance** safety invariants (no exfil tool call; budget cap fires), gating merges in CI alongside a quality-regression threshold.
 
 ---
 

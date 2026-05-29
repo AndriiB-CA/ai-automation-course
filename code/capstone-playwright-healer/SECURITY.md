@@ -39,7 +39,7 @@ When the healer captures page state to send to Claude, it:
   fields.
 - **Never transmits `<input type="password">` values**, authentication headers,
   cookie values, or any data tagged with `aria-hidden="true"`.
-- Truncates snapshots to 4 000 characters to limit inadvertent data exfiltration.
+- Truncates snapshots to 4 000 characters to limit inadvertent data exfiltration.
 - Screenshots are sent as base64 PNGs. Do not run the healer on pages that
   display sensitive information (banking dashboards, admin panels with PII) in
   their visual layout.
@@ -61,7 +61,7 @@ runaway spend:
 - A future `cost-cap.ts` module (see CHANGELOG Unreleased) will abort the
   heal loop once a configurable USD ceiling is reached per test run.
 - Prompt caching is enabled by default — repeated identical system prompts
-  are served from cache at ~10 % of the normal input-token price.
+  are served from cache at ~10 % of the normal input-token price.
 
 ---
 
