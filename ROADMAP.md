@@ -1,27 +1,34 @@
-# 🗺️ The 24-Week Roadmap
+# 🗺️ The Roadmap (24 weeks core + bonus + companion modules)
 
-> Each week targets **5–7 focused hours**: three 30-min weekday sessions + one 3–4 hr weekend build.
-> **Don't skip weekends.** The weekend session is where the real learning compounds.
+> Each week targets **5–7 focused hours**: three 30-min weekday sessions + one 3–4 hr weekend build. **Don't skip weekends.** The weekend session is where the real learning compounds.
+
+> 📎 **Companion & career modules.** Four modules (12–15) aren't extra weeks — they weave into the journey to close the gap between "AI engineer" and "AI **automation** engineer." Each is flagged at the right point below, and summarized in the [README](./README.md#-companion--career-modules-woven-into-the-journey-not-extra-weeks).
 
 ---
 
 ## How the phases fit together
 
 ```
-  ┌───────────────────────────────────────────────────────────────┐
-  │  PHASE 1  ──  FOUNDATIONS (Weeks 1–8)                       │
-  │  API calls → structured outputs → tool use → prompts → EVALS│
-  │                            │                                │
-  │  PHASE 2  ──  BUILD (Weeks 9–19)                            │
-  │  RAG → Agents → MCP → Browser Agents (your superpower zone) │
-  │                            │                                │
-  │  PHASE 3  ──  SHIP (Weeks 20–24)                            │
-  │  AI-powered QA → Production → Security → CAPSTONE           │
-  │                            │                                │
-  │  PHASE 4  ──  BONUS (Weeks 25–28)                          │
-  │  n8n Automation → Evaluating Agents (trajectory + safety)  │
-  └───────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────┐
+│  PHASE 1  ──  FOUNDATIONS (Weeks 1–8)                       │
+│  API calls → structured outputs → tool use → prompts → EVALS│
+│                            │                                │
+│  PHASE 2  ──  BUILD (Weeks 9–19)                            │
+│  RAG → [IDP] → Agents → [Multi-agent] → Browser Agents      │
+│                            │                                │
+│  PHASE 3  ──  SHIP (Weeks 20–24)                            │
+│  AI-powered QA → Production → Security → CAPSTONE           │
+│                            │                                │
+│  PHASE 4  ──  BONUS (Weeks 25–28)                          │
+│  n8n Automation → Evaluating Agents (trajectory + safety)  │
+│                            │                                │
+│  CAREER   ──  Business Translation (throughout) +          │
+│              Interview Prep & System Design (after W24)    │
+└───────────────────────────────────────────────────────────────┘
+   [ ] = companion module woven in, not a separate week
 ```
+
+> 💡 **Read [Module 13 — Business Translation](./modules/13-business-translation.md) now (skim).** Process mapping, ROI, and stakeholder communication are a thread you'll apply in every project from here on — and the #1 thing that distinguishes an automation engineer from a pure builder. Deep-read it before the capstone.
 
 ---
 
@@ -38,7 +45,7 @@
 
 ### 🟦 Week 2 — Your First Real API Call
 **Goal:** Understand tokens, temperature, streaming, system prompts.
-- Code along: [`/code/week-02-first-api-call`](./code/week-02-first-api-call/)
+- Code along: [`/code/week-02-first-api-call`](./code/week-02-first-api-call)
 - Read: Anthropic's [Messages API docs](https://docs.claude.com/en/api/messages)
 - Video: [Prompt Engineering Overview (Anthropic, 30m)](https://www.youtube.com/watch?v=T9aRN5JkmL8)
 - **Project:** Build a CLI tool that takes a URL, summarizes the page in three bullet points using streaming
@@ -49,11 +56,11 @@
 - Tools: Zod + Anthropic SDK, or OpenAI's `response_format: json_schema`
 - Read: [Extract structured data with Claude](https://docs.claude.com/en/docs/build-with-claude/extracting-structured-data)
 - **Project:** Build a tool that parses messy bug reports (free text) into `{title, severity, steps, expected, actual}` schema
-- 🧪 **QA bridge:** This is literally structured test-report generation. Save the output template — you'll use it again.
+- 🧪 **QA bridge:** This is literally structured test-report generation. Save the output template — you'll use it again (and again in Module 14, IDP).
 
 ### 🟦 Week 4 — Tool Use / Function Calling
 **Goal:** LLM can call your TypeScript functions and chain multiple calls.
-- Code along: [`/code/week-06-structured-tools`](./code/week-06-structured-tools/)
+- Code along: [`/code/week-06-structured-tools`](./code/week-06-structured-tools)
 - Read: [Tool use with Claude](https://docs.claude.com/en/docs/build-with-claude/tool-use)
 - Video: [Function Calling Explained (AI Jason, 20m)](https://www.youtube.com/watch?v=0lOSvOoF2to)
 - **Project:** Agent that, given a GitHub repo URL, uses three tools (`fetch_readme`, `list_issues`, `search_code`) to answer natural-language questions about the repo
@@ -76,7 +83,7 @@
 ### 🟩 Week 7 — Evals 101 with Promptfoo ⭐
 **Goal:** Every LLM feature you ship now gets an eval before merge. This is your QA superpower.
 - Install: `npm install -g promptfoo`
-- Code along: [`/code/week-07-promptfoo-evals`](./code/week-07-promptfoo-evals/)
+- Code along: [`/code/week-07-promptfoo-evals`](./code/week-07-promptfoo-evals)
 - Read: [Promptfoo docs – Getting Started](https://www.promptfoo.dev/docs/getting-started/)
 - Video: [How to eval your LLM app (Hamel Husain, 30m)](https://hamel.dev/blog/posts/evals/)
 - **Project:** Build an eval suite for your Week 6 PR review bot. Include assertions: `contains-json`, `llm-rubric`, `javascript` custom eval, and **cost** threshold. Run it in GitHub Actions.
@@ -100,7 +107,7 @@
 
 ### 🟨 Week 10 — Vector DBs with pgvector
 **Goal:** Store and query embeddings in Postgres. No exotic infra.
-- Code along: [`/code/week-10-rag-pgvector`](./code/week-10-rag-pgvector/)
+- Code along: [`/code/week-10-rag-pgvector`](./code/week-10-rag-pgvector)
 - Read: [pgvector README](https://github.com/pgvector/pgvector)
 - **Project:** Docker-compose a Postgres instance with pgvector, ingest 500 documents, query with cosine similarity, measure recall@k
 
@@ -116,6 +123,8 @@
 - Read: [Vercel AI SDK docs](https://sdk.vercel.ai/docs)
 - **Project:** Ship a RAG chatbot over something YOU care about — your Notion docs, your blog archive, your company's public docs. Document the retrieval evals.
 
+> 📎 **Companion project — [Module 14: Intelligent Document Processing](./modules/14-document-processing.md).** Now that you have RAG and structured outputs, build an IDP pipeline (invoice/receipt → validated structured data). It's the #1 real-world automation use case and a flagship portfolio piece. Do it as an extra weekend build here, or slot it after Week 19 if you're pacing tight.
+
 ---
 
 ### 🟧 Week 13 — Agent Architectures
@@ -126,7 +135,7 @@
 
 ### 🟧 Week 14 — Model Context Protocol (MCP)
 **Goal:** The open standard for giving agents tools. Ship a custom MCP server.
-- Code along: [`/code/week-15-mcp-agent`](./code/week-15-mcp-agent/)
+- Code along: [`/code/week-15-mcp-agent`](./code/week-15-mcp-agent)
 - Read: [Model Context Protocol docs](https://modelcontextprotocol.io/)
 - Explore: [Official MCP servers](https://github.com/modelcontextprotocol/servers)
 - **Project:** Build an MCP server exposing your local filesystem + a custom tool. Use it from Claude Desktop.
@@ -136,6 +145,8 @@
 - Framework options: Vercel AI SDK (TypeScript) or Mastra (TypeScript-native agent framework)
 - Read: [Mastra docs](https://mastra.ai/docs)
 - **Project:** "Research agent" with tools: `web_search`, `web_fetch`, `summarize`, `save_to_notion` (or `save_to_file`). Handles its own failures with retry logic.
+
+> 📎 **Read now — [Module 12: Multi-Agent Orchestration & the Claude Agent SDK](./modules/12-multi-agent-orchestration.md).** This is the biggest 2026 skill upgrade in the whole course: manager/worker systems, the **Claude Agent SDK**, the **Constrained Autonomy** production pattern (tool whitelists, output validation, human-in-the-loop, audit logging), the current framework landscape, the MCP/A2A/AGENTS.md protocols, and multi-agent cost control. Its weekend project upgrades this very research agent into a multi-agent system. **Do not skip it** — it's where single-agent tinkering becomes production architecture.
 
 ### 🟧 Week 16 — Observability for Agents
 **Goal:** You can see every LLM call, cost, and decision path.
@@ -147,7 +158,7 @@
 
 ### 🟥 Week 17 — Playwright Meets LLMs
 **Goal:** Make Claude drive a browser via Playwright through natural language.
-- Code along: [`/code/week-18-browser-agent`](./code/week-18-browser-agent/)
+- Code along: [`/code/week-18-browser-agent`](./code/week-18-browser-agent)
 - Read: [Stagehand docs (Browserbase)](https://docs.stagehand.dev/)
 - **Project:** "Book an appointment" agent. Given a URL and a task description, it navigates, fills forms, and reports success/failure.
 
@@ -169,7 +180,7 @@
 
 ### 🟥 Week 20 — AI-Powered Test Generation ⭐ (Your Track)
 **Goal:** Given a page URL or PR diff, an LLM writes valid Playwright tests.
-- Code along: [`/code/week-20-ai-test-generator`](./code/week-20-ai-test-generator/)
+- Code along: [`/code/week-20-ai-test-generator`](./code/week-20-ai-test-generator)
 - Read: [Using Claude Code for test generation](https://docs.claude.com/en/docs/claude-code/overview)
 - **Project:** CLI tool: `npx ai-testgen <url>` → emits `*.spec.ts` with assertions and proper awaits
 
@@ -177,6 +188,7 @@
 **Goal:** When a test fails because the DOM changed, an LLM proposes a fix, you review the PR.
 - **Project:** A Playwright `Locator` wrapper that, on failure, captures the DOM, asks Claude "given this test intent, find the new selector," and emits a suggested patch
 - 🧪 This is directly leading to your capstone — save all this code
+- 📎 **Tip:** Apply Module 12 here — a small manager/worker split (one agent locates the broken element, one proposes + validates the fix) makes the healer notably more robust.
 
 ### 🟥 Week 22 — Production & Cost Engineering
 **Goal:** Your app stays cheap and fast in production.
@@ -196,20 +208,22 @@
 
 See [`modules/09-capstone.md`](./modules/09-capstone.md) for the full spec.
 
+> 📎 **Before you start:** deep-read [Module 13 — Business Translation](./modules/13-business-translation.md) and add an **Impact section with real numbers** to the capstone README (heal success rate, cost/heal, time saved). Quantified impact is what hiring managers screen for.
+
 **Success criteria:**
 - [ ] Repo has README with clear setup steps
 - [ ] At least one real-world example test suite included
 - [ ] Demo video/GIF in README
 - [ ] Costs and latency documented
 - [ ] Evals for the healer itself (meta!)
+- [ ] Quantified Impact section (Module 13)
 - [ ] Blog post explaining the architecture published
 - [ ] LinkedIn post announcing it
 
 ---
 
 ## Phase 4 — Bonus (Weeks 25–28)
-
-> Optional, but high-leverage. The capstone proves you can build AI tools in code. This phase makes them usable by your whole team.
+> Optional, but high-leverage. The capstone proves you can build AI tools in code. This phase makes them usable by your whole team — and proves they're reliable.
 
 ### 🟥 Week 25 — n8n Fundamentals + Claude Integration
 **Goal:** Self-host n8n, call Claude from a workflow, ship a Slack → AI → Slack bot.
@@ -220,27 +234,38 @@ See [`modules/09-capstone.md`](./modules/09-capstone.md) for the full spec.
 ### 🟥 Week 26 — n8n + Your QA Stack
 **Goal:** Wire n8n to the tools you built in Weeks 1–24 so non-engineers can trigger them.
 - **Project:** A CI failure triage pipeline (GitHub → Claude → Jira + Slack), an MCP-tools HTTP wrapper callable from a webhook, and a nightly AI quality digest.
-- 🧭 **The boundary:** if a business analyst could draw the flowchart and it's under ~15 steps, n8n wins; if the LLM must decide what to do next, write a code agent.
+- 🧭 **The boundary:** if a business analyst could draw the flowchart and it's under ~15 steps, n8n wins; if the LLM must decide what to do next, write a code agent (Module 12).
 
 ### 🟥 Week 27 — Trajectory & Outcome Evaluation
 **Goal:** Grade an agent's *path*, not just its final answer — and report pass-rate over N runs.
 - Full module: [`modules/11-agent-evals.md`](./modules/11-agent-evals.md)
 - Read: [Evaluating agents — LangSmith](https://docs.smith.langchain.com/evaluation/concepts), [τ-bench](https://github.com/sierra-research/tau-bench), [BFCL](https://gorilla.cs.berkeley.edu/leaderboard.html)
-- **Project:** An eval harness for your Week 15 agent — a 15-task golden set with success criteria + budgets, trajectory assertions (tool selection, step/cost), and an LLM-as-judge over the path, run at N=3–5.
+- **Project:** An eval harness for your Week 15 / Module 12 agent — a 15-task golden set with success criteria + budgets, trajectory assertions (tool selection, step/cost), and an LLM-as-judge over the path, run at N=3–5.
 
 ### 🟥 Week 28 — Adversarial & Safety Evals 🛡️
 **Goal:** Turn the Module 8 red-team into repeatable, CI-gated safety evals.
 - Read: [OWASP Top 10 for Agentic AI (2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/), [Promptfoo red teaming](https://www.promptfoo.dev/docs/red-team/)
 - **Project:** An adversarial suite mapped to OWASP Agentic risks with **zero-tolerance** safety invariants (no exfil tool call; budget cap fires), gating merges in CI alongside a quality-regression threshold.
+- 📎 **Connect it:** these safety invariants are exactly the four pillars of **Constrained Autonomy** (Module 12) under test.
+
+---
+
+## Career track — run in parallel, finish strong
+
+> These two modules turn skills into offers. Business Translation is a thread throughout; Interview Prep is your finish line.
+
+### 📎 [Module 13 — Business Translation](./modules/13-business-translation.md) *(throughout)*
+Process mapping (BPMN), automation-candidate selection, ROI modeling, stakeholder communication, quantified-impact documentation. Skim in Phase 1, apply in every project README, deep-read before the capstone and the job hunt. **This is the single biggest differentiator between an AI engineer and an AI automation engineer.**
+
+### 📎 [Module 15 — Interview Prep & System Design](./modules/15-interview-prep.md) *(after Week 24)*
+The standard 4–5 stage loop, a repeatable framework for automation-specific system-design questions, take-home strategy, and your QA→AI story. Your job-hunt launchpad.
 
 ---
 
 ## Spaced repetition
-
 Every 4 weeks, spend one weekday revisiting the prior 4 weeks' daily tasks. Re-run one old project with your current knowledge. You'll be shocked how much better your code looks.
 
 ## When you fall behind
-
 You will. Everyone does.
 
 **The rule:** Never skip more than one weekend project in a row. Reading without building compounds into nothing. If the week gets hard, shorten the project scope — but ship *something*.

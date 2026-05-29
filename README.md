@@ -1,11 +1,21 @@
 # 🤖 QA → AI Automation Engineer
 
-> A 24-week, 5–7 hrs/week roadmap from Playwright/TypeScript QA engineer to AI Automation Engineer. Capstone: ship an **AI-powered Playwright test generator & self-healer** to your portfolio.
+> A 24-week core + bonus roadmap from Playwright/TypeScript QA engineer to **AI Automation Engineer**. You'll build production AI systems — RAG, agents, browser automation, document pipelines — with the evals-and-reliability discipline a QA background gives you. Capstone: ship an **AI-powered Playwright test generator & self-healer** to your portfolio.
 
 [![Made for QA](https://img.shields.io/badge/Made_for-QA_Engineers-blue)]()
 [![Stack](https://img.shields.io/badge/Stack-TypeScript_%2B_Python-orange)]()
-[![Duration](https://img.shields.io/badge/Duration-24_weeks-green)]()
+[![Duration](https://img.shields.io/badge/Duration-24_weeks_%2B_bonus-green)]()
 [![Pace](https://img.shields.io/badge/Pace-5--7_hrs%2Fweek-yellow)]()
+
+---
+
+## What this course is (and isn't)
+
+This is an **AI engineering course with a strong automation and QA emphasis.** You'll learn to build, evaluate, secure, and ship LLM-powered systems — and to wire them into real business workflows so a whole team can use them.
+
+The market uses "AI Automation Engineer" to mean someone who **automates business processes by combining orchestration with LLM agents** — the documented shift from scripted RPA bots to agentic AI systems that reason, plan, and self-correct. This course gets you there from the engineering side: you'll go deep on the AI execution layer (agents, RAG, evals), build the orchestration and integration layer (n8n, multi-agent systems, document pipelines), and learn the business-translation skills that separate this role from pure engineering.
+
+It positions you for roles titled **AI Engineer, AI Automation Engineer, AI Quality/Test Engineer, Applied AI Engineer, and Forward Deployed Engineer.** If your goal is enterprise RPA specifically (UiPath/Automation Anywhere shops), pair this with a platform certification — the AI half is here; the platform-specific half you'd add on top.
 
 ---
 
@@ -22,16 +32,21 @@ Those are **exactly** the skills that transfer to LLM evals, agent reliability, 
 
 ---
 
-## 🎯 What you'll be able to do in 24 weeks
+## 🎯 What you'll be able to do
 
 By the end of this roadmap you will have:
 
 1. **Built a RAG chatbot** over a real dataset with retrieval quality evals
 2. **Shipped an MCP-powered agent** that uses tools to complete multi-step tasks
-3. **Wired Playwright to an LLM** to build a browser agent that fills forms, scrapes data, and recovers from UI changes
-4. **Published your capstone**: an AI-powered Playwright test maintenance tool on GitHub
-5. **Red-teamed your own agent** against the OWASP LLM Top 10
-6. **Written 3 technical blog posts** documenting your builds (portfolio gold)
+3. **Architected a multi-agent system** (manager/worker) with constrained-autonomy guardrails
+4. **Built an intelligent document-processing pipeline** — the #1 enterprise automation use case
+5. **Wired Playwright to an LLM** to build a browser agent that fills forms, scrapes data, and recovers from UI changes
+6. **Published your capstone**: an AI-powered Playwright test maintenance tool on GitHub
+7. **Orchestrated business workflows in n8n** so non-engineers can trigger your AI tools
+8. **Red-teamed your own agents** against the OWASP LLM (and Agentic) Top 10
+9. **Modeled the business case** for an automation and learned to pitch it
+10. **Prepared for the interview loop** — automation-specific system design and your QA→AI story
+11. **Written 3 technical blog posts** documenting your builds (portfolio gold)
 
 ---
 
@@ -52,6 +67,17 @@ By the end of this roadmap you will have:
 | Bonus | 25–26 | **n8n Automation** | Wire your AI pipelines to Slack/Jira/CI — the no-code glue layer |
 | Bonus | 27–28 | **Evaluating Agents** | Trajectory + safety evals — the production gap almost nobody fills |
 
+### 📎 Companion & career modules (woven into the journey, not extra weeks)
+
+These close the gap between "AI engineer" and "AI **automation** engineer." Read them at the points noted:
+
+| Module | Read it… | Why |
+|--------|----------|-----|
+| **[Multi-Agent Orchestration & the Claude Agent SDK](./modules/12-multi-agent-orchestration.md)** | during/after Week 15 | Manager/worker systems, Claude Agent SDK, **Constrained Autonomy**, agent cost control — the biggest 2026 skill upgrade |
+| **[Business Translation](./modules/13-business-translation.md)** | skim in Phase 1, apply throughout, deep-read before capstone | Process mapping, ROI modeling, stakeholder comms — the #1 thing that separates this role from pure engineering |
+| **[Intelligent Document Processing](./modules/14-document-processing.md)** | as a project around Weeks 11–12 | The largest real-world automation use case; builds on your structured-outputs + RAG skills |
+| **[Interview Prep & System Design](./modules/15-interview-prep.md)** | after Week 24 | Automation-specific system design + your QA→AI story = offers |
+
 👉 Full breakdown: [**ROADMAP.md**](./ROADMAP.md)
 
 ---
@@ -69,7 +95,7 @@ Every module is a markdown file under [`/modules`](./modules). GitHub's renderer
 ### Option 3: Clone and make it yours
 ```bash
 git clone <your-fork-url>
-cd ai-automation-engineer-course
+cd ai-automation-course
 # edit anything, add notes, fork your own version
 ```
 
@@ -104,7 +130,7 @@ Total: ~5–7 hrs. Sustainable indefinitely.
 
 ## 🛡️ Cybersecurity thread
 
-AI security isn't a bolt-on at the end — it runs through every module as a 🛡️ callout. The full deep dive is [Module 8](./modules/08-security.md), but expect red-team exercises starting Week 2.
+AI security isn't a bolt-on at the end — it runs through every module as a 🛡️ callout, and **Constrained Autonomy** (Module 12) is the production pattern that ties it together. The full deep dive is [Module 8](./modules/08-security.md), the agentic-era evals are in [Module 11](./modules/11-agent-evals.md) and Week 28, but expect red-team exercises starting Week 2.
 
 ---
 
@@ -116,11 +142,14 @@ Track this in the interactive portal, or just tick boxes here:
 - [ ] Week 4: Tool-use agent that queries a real API
 - [ ] Week 8: Eval suite with ≥15 test cases + CI pipeline
 - [ ] Week 12: RAG chatbot deployed (even if just Vercel preview)
+- [ ] Week 15+: Multi-agent system with constrained-autonomy guardrails (Module 12)
 - [ ] Week 16: Multi-tool MCP agent on GitHub
 - [ ] Week 19: Browser agent that completes a 5-step task end-to-end
 - [ ] Week 21: AI-generated Playwright test suite
 - [ ] Week 23: Your agent survives a red-team session
 - [ ] Week 24: **Capstone shipped**, blog post published, LinkedIn updated
+- [ ] Bonus: n8n workflow live; agent trajectory + safety evals in CI
+- [ ] Career: ROI model + executive brief written (Module 13); interview loop rehearsed (Module 15)
 
 ---
 
