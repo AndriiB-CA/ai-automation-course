@@ -695,10 +695,10 @@
   <section class="view" data-view="dashboard" data-active="true">
 
     <div class="hero">
-      <span class="hero-eyebrow" id="dashEyebrow">Week — of 24</span>
+      <span class="hero-eyebrow" id="dashEyebrow">Week — of 28</span>
       <h1 class="hero-title">Your <em>main roadmap.</em><br>In one place.</h1>
       <p class="hero-sub" id="dashSubtitle">
-        A 24-week, 5–7 hours/week plan from Playwright/TypeScript QA engineer to AI Automation Engineer.
+        A 24-week core + 4 bonus-week plan (5–7 hours/week) from Playwright/TypeScript QA engineer to AI Automation Engineer.
         Capstone: ship an open-source AI-powered Playwright test healer.
       </p>
     </div>
@@ -730,7 +730,7 @@
 
   <!-- ============ ROADMAP VIEW ============ -->
   <section class="view" data-view="roadmap">
-    <h1 class="hero-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">The 24-week <em>roadmap</em></h1>
+    <h1 class="hero-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">The 28-week <em>roadmap</em></h1>
     <p class="hero-sub" style="margin-bottom: 2rem;">
       Click a week to see its reading, videos, tasks, and project.
       Tick tasks in the detail view — your progress is saved locally.
@@ -1525,7 +1525,7 @@ function render() {
 
 function renderDashboard() {
   const current = weekByNum(STATE.currentWeek) || weekByNum(1);
-  document.getElementById("dashEyebrow").textContent = `Week ${current.n} of 24 · ${current.moduleTitle}`;
+  document.getElementById("dashEyebrow").textContent = `Week ${current.n} of ${COURSE.weeks.length} · ${current.moduleTitle}`;
 
   const stats = totalCompletion();
   const days = daysSinceStart();
@@ -1535,7 +1535,7 @@ function renderDashboard() {
   document.getElementById("statsStrip").innerHTML = `
     <div class="stat"><div class="stat-num stat-accent">${stats.pct}%</div><div class="stat-label">Progress</div></div>
     <div class="stat"><div class="stat-num">${stats.done}<span style="color:var(--ink-soft);font-size:1rem;">/${stats.total}</span></div><div class="stat-label">Tasks done</div></div>
-    <div class="stat"><div class="stat-num">${weeksDone}<span style="color:var(--ink-soft);font-size:1rem;">/24</span></div><div class="stat-label">Weeks complete</div></div>
+    <div class="stat"><div class="stat-num">${weeksDone}<span style="color:var(--ink-soft);font-size:1rem;">/${COURSE.weeks.length}</span></div><div class="stat-label">Weeks complete</div></div>
     <div class="stat"><div class="stat-num">${days}</div><div class="stat-label">Days since start</div></div>
   `;
 
