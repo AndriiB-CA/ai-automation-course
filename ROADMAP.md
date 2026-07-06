@@ -43,6 +43,8 @@
 - 🛡️ **Security-from-day-1:** Put your API key in `.env`, add `.env` to `.gitignore`, rotate a key once to prove you can
 - **Deliverable:** Screenshot of a successful `anthropic.messages.create` response
 
+> 📎 **Read this week or next — [Module 16: Working with AI Coding Agents](./modules/16-ai-coding-agents.md).** The meta-skill of the 2026 job market: driving Claude Code / Cursor-class tools with a real workflow — context files, right-sized task specs, a review protocol for AI-written diffs, verification loops, and guardrails. Every weekend project from here on goes faster if you set this up now, and "how do you work with coding agents?" is now a standard interview question.
+
 ### 🟦 Week 2 — Your First Real API Call
 **Goal:** Understand tokens, temperature, streaming, system prompts.
 - Code along: [`/code/week-02-first-api-call`](./code/week-02-first-api-call)
@@ -259,6 +261,9 @@ Process mapping (BPMN), automation-candidate selection, ROI modeling, stakeholde
 
 ### 📎 [Module 15 — Interview Prep & System Design](./modules/15-interview-prep.md) *(after Week 24)*
 The standard 4–5 stage loop, a repeatable framework for automation-specific system-design questions, take-home strategy, and your QA→AI story. Your job-hunt launchpad.
+
+### 📎 [Module 16 — Working with AI Coding Agents](./modules/16-ai-coding-agents.md) *(Week 1–2, then throughout)*
+The meta-skill thread: mental model, repo setup (`CLAUDE.md`/`AGENTS.md`, guardrail tests), task scoping, the AI-diff review protocol, verification loops, and Constrained Autonomy applied to your own tools. Keep a delegation log — it becomes interview evidence.
 
 ---
 
