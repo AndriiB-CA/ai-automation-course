@@ -77,6 +77,7 @@ These close the gap between "AI engineer" and "AI **automation** engineer." Read
 | **[Business Translation](./modules/13-business-translation.md)** | skim in Phase 1, apply throughout, deep-read before capstone | Process mapping, ROI modeling, stakeholder comms — the #1 thing that separates this role from pure engineering |
 | **[Intelligent Document Processing](./modules/14-document-processing.md)** | as a project around Weeks 11–12 | The largest real-world automation use case; builds on your structured-outputs + RAG skills |
 | **[Interview Prep & System Design](./modules/15-interview-prep.md)** | after Week 24 | Automation-specific system design + your QA→AI story = offers |
+| **[Working with AI Coding Agents](./modules/16-ai-coding-agents.md)** | in Week 1–2, apply throughout | The meta-skill: repo setup, task scoping, reviewing AI diffs, verification loops — compounds across all 28 weeks |
 
 👉 Full breakdown: [**ROADMAP.md**](./ROADMAP.md)
 
