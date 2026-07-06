@@ -77,9 +77,34 @@ Build a golden set of ~30 documents with known-correct extractions (hand-labeled
 
 ---
 
+## Part 4 — Batch processing economics (the lever everyone forgets)
+
+The starter pipeline processes documents synchronously — one API call, wait, next. That's the right shape for a demo and for low-latency intake (a user uploads a receipt and waits). But the flagship enterprise IDP scenario is different: **10,000 invoices land in a folder overnight, and nobody is waiting on any individual one.**
+
+That workload has a purpose-built API: the **Message Batches API** (`POST /v1/messages/batches`).
+
+| | Synchronous pipeline | Batch API |
+|---|---|---|
+| Cost | Standard token pricing | **50% off all token usage** |
+| Latency per doc | Seconds | Most batches finish within 1 hour (max 24h) |
+| Scale per submission | One request at a time | Up to 100,000 requests / 256 MB per batch |
+| Feature support | Everything | Everything — vision, tool use, prompt caching all work |
+| Failure handling | You retry inline | Per-request result: `succeeded` / `errored` / `expired` — retry just the failures |
+
+The workflow is: build the same request payloads your pipeline already constructs, submit them in one batch with a `custom_id` per document, poll `processing_status` until `"ended"`, then stream the results. Two things bite people:
+
+- **Results come back in arbitrary order.** Always match by `custom_id` (use the document filename), never by position.
+- **Validation still runs on your side.** The batch gives you raw extractions; your deterministic validation layer and `review/` routing don't change at all. This is the payoff of separating extraction from validation in the pipeline design.
+
+**Why this matters for the business case:** at $0.01–0.03 per document synchronous, a 100K-document backfill is real money — batch cuts that in half with zero quality loss. When you build the ROI model in Module 13, quote the batch rate for bulk processing and the synchronous rate only for the low-latency intake path. Knowing this split exists is exactly the kind of cost-engineering detail that reads as senior in an interview (and pairs with the caching/routing levers from Week 22).
+
+---
+
 ## Weekend project (4–5 hours)
 
 **Build an invoice (or receipt) processing pipeline.**
+
+> 🚀 **Starter code:** [`/code/module-14-idp`](../code/module-14-idp/) — a runnable pipeline skeleton: native-text vs. vision ingest detection, forced-tool-call extraction with prompt caching, a deterministic validation layer (totals reconcile, date/currency checks), and confidence-threshold routing to `output/` vs `review/`. Start there and build the golden set + accuracy report on top.
 
 Pick a document type you can get 30+ samples of — invoices, receipts, or even your own utility bills (local only 🛡️; redact before committing anything).
 
@@ -93,6 +118,7 @@ Requirements (the rubric):
 - [ ] Prompt caching on the extraction system prompt (Week 22)
 
 ### Stretch
+- Convert the pipeline to the **Batch API** (Part 4): submit your 30-doc golden set as one batch, match results by `custom_id`, run them through the same validation layer, and measure the cost delta vs. the synchronous run. Add both numbers to your accuracy report.
 - Add a second document type and a router that picks the right schema (this is the multi-agent manager pattern from Module 12 in miniature)
 - Add multi-language handling and measure the accuracy delta
 - Wire the human-review queue to a simple n8n notification (preview of Weeks 25–26)

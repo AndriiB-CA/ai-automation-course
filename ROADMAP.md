@@ -123,7 +123,7 @@
 - Read: [Vercel AI SDK docs](https://sdk.vercel.ai/docs)
 - **Project:** Ship a RAG chatbot over something YOU care about — your Notion docs, your blog archive, your company's public docs. Document the retrieval evals.
 
-> 📎 **Companion project — [Module 14: Intelligent Document Processing](./modules/14-document-processing.md).** Now that you have RAG and structured outputs, build an IDP pipeline (invoice/receipt → validated structured data). It's the #1 real-world automation use case and a flagship portfolio piece. Do it as an extra weekend build here, or slot it after Week 19 if you're pacing tight.
+> 📎 **Companion project — [Module 14: Intelligent Document Processing](./modules/14-document-processing.md).** Now that you have RAG and structured outputs, build an IDP pipeline (invoice/receipt → validated structured data). It's the #1 real-world automation use case and a flagship portfolio piece. Do it as an extra weekend build here, or slot it after Week 19 if you're pacing tight. Starter code: [`/code/module-14-idp`](./code/module-14-idp).
 
 ---
 
@@ -146,7 +146,7 @@
 - Read: [Mastra docs](https://mastra.ai/docs)
 - **Project:** "Research agent" with tools: `web_search`, `web_fetch`, `summarize`, `save_to_notion` (or `save_to_file`). Handles its own failures with retry logic.
 
-> 📎 **Read now — [Module 12: Multi-Agent Orchestration & the Claude Agent SDK](./modules/12-multi-agent-orchestration.md).** This is the biggest 2026 skill upgrade in the whole course: manager/worker systems, the **Claude Agent SDK**, the **Constrained Autonomy** production pattern (tool whitelists, output validation, human-in-the-loop, audit logging), the current framework landscape, the MCP/A2A/AGENTS.md protocols, and multi-agent cost control. Its weekend project upgrades this very research agent into a multi-agent system. **Do not skip it** — it's where single-agent tinkering becomes production architecture.
+> 📎 **Read now — [Module 12: Multi-Agent Orchestration & the Claude Agent SDK](./modules/12-multi-agent-orchestration.md).** This is the biggest 2026 skill upgrade in the whole course: manager/worker systems, the **Claude Agent SDK**, the **Constrained Autonomy** production pattern (tool whitelists, output validation, human-in-the-loop, audit logging), the current framework landscape, the MCP/A2A/AGENTS.md protocols, and multi-agent cost control. Its weekend project upgrades this very research agent into a multi-agent system. **Do not skip it** — it's where single-agent tinkering becomes production architecture. Starter code: [`/code/module-12-multi-agent`](./code/module-12-multi-agent).
 
 ### 🟧 Week 16 — Observability for Agents
 **Goal:** You can see every LLM call, cost, and decision path.

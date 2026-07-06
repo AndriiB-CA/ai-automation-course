@@ -155,6 +155,8 @@ Multi-agent systems have a nasty failure mode: **token explosion.** A manager th
 
 **Build a manager/worker research-and-report system** with constrained autonomy.
 
+> 🚀 **Starter code:** [`/code/module-12-multi-agent`](../code/module-12-multi-agent/) — a runnable manager/worker skeleton with per-worker tool whitelists, per-worker and cumulative budget caps, model tiering (strong manager / cheap workers), and an audit log. Clone it, read `src/manager.ts` first, then extend it to meet the rubric below.
+
 Extend your Week 15 research agent into a multi-agent system:
 - **Manager agent** — takes a research question, plans sub-tasks, delegates, synthesizes a final report
 - **Research worker** — `web_search` + `web_fetch`, returns sourced findings
