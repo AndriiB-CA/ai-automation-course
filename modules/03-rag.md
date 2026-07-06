@@ -132,6 +132,20 @@ Blend scores: `final_score = 0.7 * vector_score + 0.3 * bm25_score`. Include thi
 ### Advanced: GraphRAG
 For document corpora with complex entity relationships (e.g., legal docs, codebases, research papers), consider **GraphRAG** (open-sourced by Microsoft): it extracts entity-relationship graphs and builds community summaries for multi-hop reasoning. Overkill for simple Q&A, powerful for "who approved X and why?" queries. [GraphRAG docs](https://microsoft.github.io/graphrag/).
 
+### The data lifecycle — what actually breaks in production
+
+Every tutorial (including this one, so far) indexes a corpus once and queries it forever. Real corpora *change*: docs get edited, deleted, and added daily. A RAG system with no update strategy quietly rots — and "the bot confidently answered from a policy we deleted in March" is the RAG incident you'll actually get paged for.
+
+Three problems, three patterns:
+
+1. **Detecting change.** Store a content hash (and source `updated_at` if the system provides one) per document. On each sync run, diff hashes: new → index, changed → re-chunk and replace, missing → delete. Never "just re-index everything" on a schedule — at 100K+ documents that's slow, expensive, and causes a window where search quality dips mid-rebuild.
+
+2. **Replacing safely.** A changed document's chunk boundaries shift, so you can't update chunks in place — delete *all* chunks for that `document_id` and insert the new set, in one transaction. This is why every chunk row needs a `document_id` foreign key from day one (your Week 10 schema should already have it — check).
+
+3. **Proving deletion worked.** Deleted content hiding in the index is both a quality bug and a **compliance bug** (GDPR erasure, retracted policies, offboarded customer data). Keep a small **staleness eval**: for each recently deleted document, ask a question only it could answer and assert the bot *doesn't* reproduce the deleted content. Run it in CI next to your retrieval evals.
+
+> 🧪 **QA bridge:** This is regression testing for your index. The staleness suite is a negative-assertion test ("must NOT find X") — you've written hundreds of those. And the sync job needs the same idempotency discipline as any data migration: running it twice must be safe.
+
 ---
 
 ## Week 12 — Ship a RAG App
@@ -196,6 +210,7 @@ Dataset ideas:
 - [ ] You have measurements of retrieval quality for at least two chunking strategies
 - [ ] You've logged a real query to Langfuse and seen the full trace
 - [ ] You know the cost per query of your app within 20%
+- [ ] You can sketch the index update strategy: hash-diff sync, transactional chunk replacement, staleness evals
 
 ---
 

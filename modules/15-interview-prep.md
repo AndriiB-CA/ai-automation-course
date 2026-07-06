@@ -55,6 +55,21 @@ Use a **repeatable 6-step framework** (write these on a whiteboard / shared doc 
 
 > 🧪 **QA bridge:** Step 4 and step 5 are where your background shines. Most candidates handwave reliability and edge cases. You live there. Lead with "here's how this fails and how I contain it" and you'll stand out.
 
+### Sidebar — "Would you fine-tune?" (the question this course didn't need, but interviews do)
+
+This course deliberately skips fine-tuning: for automation work in 2026, prompting + RAG covers ~95% of cases. But interviewers ask about it, and the *shape* of your answer signals seniority. Use the escalation ladder:
+
+| Rung | Reach for it when | Cost profile |
+|---|---|---|
+| **1. Prompt engineering** | Always first. Behavior, format, tone, task framing | Minutes of work; per-request tokens only |
+| **2. Few-shot examples** | The task has a pattern that's easier to show than describe | Slightly more tokens; still zero infra |
+| **3. RAG** | The model needs **knowledge it doesn't have** — your docs, current data, per-tenant facts | Index infra + retrieval per query; knowledge stays updatable |
+| **4. Fine-tuning** | The model needs a **skill or style it can't reliably do from instructions** — after rungs 1–3 have demonstrably plateaued on an eval | Training runs, dataset curation (1000s of labeled examples), model versioning, re-tuning on every base-model upgrade |
+
+The one-liner that lands: **"RAG changes what the model *knows*; fine-tuning changes how it *behaves*. Knowledge changes daily, so it belongs in an index, not in weights."** Legitimate fine-tune cases are narrow: high-volume classification where a tuned small model beats a prompted large one on cost, rigid domain-specific output style, or latency budgets that force a small model to punch up. Then name the tax: you now own a dataset pipeline, eval-gated retraining, and a model that silently goes stale when the base model improves.
+
+Bonus points: "I'd only consider it with an eval suite already in place — otherwise you can't even prove the fine-tune helped." That's your Week 7–8 material, and it's the answer of someone who's shipped.
+
 ### Exercise (2 hours)
 Take all three example prompts above. For each, spend 30–40 minutes producing a whiteboard-style design using the 6-step framework. Record yourself explaining one out loud in 10 minutes. Listen back — did you lead with the business outcome? Did you place the human in the loop explicitly? Did you mention cost?
 
@@ -101,6 +116,7 @@ You're not a junior. You're a senior QA engineer who retooled into AI. Own that 
 - [ ] You have a natural 60-second QA→AI pitch
 - [ ] You can explain Constrained Autonomy in a design round and say where the human stays in the loop
 - [ ] Your capstone repo doubles as a take-home template (README, tests, DECISIONS.md)
+- [ ] You can walk the prompt → few-shot → RAG → fine-tune ladder and name when fine-tuning is actually justified
 
 ---
 

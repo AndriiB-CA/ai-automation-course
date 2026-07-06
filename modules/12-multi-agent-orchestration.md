@@ -151,6 +151,28 @@ Multi-agent systems have a nasty failure mode: **token explosion.** A manager th
 
 ---
 
+## Part 6 — Agent memory (the difference between a tool and a colleague)
+
+Everything so far is stateless: each run starts from zero. That's fine for one-shot tasks, but real automations run the *same kind* of task repeatedly — and a stateless agent re-discovers the same facts, repeats the same mistakes, and re-pays the same exploration tokens every single run.
+
+**File-based memory** is the production pattern, and it's disarmingly simple: give the agent a directory it can read and write, tell it in the system prompt that the directory exists and what it's for, and instruct it to consult memory before starting and record learnings when done. The Claude API now ships a first-class **memory tool** (`memory_20250818`) with `view`/`create`/`str_replace`/`insert`/`delete` commands — you implement the storage backend (a local folder is fine), the model handles when to read and write.
+
+What makes memory *work* is format discipline, not storage tech. Give the agent rules like:
+
+> Store one lesson per file with a one-line summary at the top. Record corrections and confirmed approaches alike, including why they mattered. Don't save what the repo or chat history already records; update an existing note rather than creating a duplicate; delete notes that turn out to be wrong.
+
+Where memory pays off in a multi-agent system:
+
+- **Manager level** — "last time a research task like this needed 3 workers, not 5" → better delegation, lower cost
+- **Worker level** — "this site's search is broken, go directly to /docs" → fewer wasted tool calls
+- **Failure memory** — the highest-value entries are *corrections*: things that went wrong and what fixed them
+
+⚠️ **Memory is also an attack surface and a liability.** A poisoned memory entry persists across sessions (tool-result injection from Module 8, but durable). And memory files accumulate PII if you let them. Rules: never store secrets or customer data in memory, keep memory per-tenant, and treat the memory directory as reviewable audit material — it's part of your Constrained Autonomy story, not an exception to it.
+
+> 🧪 **QA bridge:** Memory quality is testable. Run the same task suite with memory on vs. off (empty directory) and diff cost, steps, and success rate — that's an A/B regression harness. If memory doesn't measurably help, the format rules are wrong.
+
+---
+
 ## Weekend project (4–5 hours)
 
 **Build a manager/worker research-and-report system** with constrained autonomy.
@@ -176,6 +198,7 @@ Run it on 5 different research questions. Produce a short report: cost per task,
 
 ### Stretch
 - Add an **evaluator worker** (the evaluator-optimizer pattern): it critiques the writer's draft against a rubric and sends it back once for revision. Measure quality lift vs. cost.
+- Give the manager a **memory directory** (Part 6): run the same 5 research questions twice — once with empty memory, once with the memory from run 1 — and report the delta in cost, tool calls, and report quality.
 - Add an `AGENTS.md` to the repo.
 
 ---
@@ -188,6 +211,7 @@ Run it on 5 different research questions. Produce a short report: cost per task,
 - [ ] You can pick a framework for a given workflow shape and justify it in two sentences
 - [ ] You know what MCP, A2A, and AGENTS.md each are
 - [ ] You measured and reduced multi-agent cost with tiering + context pruning
+- [ ] You can explain file-based agent memory, its format rules, and why it's an attack surface
 
 ---
 
