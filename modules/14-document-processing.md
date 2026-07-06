@@ -81,6 +81,8 @@ Build a golden set of ~30 documents with known-correct extractions (hand-labeled
 
 **Build an invoice (or receipt) processing pipeline.**
 
+> 🚀 **Starter code:** [`/code/module-14-idp`](../code/module-14-idp/) — a runnable pipeline skeleton: native-text vs. vision ingest detection, forced-tool-call extraction with prompt caching, a deterministic validation layer (totals reconcile, date/currency checks), and confidence-threshold routing to `output/` vs `review/`. Start there and build the golden set + accuracy report on top.
+
 Pick a document type you can get 30+ samples of — invoices, receipts, or even your own utility bills (local only 🛡️; redact before committing anything).
 
 Requirements (the rubric):

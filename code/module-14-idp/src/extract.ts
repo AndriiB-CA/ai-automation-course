@@ -94,8 +94,8 @@ const EMIT_INVOICE_TOOL: Anthropic.Tool = {
 function calcCost(usage: {
   input_tokens: number;
   output_tokens: number;
-  cache_creation_input_tokens?: number;
-  cache_read_input_tokens?: number;
+  cache_creation_input_tokens?: number | null;
+  cache_read_input_tokens?: number | null;
 }): UsageStats {
   const inputTokens = usage.input_tokens;
   const outputTokens = usage.output_tokens;
