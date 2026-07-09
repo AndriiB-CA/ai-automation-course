@@ -30,6 +30,27 @@ By the end of this module you will:
 - 🎥 [Intro to LLMs — Andrej Karpathy (1h)](https://www.youtube.com/watch?v=zjkBMFhNj_g) — the mental model foundation
 - 🎥 [Anthropic API Crash Course — AI Jason (25 min)](https://www.youtube.com/watch?v=T9aRN5JkmL8) — shorter, more practical
 
+### Tokens, tokenization & context windows (the units everything is priced in)
+
+You'll say "token" fifty times a day in this job, so spend 30 minutes making it concrete instead of vibes.
+
+**Tokenization** is how text becomes model input: a learned compression (BPE-family algorithms) that splits text into subword chunks from a fixed vocabulary. Common words are one token; rare words shatter into pieces. Consequences you'll hit in practice:
+
+- **~4 characters ≈ 1 token in English prose** — the estimation rule of thumb, and *only* a rule of thumb
+- **Code, JSON, and non-English text tokenize worse.** The same content in Japanese or as deeply-nested JSON can cost 1.5–3× the tokens of plain English. This is why "just send everything as JSON" quietly inflates your bill.
+- **The model sees tokens, not letters.** The famous "how many r's in strawberry" failure is a tokenization artifact — the model never saw the individual characters. When output seems weirdly blind to spelling or exact character positions, this is why.
+- **Every model family has its own tokenizer.** The same text produces *different counts* on Claude vs. GPT vs. Llama. The practical trap: **`tiktoken` is OpenAI's tokenizer** — using it to count Claude tokens undercounts by ~15–20% (worse on code). For Claude, count with the API's [`count_tokens` endpoint](https://docs.claude.com/en/docs/build-with-claude/token-counting); it's free and exact.
+
+**Exercise (15 min):** Paste the same three inputs — an English paragraph, that paragraph as a JSON object, and a code snippet — into a tokenizer playground ([OpenAI's](https://platform.openai.com/tokenizer) for GPT-family intuition), then count the same inputs via Claude's `count_tokens`. Note the per-model differences and the JSON tax. That 15 minutes permanently calibrates your cost instincts.
+
+**The context window** is the model's total working memory per request, measured in tokens — input *plus* output share it. Current Claude models run 200K–1M tokens depending on model and tier. Three things to internalize now:
+
+1. **It's a hard budget, not a suggestion.** Exceed it and the request fails (or the API returns a `model_context_window_exceeded` stop reason mid-generation). Production code checks size *before* sending — with `count_tokens`, not string length.
+2. **Bigger ≠ free.** You pay per input token every request, and models attend less reliably to material buried in the middle of an enormous prompt than to its start and end. Stuffing 400K tokens of docs into every request is both expensive and *worse* than retrieving the relevant 2K.
+3. **That tension — "my knowledge doesn't fit / doesn't belong in the window" — is exactly why RAG exists.** When you hit Week 9, remember this paragraph: retrieval is context-window management. Long-context and RAG are complements, not competitors.
+
+> 🧪 **QA bridge:** Tokens are your load units. "Does it fit in the window" is a boundary test, `count_tokens` is your measurement oracle, and the cost-per-request estimate you'll do in the weekend project is performance budgeting. Treat the window like you treat a rate limit: test at the boundary, not just the happy path.
+
 ### Weekend project (3–4 hours)
 
 **Build:** A CLI tool `summarize-url` that:
@@ -139,6 +160,8 @@ You should be able to, **without Googling**:
 - [ ] Guess the cost of a 2,000-token input / 500-token output call to Sonnet 4.6 within 20%
 - [ ] Know what "extended thinking" is and when to use it (Opus 4.8 with `effort: "high"` for hard reasoning tasks; Sonnet 4.6 for most production use)
 - [ ] Explain why streaming matters for UX even when total latency is unchanged
+- [ ] Explain what a token is, why JSON and non-English text cost more, and why you count Claude tokens with `count_tokens` (not tiktoken)
+- [ ] State what a context window is, what happens when you exceed it, and why that's the reason RAG exists
 
 If any of these are fuzzy, spend a weekday revisiting before moving to Module 2.
 

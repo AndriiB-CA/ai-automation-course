@@ -48,6 +48,23 @@ Things to notice:
 - Language matters (English and French translations can land far apart with some models)
 - Negation ("is", "is not") often doesn't change the embedding much — known failure mode!
 
+### Choosing dimensions (why the schema says 1024)
+
+Embedding size is a knob, not a constant. More dimensions capture finer semantic distinctions; every dimension also costs storage, index memory, and query latency — *per chunk, forever*. The working ranges in 2026:
+
+| Dimensions | Typical use |
+|---|---|
+| 256–512 | High-volume, latency-sensitive search; noticeably cheaper indexes; small accuracy drop |
+| **1024** | **The production sweet spot** — what `voyage-3-large` defaults to and why Week 10's schema says `vector(1024)` |
+| 1536–3072 | Marginal recall gains; index size and query cost grow linearly — justify with a benchmark, not a hunch |
+
+Two practical notes:
+
+1. **Modern APIs let you truncate.** Matryoshka-trained models (including Voyage and OpenAI's `text-embedding-3` family) pack the most important information into the leading dimensions, so you can request 512-dim vectors from a 2048-dim model and keep most of the quality. If storage or latency bites at scale, truncation is the first lever — cheaper than switching models.
+2. **The dimension is frozen into your index.** Changing it later means re-embedding the entire corpus — a full re-index, not a migration. Pick with a small benchmark on *your* data (your Recall@5 eval below is exactly the tool), then commit.
+
+> 🧪 **QA bridge:** Dimensions vs. recall is a classic cost/quality tradeoff curve — benchmark it like you'd benchmark test-suite depth vs. runtime. Run your Recall@5 eval at 512 and 1024 dims on the same corpus; if the delta is under a point, the smaller index wins.
+
 ---
 
 ## Week 10 — Vector Databases with pgvector
