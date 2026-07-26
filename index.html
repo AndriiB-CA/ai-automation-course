@@ -746,6 +746,14 @@
       Every file, module, resource, and code example in one index.
     </p>
 
+    <input type="search" id="librarySearch" placeholder="Search weeks, modules, code, resources…" aria-label="Search the library"
+      style="width:100%; max-width:480px; display:block; margin-bottom:2.5rem; font-family:var(--font-mono); font-size:0.95rem; padding:0.65rem 0.9rem; border-radius:8px; border:1px solid var(--stroke); background:var(--paper); color:var(--ink);" />
+
+    <div id="searchWeeksSection" hidden>
+      <h2 class="section-title">🗓️ Weeks</h2>
+      <div class="library-grid" id="searchWeeksGrid" style="margin-bottom: 3rem;"></div>
+    </div>
+
     <h2 class="section-title">📖 Modules</h2>
     <div class="library-grid" id="moduleGrid" style="margin-bottom: 3rem;"></div>
 
@@ -767,7 +775,7 @@
       <p class="card-lead">This determines the dashboard spotlight. Change it if you've skipped ahead or fallen behind.</p>
       <label>
         Current week:
-        <input type="number" id="weekInput" min="1" max="24" style="margin-left:0.5rem; font-family: var(--font-mono); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--stroke); background: var(--paper); color: var(--ink); width: 80px;" />
+        <input type="number" id="weekInput" min="1" max="28" style="margin-left:0.5rem; font-family: var(--font-mono); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--stroke); background: var(--paper); color: var(--ink); width: 80px;" />
       </label>
       <div class="btn-row">
         <button class="btn" id="saveWeekBtn">Save</button>
@@ -1556,7 +1564,7 @@ function renderDashboard() {
     <div class="btn-row">
       ${current.module_link ? `<a class="btn secondary" href="viewer.html?file=${current.module_link}">Full module →</a>` : ""}
       <button class="btn secondary" data-open-week="${current.n}">Week detail</button>
-      ${STATE.currentWeek < 24 ? `<button class="btn" id="advanceWeek">Advance to Week ${STATE.currentWeek + 1}</button>` : ""}
+      ${STATE.currentWeek < COURSE.weeks.length ? `<button class="btn" id="advanceWeek">Advance to Week ${STATE.currentWeek + 1}</button>` : ""}
     </div>
   `;
   document.getElementById("currentWeekContent").querySelectorAll(".task-check").forEach(cb => {
@@ -1722,30 +1730,63 @@ function closeOverlay() {
   document.body.style.overflow = "";
 }
 
+function libMatches(q, ...fields) {
+  return !q || fields.some(f => (f || "").toLowerCase().includes(q));
+}
+
 function renderLibrary() {
-  document.getElementById("moduleGrid").innerHTML = COURSE.modules.map(m => `
+  const searchEl = document.getElementById("librarySearch");
+  const q = searchEl ? searchEl.value.trim().toLowerCase() : "";
+  const emptyMsg = `<p class="card-lead" style="grid-column:1/-1;">No matches here.</p>`;
+
+  const weeksSection = document.getElementById("searchWeeksSection");
+  if (q) {
+    const wks = COURSE.weeks.filter(w => libMatches(q,
+      w.title, w.moduleTitle, `week ${w.n}`,
+      (w.tasks || []).map(t => t.label).join(" "),
+      w.companion ? w.companion.label : ""
+    ));
+    weeksSection.hidden = wks.length === 0;
+    document.getElementById("searchWeeksGrid").innerHTML = wks.map(w => `
+      <button class="lib" data-open-week="${w.n}" style="text-align:left; cursor:pointer; font:inherit;">
+        <div class="lib-tag">Week ${w.n} · Mod ${w.module}</div>
+        <div class="lib-title">${escapeHtml(w.title)}</div>
+        <p class="lib-desc">${escapeHtml(w.moduleTitle)}</p>
+      </button>
+    `).join("");
+    document.getElementById("searchWeeksGrid").querySelectorAll("[data-open-week]").forEach(btn => {
+      btn.addEventListener("click", () => openWeekDetail(parseInt(btn.dataset.openWeek, 10)));
+    });
+  } else {
+    weeksSection.hidden = true;
+  }
+
+  const mods = COURSE.modules.filter(m => libMatches(q, m.title, `module ${m.num}`, m.file, m.weeks));
+  document.getElementById("moduleGrid").innerHTML = mods.map(m => `
     <a class="lib" href="viewer.html?file=${m.file}" target="_self">
       <div class="lib-tag">Module ${m.num} · Weeks ${m.weeks}</div>
       <div class="lib-title">${escapeHtml(m.title)}</div>
       <p class="lib-desc">Full module notes with reading, videos, project spec, and security callouts.</p>
     </a>
-  `).join("");
+  `).join("") || emptyMsg;
 
-  document.getElementById("codeGrid").innerHTML = COURSE.code.map(c => `
+  const codes = COURSE.code.filter(c => libMatches(q, c.title, c.desc, c.tag));
+  document.getElementById("codeGrid").innerHTML = codes.map(c => `
     <a class="lib" href="${c.url}" target="_self">
       <div class="lib-tag">${c.tag}</div>
       <div class="lib-title">${escapeHtml(c.title)}</div>
       <p class="lib-desc">${escapeHtml(c.desc)}</p>
     </a>
-  `).join("");
+  `).join("") || emptyMsg;
 
-  document.getElementById("resourceGrid").innerHTML = COURSE.resources.map(r => `
+  const res = COURSE.resources.filter(r => libMatches(q, r.title, r.desc, r.tag));
+  document.getElementById("resourceGrid").innerHTML = res.map(r => `
     <a class="lib" href="${r.url.startsWith("http") ? r.url : "viewer.html?file=" + r.url}" target="${r.url.startsWith("http") ? "_blank" : "_self"}">
       <div class="lib-tag">${r.tag}</div>
       <div class="lib-title">${escapeHtml(r.title)}</div>
       <p class="lib-desc">${escapeHtml(r.desc)}</p>
     </a>
-  `).join("");
+  `).join("") || emptyMsg;
 }
 
 function renderSettings() {
@@ -1782,6 +1823,9 @@ function switchView(view) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/* Library search */
+document.getElementById("librarySearch").addEventListener("input", renderLibrary);
+
 /* Overlay close */
 document.getElementById("overlayClose").addEventListener("click", closeOverlay);
 document.getElementById("weekOverlay").addEventListener("click", (e) => {
@@ -1804,7 +1848,7 @@ document.getElementById("themeToggle").addEventListener("click", () => {
 /* Settings handlers */
 document.getElementById("saveWeekBtn").addEventListener("click", () => {
   const v = parseInt(document.getElementById("weekInput").value, 10);
-  if (v >= 1 && v <= 24) {
+  if (v >= 1 && v <= COURSE.weeks.length) {
     STATE.currentWeek = v;
     saveState(STATE);
     render();

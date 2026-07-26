@@ -100,6 +100,22 @@ The action verification step is your **implicit assertion**. You've done this in
 - Deterministic workflows that need auditability
 - Accessibility-first testing
 
+### The third architecture — computer use (OS-level control)
+
+Your Week 17 agent controls a *browser* through Playwright's API. Your vision variant still executes through Playwright — it just *perceives* through screenshots. **Computer use** goes one level lower: Claude's [computer-use tool](https://docs.claude.com/en/docs/agents-and-tools/computer-use) perceives via screenshots *and* acts via OS-level mouse/keyboard events on a whole desktop, usually inside a sandboxed VM or container. No DOM, no selectors, no browser API at all.
+
+Where the three sit:
+
+| | Perceives via | Acts via | Reach | Reliability on web forms | Cost/speed |
+|---|---|---|---|---|---|
+| **DOM-driven** (Stagehand, Playwright Agents) | accessibility tree / DOM | Playwright API | web only | highest (the 12–17 pp advantage above) | cheapest, fastest |
+| **Vision + Playwright** (your Week 18 build) | screenshots | Playwright coordinates | web only | mid | mid |
+| **Computer use** | screenshots | OS mouse/keyboard | **anything on screen** — desktop apps, Citrix/RDP, Electron, legacy ERP | lowest for web | most expensive, slowest |
+
+The decision rule extends naturally: **DOM for the predictable 80%, vision for the stubborn 20%, computer use only when there's no DOM to talk to.** In enterprise automation the "no DOM" case is real and lucrative — the RPA industry exists because so much business software is a legacy desktop app. Computer use is the LLM-native successor to that niche, which is why it belongs in your interview vocabulary even if you rarely deploy it.
+
+🛡️ Note the security gradient too: a computer-use agent holds *the whole machine* — every pillar of Constrained Autonomy (Module 12) matters more. Run it in a disposable VM, never on your own desktop session, and treat everything it reads on screen as untrusted input.
+
 ### Reading (90 min)
 - [Claude vision capabilities](https://docs.claude.com/en/docs/build-with-claude/vision)
 - [Anthropic Computer Use: Reference implementation](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo)
@@ -123,6 +139,8 @@ Take your **Week 17 agent** and build a vision-only variant:
 | Breaks when UI changes | ? | ? |
 
 Write up findings. This is excellent blog post material. 🎯
+
+**Stretch (2–3 hours):** Run the same 5 tasks through the [Anthropic computer-use reference container](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo) and add a third column to your table. You should see the reliability/cost gradient from the architecture comparison above reproduce in your own data — DOM > vision-via-Playwright > computer use for web tasks. If it doesn't, that's even better blog material: figure out why.
 
 ### 🛡️ Security callout — read this twice
 A browser agent reads arbitrary web pages. Those pages can contain instructions addressed to the agent itself. Real example:
@@ -189,6 +207,7 @@ You've just built **AI-powered synthetic monitoring**. This is a product compani
 
 - [ ] You've built two browser agents: selector-based and vision-based
 - [ ] You have data comparing their reliability/cost/speed
+- [ ] You can explain when computer use beats both — and why it's the last resort for web UIs, not the first
 - [ ] Your agent runs in Docker with traces, retries, and cost caps
 - [ ] You've caused a prompt injection on your own agent via a crafted page — and seen it fail gracefully after your mitigation
 
