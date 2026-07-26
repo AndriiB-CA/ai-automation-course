@@ -1,0 +1,37 @@
+name: Starter smoke tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "code/module-14-idp/**"
+      - "code/module-12-multi-agent/**"
+      - ".github/workflows/starters-typecheck.yml"
+  pull_request:
+    paths:
+      - "code/module-14-idp/**"
+      - "code/module-12-multi-agent/**"
+      - ".github/workflows/starters-typecheck.yml"
+
+jobs:
+  typecheck:
+    name: tsc --noEmit (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - code/module-14-idp
+          - code/module-12-multi-agent
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit

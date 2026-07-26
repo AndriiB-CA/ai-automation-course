@@ -8,6 +8,18 @@
 
 **Retrieval-Augmented Generation (RAG)** is the #1 production AI pattern in 2026. "Chat with your docs", "semantic search over our Confluence", "support agent that knows our product" — these are all RAG. If you can build, evaluate, and deploy a RAG system, you can ship 80% of the AI features companies need.
 
+### Sidebar — "But the context window is 1M tokens now. Why not just paste everything in?"
+
+You will get this question in every architecture discussion from now on, so have the math ready. Flagship Claude models (Sonnet 5, Opus 5, Fable 5) all take 1M tokens of input. Three reasons "just paste the corpus" still loses for repeated queries:
+
+1. **Cost, per request, forever.** 1M input tokens on Sonnet 5 is ~$3.00 *every single request*. Retrieving the relevant ~2K tokens costs ~$0.006 — a **500× difference** that multiplies by your query volume. (Prompt caching narrows this for a *fixed* corpus re-queried within the cache window — cached reads are ~10% of list price — but that's still ~30¢/request, 50× worse than retrieval, and it resets when the corpus changes.)
+2. **Latency.** The model must ingest every token before the first output token. Million-token prompts mean tens of seconds of time-to-first-token; a 2K-token retrieved prompt streams almost immediately.
+3. **Attention quality.** Models attend less reliably to material buried in the middle of an enormous prompt. Relevant-only context doesn't just cost less — it *answers better*, which your Week 11 evals can demonstrate.
+
+**When long context genuinely wins:** one-shot analysis of a document that fits (a contract, a codebase slice, a deposition transcript), cross-document reasoning where you can't know what's relevant in advance, or corpora too small to be worth an indexing pipeline. Long context and RAG are complements: retrieval gets the right material *into* the window; the big window lets you be generous about how much "right material" you include.
+
+> 🧪 **QA bridge:** this sidebar is a performance-budget argument, and you can defend it with data — measure cost and time-to-first-token for the same question asked over (a) the full corpus in-context and (b) top-5 retrieved chunks, and put both numbers in your Week 12 writeup.
+
 ## Learning objectives
 
 - Understand embeddings well enough to debug them

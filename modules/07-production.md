@@ -112,6 +112,17 @@ Re-run the benchmark. Write a markdown report:
 
 🎯 **This report is portfolio material.** Tweet it. It proves you can take something to production.
 
+### Stretch — the model-migration drill (2 hours, do this once per model generation)
+
+The most realistic maintenance task in this field isn't building something new — it's upgrading a running system when a new model generation ships (Claude 4 → 5, and the one after that). Practice it on your own project *before* an employer asks you to do it on theirs:
+
+1. **Branch**, then swap every model ID in one project to the current generation (`grep -rn "claude-" src/` finds them all — if that grep is painful, that's finding number one: centralize your model IDs in one config file).
+2. **Re-run your eval suite** from Module 2 against both branches. Diff pass rates per test case, not just the aggregate.
+3. **Re-run your cost baseline** (Step 1 above) on both. New generations change tokenizers and verbosity, so cost per request can move in either direction even at identical per-token prices.
+4. **Write the migration verdict** in three lines: quality delta, cost delta, and go/no-go. That artifact — "I upgraded, measured, and shipped/rolled back" — is a senior-engineer signal in interviews.
+
+The QA framing: a model upgrade is a **dependency bump with non-deterministic behavior change**. Nobody merges those without a regression suite. Your evals *are* that suite.
+
 ---
 
 ## Cost alerts (set these today)
