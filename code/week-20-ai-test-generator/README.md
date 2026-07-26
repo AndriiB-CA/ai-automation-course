@@ -29,7 +29,7 @@ npx playwright install chromium
 └───────┬───────────┘
         ▼
 ┌─────────────────────┐
-│ Claude Sonnet 4.6   │
+│ Claude Sonnet 5     │
 │ • cached system prompt (Playwright best practices) │
 │ • user: { a11y tree, url, task? } │
 │ • tool: emit_spec    │

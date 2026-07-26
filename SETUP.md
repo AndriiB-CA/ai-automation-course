@@ -120,7 +120,7 @@ cat > test.mjs <<'EOF'
 import Anthropic from "@anthropic-ai/sdk";
 const client = new Anthropic();
 const msg = await client.messages.create({
-  model: "claude-sonnet-4-6",
+  model: "claude-sonnet-5",
   max_tokens: 256,
   messages: [{ role: "user", content: "Reply with exactly: It works." }],
 });

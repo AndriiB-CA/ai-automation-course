@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { InvoiceExtraction } from "./schemas.js";
 import type { InvoiceExtraction as InvoiceExtractionT } from "./schemas.js";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-sonnet-5";
 
 // Pricing (USD per million tokens)
 const PRICE_INPUT_PER_M = 3.0;

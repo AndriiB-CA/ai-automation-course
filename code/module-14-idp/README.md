@@ -5,7 +5,7 @@ An end-to-end pipeline that extracts structured data from invoices and receipts 
 ## What it does
 
 1. **Ingest** (`src/ingest.ts`) — detects whether a document has a native text layer (PDF with >50 chars of extractable text) or must be handled via vision (scanned PDF, JPEG, PNG).
-2. **Extract** (`src/extract.ts`) — calls `claude-sonnet-4-6` with a cached system prompt and a forced `emit_invoice` tool call. Returns a Zod-validated `InvoiceExtraction`.
+2. **Extract** (`src/extract.ts`) — calls `claude-sonnet-5` with a cached system prompt and a forced `emit_invoice` tool call. Returns a Zod-validated `InvoiceExtraction`.
 3. **Validate** (`src/validate.ts`) — pure deterministic checks: line-item sums, subtotal+tax=total, date parseability, ISO currency code recognition.
 4. **Pipeline** (`src/pipeline.ts`) — orchestrates the three steps and routes output:
    - `output/<filename>.json` — high-confidence, validation-passing extractions

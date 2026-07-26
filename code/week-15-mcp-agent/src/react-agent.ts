@@ -17,7 +17,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { writeFileSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-const CHAT_MODEL = "claude-sonnet-4-6";
+const CHAT_MODEL = "claude-sonnet-5";
 const CHEAP_MODEL = "claude-haiku-4-5-20251001";
 
 const MAX_ITERATIONS = 15;

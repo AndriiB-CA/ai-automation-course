@@ -67,7 +67,7 @@ Tone for today: ${TONE_INSTRUCTIONS[tone]}`;
 
 // ---- Cost tracking --------------------------------------------------------
 const PRICES_PER_MTOK = {
-  "claude-sonnet-4-6": { input: 3.0, output: 15.0 },
+  "claude-sonnet-5": { input: 3.0, output: 15.0 },
   "claude-haiku-4-5-20251001": { input: 1.0, output: 5.0 },
 };
 
@@ -82,7 +82,7 @@ async function main() {
   console.error(`→ Extracted ${pageText.length} chars. Summarizing...\n`);
 
   const client = new Anthropic();
-  const model = "claude-sonnet-4-6";
+  const model = "claude-sonnet-5";
 
   // Streaming: print tokens as they arrive
   const stream = client.messages.stream({

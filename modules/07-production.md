@@ -35,11 +35,15 @@ Prototypes are fun. Production bills are not. The difference between "cool demo"
 ### 1. Model selection
 You paid for Sonnet and Haiku has the same capability for your task. Always ask: can this step use Haiku? Benchmark it. Usually the answer is yes.
 
+The 2026 ladder has four rungs — Haiku 4.5 ($1/$5) → Sonnet 5 ($3/$15) → Opus 5 ($5/$25) → Fable 5 ($10/$50) — and the discipline is to *earn* each step up with an eval, not vibes. Fable 5 exists for the hardest long-running agent work; most production pipelines never need to route above Opus 5, and most individual steps sit happily on Haiku or Sonnet.
+
+One more 2026 lever inside a single model: Claude 5 models use **adaptive thinking**, controlled by the `effort` parameter (defaults to `high` on the API). Dropping `effort` on simple, high-volume steps cuts latency and output tokens without changing models — benchmark it the same way you benchmark a model downgrade.
+
 ### 2. Prompt caching
 For repeated system prompts, examples, and context windows:
 ```ts
 const msg = await client.messages.create({
-  model: "claude-sonnet-4-6",
+  model: "claude-sonnet-5",
   max_tokens: 1024,
   system: [
     {
@@ -162,7 +166,7 @@ Know your use case. Don't stream reflexively.
 
 ## Self-check
 
-- [ ] You can quote the pricing of Haiku 4.5, Sonnet 4.6, Opus 4.8 within 20%
+- [ ] You can quote the pricing of Haiku 4.5, Sonnet 5, Opus 5 within 20%
 - [ ] You've measured a >50% cost reduction on one of your projects
 - [ ] You have a cost alert set in the Anthropic console
 - [ ] Your main projects have a response cache layer

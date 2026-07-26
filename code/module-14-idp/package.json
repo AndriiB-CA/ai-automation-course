@@ -7,7 +7,7 @@
     "process": "tsx src/cli.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.110.0",
+    "@anthropic-ai/sdk": "^0.115.0",
     "dotenv": "^16.4.5",
     "glob": "^11.0.0",
     "pdf-parse": "^1.1.1",

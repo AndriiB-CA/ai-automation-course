@@ -54,7 +54,7 @@ Outputs a valid `login.spec.ts` that:
            │ structured page state
            ▼
 ┌──────────────────────┐
-│  Claude (Sonnet 4.6) │
+│  Claude (Sonnet 5)   │
 │  system: testgen     │
 │  user: {page, task}  │
 │  tool: emit_test     │

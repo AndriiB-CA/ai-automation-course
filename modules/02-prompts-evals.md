@@ -196,7 +196,7 @@ tests:
     assert:
       - type: llm-rubric
         value: "Response must flag SQL injection in severity='high' or 'critical'. Penalize any lower severity."
-        provider: anthropic:messages:claude-opus-4-8
+        provider: anthropic:messages:claude-opus-5
 ```
 
 **Part 3: Wire to CI with a regression threshold**

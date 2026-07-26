@@ -1,4 +1,4 @@
-export const MANAGER_MODEL = "claude-opus-4-8";
+export const MANAGER_MODEL = "claude-opus-5";
 export const WORKER_MODEL = "claude-haiku-4-5-20251001";
 
 // Pricing (USD per million tokens) — update if Anthropic changes pricing

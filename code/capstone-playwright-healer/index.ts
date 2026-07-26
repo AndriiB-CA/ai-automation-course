@@ -33,8 +33,8 @@ interface HealerConfig {
 }
 
 const DEFAULT_CONFIG: HealerConfig = {
-  healModel: "claude-sonnet-4-6",
-  genModel: "claude-sonnet-4-6",
+  healModel: "claude-sonnet-5",
+  genModel: "claude-sonnet-5",
   confidenceThreshold: parseFloat(process.env.HEAL_CONFIDENCE_THRESHOLD ?? "0.7"),
   recordsDir: ".healer",
   allowedSpecGlobs: ["**/*.spec.ts", "**/*.spec.js"],

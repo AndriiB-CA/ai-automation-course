@@ -5,7 +5,7 @@ A manager/worker multi-agent system built with the Anthropic Claude SDK. A manag
 ## Architecture
 
 ```
-index.ts  →  manager (claude-opus-4-8)
+index.ts  →  manager (claude-opus-5)
                 ├── research worker (claude-haiku-4-5-20251001)  tools: web_search, web_fetch
                 └── writer worker   (claude-haiku-4-5-20251001)  tools: save_note
 ```
@@ -31,5 +31,5 @@ npx tsx src/index.ts "What are the main Playwright best practices for handling f
 3. **HITL (Human-in-the-Loop)** — the manager prints the decomposed sub-task plan before spawning any worker, giving an operator the opportunity to inspect intent (extend with an `--interactive` flag to add a y/n gate).
 4. **Audit log** — every tool call, worker iteration, and cost checkpoint is logged to stdout with structured tags (`[manager]`, `[worker:tool]`, `[worker:observe]`, etc.).
 5. **Budget cap** — `$0.10` per worker (checked before each API call inside the loop) and `$0.50` cumulative (checked before each worker spawn in the manager).
-6. **Model tiering** — the planning/synthesis manager uses `claude-opus-4-8`; all workers use the cheaper `claude-haiku-4-5-20251001`.
+6. **Model tiering** — the planning/synthesis manager uses `claude-opus-5`; all workers use the cheaper `claude-haiku-4-5-20251001`.
 7. **Cost delta report** — per-worker cost and cumulative totals are printed at each stage; the final report includes total tokens in/out and USD cost.

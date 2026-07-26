@@ -98,7 +98,7 @@ If the input is ambiguous, make reasonable assumptions and flag them in the titl
         : "";
 
     const msg = await client.messages.create({
-      model: "claude-sonnet-4-6",
+      model: "claude-sonnet-5",
       max_tokens: 1024,
       system: systemPrompt,
       tools: [BUG_REPORT_TOOL],
