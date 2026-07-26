@@ -126,6 +126,7 @@ Total: ~5–7 hrs. Sustainable indefinitely.
 | Curated video library | [`/resources/VIDEOS.md`](./resources/VIDEOS.md) |
 | Tools cheat sheet | [`/resources/TOOLS.md`](./resources/TOOLS.md) |
 | Communities to join | [`/resources/COMMUNITIES.md`](./resources/COMMUNITIES.md) |
+| Is this content still current? | [VERSIONS.md](./VERSIONS.md) — freshness ledger, re-verified quarterly |
 
 ---
 

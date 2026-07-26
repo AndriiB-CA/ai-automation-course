@@ -26,7 +26,7 @@ import { Stagehand } from "@browserbasehq/stagehand";
 
 const stagehand = new Stagehand({
   env: "LOCAL",
-  modelName: "claude-sonnet-4-6",
+  modelName: "claude-sonnet-5",
   modelClientOptions: { apiKey: process.env.ANTHROPIC_API_KEY }
 });
 

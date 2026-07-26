@@ -23,7 +23,7 @@ By the end of this module you will:
 
 ### Reading (90 min, spread across weekdays)
 1. [Anthropic Messages API reference](https://docs.claude.com/en/api/messages) — skim the params, then focus on `system`, `messages`, `max_tokens`, `temperature`, `stream`
-2. [Anthropic Pricing page](https://www.anthropic.com/pricing) — memorize roughly: Opus 4.8 = newest flagship (~$5/$25 per MTok, released May 2026), Sonnet 4.6 = balanced workhorse (~$3/$15), Haiku 4.5 = fast/cheap (~$1/$5). These are the active Claude 4.x models as of mid-2026. Prompt caching cuts cached-input cost ~10× (Sonnet $3 → $0.30).
+2. [Anthropic Pricing page](https://www.anthropic.com/pricing) — memorize roughly, for the Claude 5 family (current as of July 2026): Fable 5 = top-tier frontier model (~$10/$50 per MTok), Opus 5 = flagship for agentic/complex work (~$5/$25, released July 2026), Sonnet 5 = balanced workhorse (~$3/$15; intro pricing $2/$10 through Aug 2026), Haiku 4.5 = fast/cheap (~$1/$5). Sonnet 5, Opus 5, and Fable 5 all have 1M-token context windows. Prompt caching cuts cached-input cost ~10× (Sonnet $3 → $0.30).
 3. Blog post: [A Brief Intro to LLM Inference (Chip Huyen)](https://huyenchip.com/2024/01/16/sampling.html)
 
 ### Videos (pick one, ~1 hour)
@@ -40,10 +40,11 @@ You'll say "token" fifty times a day in this job, so spend 30 minutes making it 
 - **Code, JSON, and non-English text tokenize worse.** The same content in Japanese or as deeply-nested JSON can cost 1.5–3× the tokens of plain English. This is why "just send everything as JSON" quietly inflates your bill.
 - **The model sees tokens, not letters.** The famous "how many r's in strawberry" failure is a tokenization artifact — the model never saw the individual characters. When output seems weirdly blind to spelling or exact character positions, this is why.
 - **Every model family has its own tokenizer.** The same text produces *different counts* on Claude vs. GPT vs. Llama. The practical trap: **`tiktoken` is OpenAI's tokenizer** — using it to count Claude tokens undercounts by ~15–20% (worse on code). For Claude, count with the API's [`count_tokens` endpoint](https://docs.claude.com/en/docs/build-with-claude/token-counting); it's free and exact.
+- **Tokenizers change *between generations of the same family*.** Claude models from Opus 4.7 onward (including Fable 5) use a new tokenizer that produces roughly 30% more tokens for the same text than earlier Claude models. Any hardcoded "this prompt is ~3K tokens" assumption silently breaks on a model upgrade — one more reason to *count*, never estimate, in production code.
 
 **Exercise (15 min):** Paste the same three inputs — an English paragraph, that paragraph as a JSON object, and a code snippet — into a tokenizer playground ([OpenAI's](https://platform.openai.com/tokenizer) for GPT-family intuition), then count the same inputs via Claude's `count_tokens`. Note the per-model differences and the JSON tax. That 15 minutes permanently calibrates your cost instincts.
 
-**The context window** is the model's total working memory per request, measured in tokens — input *plus* output share it. Current Claude models run 200K–1M tokens depending on model and tier. Three things to internalize now:
+**The context window** is the model's total working memory per request, measured in tokens — input *plus* output share it. Current Claude models run 200K (Haiku 4.5) to 1M tokens (Sonnet 5, Opus 5, Fable 5 — 1M is now the flagship standard). Three things to internalize now:
 
 1. **It's a hard budget, not a suggestion.** Exceed it and the request fails (or the API returns a `model_context_window_exceeded` stop reason mid-generation). Production code checks size *before* sending — with `count_tokens`, not string length.
 2. **Bigger ≠ free.** You pay per input token every request, and models attend less reliably to material buried in the middle of an enormous prompt than to its start and end. Stuffing 400K tokens of docs into every request is both expensive and *worse* than retrieving the relevant 2K.
@@ -157,8 +158,8 @@ You should be able to, **without Googling**:
 - [ ] Explain the difference between `temperature=0` and `temperature=1`
 - [ ] Define a Zod schema for a nested object with optional fields
 - [ ] Sketch the tool-use loop (receive → execute → send back → repeat)
-- [ ] Guess the cost of a 2,000-token input / 500-token output call to Sonnet 4.6 within 20%
-- [ ] Know what "extended thinking" is and when to use it (Opus 4.8 with `effort: "high"` for hard reasoning tasks; Sonnet 4.6 for most production use)
+- [ ] Guess the cost of a 2,000-token input / 500-token output call to Sonnet 5 within 20%
+- [ ] Know what **adaptive thinking** is and how the `effort` parameter controls it (Claude 5 models decide per-request how much to reason; `effort` defaults to `high` on the API — dial it down for cheap/simple calls, up for hard reasoning)
 - [ ] Explain why streaming matters for UX even when total latency is unchanged
 - [ ] Explain what a token is, why JSON and non-English text cost more, and why you count Claude tokens with `count_tokens` (not tiktoken)
 - [ ] State what a context window is, what happens when you exceed it, and why that's the reason RAG exists

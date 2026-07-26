@@ -13,7 +13,7 @@ import { TestSpec } from "./schemas.js";
 import { render } from "./render.js";
 import type { UsageStats } from "./generate.js";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-sonnet-5";
 const PRICE_INPUT_PER_M = 3.0;
 const PRICE_CACHE_WRITE_PER_M = 3.75;
 const PRICE_CACHE_READ_PER_M = 0.3;

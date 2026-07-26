@@ -1,7 +1,7 @@
 /**
  * generate.ts
  *
- * Calls Claude (claude-sonnet-4-6) with:
+ * Calls Claude (claude-sonnet-5) with:
  *   • A cached system prompt loaded from prompts/system.md
  *   • A user message containing the a11y snapshot, URL, and optional task
  *   • A tool definition `emit_spec` whose input_schema matches TestSpec
@@ -17,7 +17,7 @@ import { TestSpec } from "./schemas.js";
 
 // ── Constants ───────────────────────────────────────────────────────────────────────────────
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-sonnet-5";
 
 // Pricing (USD per million tokens) — update if Anthropic changes pricing
 const PRICE_INPUT_PER_M = 3.0;

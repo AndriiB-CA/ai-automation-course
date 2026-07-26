@@ -17,16 +17,16 @@ import "dotenv/config";
 // ---------------------------------------------------------------------------
 
 /** Primary model for spec generation and locator healing. */
-export const MODEL_GEN = "claude-sonnet-4-6" as const;
+export const MODEL_GEN = "claude-sonnet-5" as const;
 
 /** Alias: same model used at heal-time (kept separate so intent is clear). */
-export const MODEL_HEAL = "claude-sonnet-4-6" as const;
+export const MODEL_HEAL = "claude-sonnet-5" as const;
 
 /**
  * Stronger judge — only used when evaluating ambiguous heal proposals or
  * running quality-gate evals. Costs ~5× more; use sparingly.
  */
-export const MODEL_JUDGE = "claude-opus-4-8" as const;
+export const MODEL_JUDGE = "claude-opus-5" as const;
 
 // ---------------------------------------------------------------------------
 // Pricing table (USD per million tokens, as of 2025-Q2)
@@ -39,10 +39,10 @@ type PriceTier = {
 };
 
 const PRICING: Record<string, PriceTier> = {
-  // Sonnet 4.6
-  "claude-sonnet-4-6": { inputPerMTok: 3.0, outputPerMTok: 15.0 },
-  // Opus 4.8
-  "claude-opus-4-8": { inputPerMTok: 5.0, outputPerMTok: 25.0 },
+  // Sonnet 5
+  "claude-sonnet-5": { inputPerMTok: 3.0, outputPerMTok: 15.0 },
+  // Opus 5
+  "claude-opus-5": { inputPerMTok: 5.0, outputPerMTok: 25.0 },
   // Haiku 4.5 — included so helpers that call it don't error
   "claude-haiku-4-5-20251001": { inputPerMTok: 1.0, outputPerMTok: 5.0 },
 };
