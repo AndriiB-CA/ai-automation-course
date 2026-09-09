@@ -14,10 +14,10 @@ import { render } from "./render.js";
 import type { UsageStats } from "./generate.js";
 
 const MODEL = "claude-sonnet-5";
-const PRICE_INPUT_PER_M = 3.0;
+const PRICE_INPUT_PER_M = 2.0;
 const PRICE_CACHE_WRITE_PER_M = 3.75;
 const PRICE_CACHE_READ_PER_M = 0.3;
-const PRICE_OUTPUT_PER_M = 15.0;
+const PRICE_OUTPUT_PER_M = 10.0;
 
 function relPath(...parts: string[]): string {
   const __dirname = dirname(fileURLToPath(import.meta.url));

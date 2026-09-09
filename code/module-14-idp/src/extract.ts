@@ -5,10 +5,10 @@ import type { InvoiceExtraction as InvoiceExtractionT } from "./schemas.js";
 const MODEL = "claude-sonnet-5";
 
 // Pricing (USD per million tokens)
-const PRICE_INPUT_PER_M = 3.0;
+const PRICE_INPUT_PER_M = 2.0;
 const PRICE_CACHE_WRITE_PER_M = 3.75;
 const PRICE_CACHE_READ_PER_M = 0.3;
-const PRICE_OUTPUT_PER_M = 15.0;
+const PRICE_OUTPUT_PER_M = 10.0;
 
 export interface UsageStats {
   inputTokens: number;

@@ -12,7 +12,7 @@
 
 You will get this question in every architecture discussion from now on, so have the math ready. Flagship Claude models (Sonnet 5, Opus 5, Fable 5) all take 1M tokens of input. Three reasons "just paste the corpus" still loses for repeated queries:
 
-1. **Cost, per request, forever.** 1M input tokens on Sonnet 5 is ~$3.00 *every single request*. Retrieving the relevant ~2K tokens costs ~$0.006 — a **500× difference** that multiplies by your query volume. (Prompt caching narrows this for a *fixed* corpus re-queried within the cache window — cached reads are ~10% of list price — but that's still ~30¢/request, 50× worse than retrieval, and it resets when the corpus changes.)
+1. **Cost, per request, forever.** 1M input tokens on Sonnet 5 is ~$2.00 *every single request*. Retrieving the relevant ~2K tokens costs ~$0.004 — a **500× difference** that multiplies by your query volume. (Prompt caching narrows this for a *fixed* corpus re-queried within the cache window — cached reads are ~10% of list price — but that's still ~20¢/request, 50× worse than retrieval, and it resets when the corpus changes.)
 2. **Latency.** The model must ingest every token before the first output token. Million-token prompts mean tens of seconds of time-to-first-token; a 2K-token retrieved prompt streams almost immediately.
 3. **Attention quality.** Models attend less reliably to material buried in the middle of an enormous prompt. Relevant-only context doesn't just cost less — it *answers better*, which your Week 11 evals can demonstrate.
 

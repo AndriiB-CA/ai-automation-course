@@ -62,7 +62,7 @@ Slide right as trust and test coverage increase; slide left when the blast radiu
 
 Agents read the repo fresh every session. Repos that are legible to a new hire are legible to an agent — and the same artifacts serve both.
 
-**1. A context file (`CLAUDE.md` / `AGENTS.md`).** The agent reads it automatically at session start. Keep it short and dense — it's a system prompt, not documentation:
+**1. A context file (`AGENTS.md`).** The agent reads it automatically at session start. Keep it short and dense — it's a system prompt, not documentation:
 
 ```markdown
 # Project notes for AI agents
@@ -73,7 +73,9 @@ Agents read the repo fresh every session. Repos that are legible to a new hire a
 - The eval suite in evals/ is the source of truth for prompt changes — run it, don't reason about it.
 ```
 
-What belongs: build/test/lint commands, hard constraints ("never X"), conventions the linter doesn't enforce, and pointers to source-of-truth docs. What doesn't: anything the code already says, aspirational style essays, novels. Under a page. The `AGENTS.md` open format ([agents.md](https://agents.md)) is the cross-tool standard; Claude Code reads `CLAUDE.md` natively.
+What belongs: build/test/lint commands, hard constraints ("never X"), conventions the linter doesn't enforce, and pointers to source-of-truth docs. What doesn't: anything the code already says, aspirational style essays, novels. Under a page.
+
+**Write one file, not one per vendor.** [`AGENTS.md`](https://agents.md) is the open cross-tool standard — Cursor, Codex, Copilot, Gemini CLI, Aider, and others read it, and Claude Code reads `CLAUDE.md` natively. Keep `AGENTS.md` as the single source of truth and symlink or copy anything a specific tool insists on. Maintaining divergent per-tool rule files is how repos end up with three contradictory sets of instructions — and it locks your team into whichever tool you wrote the best file for. **This course repo does exactly that: read its [`AGENTS.md`](../AGENTS.md) as a worked example**, including the section on facts that expire, which is the failure mode that bites hardest when an agent writes content from stale training data.
 
 **2. Fast, runnable checks.** An agent that can run `npm test` in 30 seconds self-corrects; one that can't just asserts success. Cheap tests + a typechecker are *agent guardrails* now, not just CI hygiene. This changes the ROI math on test coverage — the suite pays for itself every session.
 
@@ -83,8 +85,8 @@ What belongs: build/test/lint commands, hard constraints ("never X"), convention
 
 ### Reading (60 min)
 
-1. [Claude Code best practices (Anthropic engineering)](https://www.anthropic.com/engineering/claude-code-best-practices) — the canonical workflow guide; most of it transfers to any agentic tool
-2. [AGENTS.md](https://agents.md) — the open context-file format; skim the examples
+1. [AGENTS.md](https://agents.md) — the open context-file format; skim the examples, then read this repo's own [`AGENTS.md`](../AGENTS.md)
+2. [Claude Code best practices (Anthropic engineering)](https://www.anthropic.com/engineering/claude-code-best-practices) — the canonical workflow guide; written for one tool, but most of it transfers to any agentic tool. Read your own tool's equivalent alongside it
 3. [Simon Willison on AI-assisted programming](https://simonwillison.net/tags/ai-assisted-programming/) — pick two recent posts; the running commentary of someone who measures
 
 ---
@@ -166,7 +168,7 @@ Interactive terminal/IDE agents (Claude Code, Cursor, Windsurf, Copilot agent mo
 Pick a genuine task from your current week — extending one of the code starters is ideal (e.g., add the Batch API stretch goal to `code/module-14-idp/`, or the memory directory to `code/module-12-multi-agent/`).
 
 Requirements (the rubric):
-- [ ] Write a `CLAUDE.md` / `AGENTS.md` for the starter repo *first* (Part 2 checklist: commands, constraints, conventions)
+- [ ] Write an `AGENTS.md` for the starter repo *first* (Part 2 checklist: commands, constraints, conventions)
 - [ ] Write the task spec before opening the tool: goal, constraints, acceptance criteria, explicit non-goals
 - [ ] Ask for a plan first; approve or correct it before any code is written
 - [ ] Agent runs the tests itself and iterates to green before presenting
@@ -175,7 +177,7 @@ Requirements (the rubric):
 - [ ] Write a ~10-line retro: where the agent saved time, where it cost time, what you'd scope differently
 
 ### Stretch
-- Run the *same* task twice — once with your `CLAUDE.md` and spec, once with a bare one-line prompt in a fresh clone. Diff the results and the review time. This is an A/B eval of your own context engineering, and it will make the value of Part 2 visceral.
+- Run the *same* task twice — once with your `AGENTS.md` and spec, once with a bare one-line prompt in a fresh clone. Diff the results and the review time. This is an A/B eval of your own context engineering, and it will make the value of Part 2 visceral.
 - Turn your Part 4 checklist into a custom slash command or reusable review prompt in your tool of choice.
 
 ---
@@ -194,8 +196,8 @@ Requirements (the rubric):
 ## Daily 15-min tasks
 
 - **Mon:** Delegate one small real task (a test, a rename, a docstring pass). Review with the Part 4 protocol.
-- **Tue:** Improve one repo's `CLAUDE.md` based on something the agent got wrong yesterday.
-- **Wed:** Read one section of the Claude Code best-practices post; adopt or reject one technique deliberately.
+- **Tue:** Improve one repo's `AGENTS.md` based on something the agent got wrong yesterday.
+- **Wed:** Read one section of your agent tool's best-practices docs; adopt or reject one technique deliberately.
 - **Thu:** Find one issue in an AI diff *before* running the tests. Note which failure mode it was.
 - **Fri:** Update your delegation log: what did you hand off this week, and what was the redo rate?
 

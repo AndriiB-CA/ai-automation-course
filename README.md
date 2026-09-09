@@ -127,6 +127,7 @@ Total: ~5–7 hrs. Sustainable indefinitely.
 | Tools cheat sheet | [`/resources/TOOLS.md`](./resources/TOOLS.md) |
 | Communities to join | [`/resources/COMMUNITIES.md`](./resources/COMMUNITIES.md) |
 | Is this content still current? | [VERSIONS.md](./VERSIONS.md) — freshness ledger, re-verified quarterly |
+| Working on this repo with an AI agent | [AGENTS.md](./AGENTS.md) — conventions any coding agent should read first |
 
 ---
 
