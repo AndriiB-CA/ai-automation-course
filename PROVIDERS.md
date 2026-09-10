@@ -27,8 +27,8 @@ apply to the whole course.
 |---|---|---|
 | `LLM_BASE_URL` | Your provider's OpenAI-compatible endpoint | `https://api.x.ai/v1` |
 | `LLM_API_KEY` | Your key for that provider | `xai-...` |
-| `LLM_MODEL` | The model ID for normal work | `grok-4.6` |
-| `LLM_MODEL_SMALL` | A cheaper/faster model for high-volume steps | `grok-4.1-fast` |
+| `LLM_MODEL` | The model ID for normal work | *from your provider's model list* |
+| `LLM_MODEL_SMALL` | A cheaper/faster model for high-volume steps | *the cheapest one they serve* |
 
 Two optional variables turn on cost reporting (see [Cost math](#cost-math-without-a-price-table)):
 
@@ -46,8 +46,8 @@ Two optional variables turn on cost reporting (see [Cost math](#cost-math-withou
 
 ## Base URLs
 
-Verified 2026-09-10. The endpoint URLs are stable; the model IDs beside them are **examples,
-not recommendations** — open the provider's model list and pick a current one.
+Verified 2026-09-10. Endpoint URLs are stable — model IDs are not, which is why none appear
+below. Open your chosen provider's model list and pick a current one.
 
 | Provider | `LLM_BASE_URL` | Key from | Notes |
 |---|---|---|---|

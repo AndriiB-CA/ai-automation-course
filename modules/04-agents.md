@@ -67,11 +67,11 @@ Starter in [`/code/week-15-mcp-agent/react-agent.ts`](../code/week-15-mcp-agent/
 ## Week 14 — Model Context Protocol (MCP) 🔌
 
 ### What MCP is, in one sentence
-**MCP is USB for AI tools** — a standard protocol so any client (Claude Desktop, Cursor, VS Code, your app) can talk to any tool server.
+**MCP is USB for AI tools** — a standard protocol so any client (Claude Desktop, Cursor, Windsurf, Zed, VS Code, your own app) can talk to any tool server, regardless of which model is behind it.
 
 Before MCP, every AI client had its own tool plugin system. You wrote the same tool 5 times for 5 different products. With MCP, you write it once, it runs everywhere.
 
-**MCP is now the industry standard (2026).** Anthropic donated the spec to the Linux Foundation in December 2025. OpenAI, Google, and Microsoft all ship MCP support. There are 9,400+ active MCP servers in the public registry and 78% of enterprise AI teams report at least one MCP-backed agent in production. This is no longer "emerging" — teach it as the default integration layer.
+**MCP is now the industry standard (2026).** It originated at Anthropic, which donated the spec to the Linux Foundation in December 2025; OpenAI, Google, and Microsoft all ship MCP support. It is model-agnostic by design — that vendor-neutrality is precisely why it won. There are 9,400+ active MCP servers in the public registry and 78% of enterprise AI teams report at least one MCP-backed agent in production. This is no longer "emerging" — teach it as the default integration layer.
 
 ### Reading (2 hours)
 - ⭐ [Model Context Protocol — official docs](https://modelcontextprotocol.io/)
@@ -102,8 +102,8 @@ Use the official [TypeScript SDK](https://github.com/modelcontextprotocol/typesc
 npm install @modelcontextprotocol/sdk
 ```
 
-### Wire it to Claude Desktop
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or equivalent:
+### Wire it to an MCP client
+Every MCP host keeps a server list in its own config file, but they share this JSON shape. Claude Desktop uses `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS; Cursor, Windsurf, Zed and the VS Code extensions each document their own path. Pick whichever you already have installed:
 ```json
 {
   "mcpServers": {
@@ -115,7 +115,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 }
 ```
 
-Restart Claude Desktop. Your tools appear automatically. **Moment of magic:** ask Claude "what tests are failing in my project?" and watch it call your tool.
+Restart the client. Your tools appear automatically. **Moment of magic:** ask it "what tests are failing in my project?" and watch it call your tool.
 
 ### 🛡️ Security critical
 MCP servers run with *your* permissions. If an LLM can call your `run_shell_command` tool, a prompt injection from a web page could exfiltrate files. Rules:
@@ -131,10 +131,10 @@ MCP servers run with *your* permissions. If an LLM can call your `run_shell_comm
 
 ### Pick one framework (TypeScript-first)
 - **Mastra v1.0** — TypeScript-native, MCP-aware, 22k+ GitHub stars, 1.8M monthly downloads, used by PayPal/Adobe/Docker. Its `Workflow` primitive maps cleanly to test orchestration. **Recommended for this track.**
-- **OpenAI Agents SDK** — lightweight and provider-agnostic (works with Claude, Gemini, etc.); built-in handoffs, guardrails, tracing. Good second choice.
+- **OpenAI Agents SDK** — lightweight and provider-agnostic: it accepts any OpenAI-compatible base URL, so it works with the provider you already configured. Built-in handoffs, guardrails, tracing. Good second choice.
 - **Vercel AI SDK** — lowest-level, most explicit. Good if you want maximum control.
 - **LangGraph.js** — complex stateful workflows; best for intricate multi-agent pipelines.
-- **Claude Agent SDK** (September 2025) — Anthropic's own SDK, built on the same infrastructure that powers Claude Code. Best for Claude-only pipelines.
+- **Vendor-native agent SDKs** — most labs now ship one (Anthropic's Claude Agent SDK, Google's ADK, and others). They expose that vendor's newest capabilities first and give up portability in exchange. Reach for one when you have *decided* on a vendor, not before.
 
 For your QA track, I recommend **Mastra** — its `Workflow` primitive maps cleanly to test orchestration.
 
@@ -142,7 +142,7 @@ For your QA track, I recommend **Mastra** — its `Workflow` primitive maps clea
 - [Mastra v1.0 docs — Getting Started](https://mastra.ai/docs/getting-started/installation)
 - [Mastra Agents & Tools](https://mastra.ai/docs/agents/overview)
 - Browse: [Mastra examples](https://github.com/mastra-ai/mastra/tree/main/examples)
-- [Claude Agent SDK — Building Agents](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk)
+- [Building agents with a vendor SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk) — read for the architecture, not the API surface
 
 ### Weekend project (5 hours)
 
@@ -184,7 +184,7 @@ Give it a real task: "Research the current state of MCP adoption in 2026 and sav
 
 ### Reading (90 min)
 - [Langfuse docs — Tracing](https://langfuse.com/docs/tracing)
-- [Langfuse integration guides](https://langfuse.com/docs/integrations/overview) — pick TypeScript + Anthropic
+- [Langfuse integration guides](https://langfuse.com/docs/integrations/overview) — pick TypeScript + OpenAI; the SDK instruments the OpenAI client, so it traces every compatible provider you point it at
 - [Observability for LLM applications — Chip Huyen](https://huyenchip.com/2023/10/10/multimodal.html)
 
 ### Weekend project (3 hours)
@@ -215,7 +215,7 @@ Your Langfuse dashboard is to LLMs what your Playwright HTML reporter is to brow
 ## Self-check before moving on
 
 - [ ] You can explain ReAct and when it's the wrong choice
-- [ ] You have an MCP server running that shows up in Claude Desktop
+- [ ] You have an MCP server running that shows up in your MCP client
 - [ ] Your research agent has completed 20+ tasks with full traces
 - [ ] You've spotted at least one optimization from looking at your dashboard
 - [ ] You have a personal opinion on Mastra vs Vercel AI SDK vs LangGraph
@@ -226,7 +226,7 @@ Your Langfuse dashboard is to LLMs what your Playwright HTML reporter is to brow
 
 - **Mon:** Browse one new MCP server in the [official servers repo](https://github.com/modelcontextprotocol/servers). Understand what it exposes.
 - **Tue:** Run one old task through your agent with a smaller model (Haiku). Note quality/cost tradeoff.
-- **Wed:** Read one [Anthropic research post](https://www.anthropic.com/research)
+- **Wed:** Read one research post from a frontier lab ([Anthropic](https://www.anthropic.com/research), [OpenAI](https://openai.com/research/), [Google DeepMind](https://deepmind.google/research/))
 - **Thu:** Refactor one agent tool description — make it tighter
 - **Fri:** Open your Langfuse dashboard. Look at it for 5 minutes. Write down one pattern you notice.
 

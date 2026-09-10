@@ -107,7 +107,7 @@ Week 24 is dedicated to polish, not new learning. You've built all the parts; th
 │        ▼                ▼                   ▼          │
 │  ┌────────────────────────────────────────────────┐   │
 │  │           Shared: LLM client + evals           │   │
-│  │   • Anthropic SDK with prompt caching          │   │
+│  │   • OpenAI-compatible client (any provider)    │   │
 │  │   • Zod-validated structured outputs           │   │
 │  │   • Langfuse traces                            │   │
 │  │   • Cost cap + rate limit                      │   │
@@ -166,7 +166,7 @@ Add a short **"Operations"** section to your README with the workflow diagram. I
 > 
 > 🔗 **[github.com/YOU/playwright-healer]**
 > 
-> It's an open-source tool that uses Claude to:
+> It's an open-source tool that uses an LLM to:
 > • Generate Playwright tests from URLs
 > • Auto-heal broken selectors when the DOM changes
 > • Open PRs with proposed fixes
@@ -177,7 +177,7 @@ Add a short **"Operations"** section to your README with the workflow diagram. I
 > 
 > Open to questions, PRs, and conversations about AI Automation Engineering roles.
 > 
-> #AIEngineering #Playwright #QualityEngineering #ClaudeAI
+> #AIEngineering #Playwright #QualityEngineering #LLM
 
 ---
 
@@ -198,7 +198,7 @@ Your resume now reads:
 - Open-source contributions to [project names]
 
 You're positioned for roles titled:
-- **Forward Deployed Engineer** (Anthropic, Scale, Palantir)
+- **Forward Deployed Engineer** (frontier labs, Scale, Palantir)
 - **AI Engineer / Applied AI**
 - **AI Test Engineer** / **AI Quality Engineer**
 - **Developer Tools Engineer** (AI-flavored)

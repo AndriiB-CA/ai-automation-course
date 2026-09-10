@@ -10,9 +10,9 @@
 
 ### Sidebar — "But the context window is 1M tokens now. Why not just paste everything in?"
 
-You will get this question in every architecture discussion from now on, so have the math ready. Flagship Claude models (Sonnet 5, Opus 5, Fable 5) all take 1M tokens of input. Three reasons "just paste the corpus" still loses for repeated queries:
+You will get this question in every architecture discussion from now on, so have the math ready. Flagship models across every vendor now take 1M tokens of input or more. Three reasons "just paste the corpus" still loses for repeated queries:
 
-1. **Cost, per request, forever.** 1M input tokens on Sonnet 5 is ~$2.00 *every single request*. Retrieving the relevant ~2K tokens costs ~$0.004 — a **500× difference** that multiplies by your query volume. (Prompt caching narrows this for a *fixed* corpus re-queried within the cache window — cached reads are ~10% of list price — but that's still ~20¢/request, 50× worse than retrieval, and it resets when the corpus changes.)
+1. **Cost, per request, forever.** The ratio is what matters, and it barely moves between vendors: sending 1M tokens costs **500× more than sending the 2K that were actually relevant**, every single request, multiplied by your query volume. Do it with your own numbers — take `LLM_PRICE_IN_PER_MTOK` from your `.env`; that figure *is* the price of one full-corpus request. (Prompt caching narrows the gap for a *fixed* corpus re-queried within the cache window, since cached reads run around 10% of list price. That still leaves retrieval ~50× cheaper, the discount resets whenever the corpus changes, and caching is a provider-native feature your compatibility layer may not expose at all.)
 2. **Latency.** The model must ingest every token before the first output token. Million-token prompts mean tens of seconds of time-to-first-token; a 2K-token retrieved prompt streams almost immediately.
 3. **Attention quality.** Models attend less reliably to material buried in the middle of an enormous prompt. Relevant-only context doesn't just cost less — it *answers better*, which your Week 11 evals can demonstrate.
 
@@ -47,7 +47,7 @@ An embedding is a function that maps text → a vector of floats (e.g., 1024 num
 
 **Build:** An embedding explorer.
 1. Pick 100 texts you care about — Slack messages, tweets, past bug reports, journal entries (local only 🛡️)
-2. Embed them using `voyage-3-large` or `voyage-3.5-lite` (best accuracy/cost ratio per 2026 MTEB — Anthropic-recommended); OpenAI's `text-embedding-3-large` is a solid alternative
+2. Embed them with whatever embedding model your provider serves — check the [MTEB leaderboard](https://huggingface.co/spaces/mteb/leaderboard) for current accuracy/cost tradeoffs, and note that **embeddings are a separate endpoint from chat** and not every chat provider offers one. Ollama runs good open-weight embedding models locally for free, which is often the easiest answer here. Set `EMBEDDING_BASE_URL` / `EMBEDDING_MODEL` / `EMBEDDING_DIMS` — see [PROVIDERS.md](../PROVIDERS.md)
 3. Calculate cosine similarity of each pair → heatmap
 4. Run t-SNE or UMAP → plot in 2D → manually label the clusters
 5. Try to break it: craft two texts that mean the same thing in different words. Do they land near each other? Craft two that look similar but mean opposite things. Do they land apart?

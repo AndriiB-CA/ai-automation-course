@@ -14,11 +14,12 @@
 - [**Transformer explained visually — 3Blue1Brown**](https://www.youtube.com/watch?v=wjZofJX0v4M) (26m) — best visual intuition
 
 ### Prompt engineering
-- [**Anthropic Prompt Engineering overview**](https://www.youtube.com/watch?v=T9aRN5JkmL8) (30m)
+- [**Prompt engineering overview**](https://www.youtube.com/watch?v=T9aRN5JkmL8) (30m)
 - [**Prompt Engineering — DeepLearning.AI short course**](https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/) (1.5h, free, hands-on notebooks)
 
-### The Anthropic cookbook videos
-- [**Anthropic YouTube channel**](https://www.youtube.com/@anthropic-ai) — new videos every few weeks, high-quality, short
+### Vendor channels
+Every major lab publishes short, high-quality explainers. Watch your own provider's first, then one other — the differences are where you learn what's general and what's vendor-specific.
+- [**Anthropic**](https://www.youtube.com/@anthropic-ai) · [**OpenAI**](https://www.youtube.com/@OpenAI) · [**Google for Developers**](https://www.youtube.com/@GoogleDevelopers)
 
 ---
 
@@ -47,7 +48,7 @@
 - [**Building Effective Agents — Anthropic**](https://www.anthropic.com/research/building-effective-agents) (blog with embedded video)
 - [**MCP Explained — Anthropic**](https://www.youtube.com/watch?v=7j1t3UZA1TY) (30m)
 - [**Mastra Framework deep dive**](https://www.youtube.com/@mastra-ai) (channel, multiple tutorials)
-- 🆕 [**Building Agents with the Claude Agent SDK — Anthropic**](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk) (engineering post + demo) — the same engine that powers Claude Code
+- 🆕 [**Building agents with a vendor agent SDK**](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk) (engineering post + demo) — read for the architecture; the API surface is one vendor's
 - 🆕 **2026 note:** MCP is now a Linux Foundation standard with OpenAI/Google/Microsoft support — prioritize current MCP content over 2024 explainers
 
 ---
@@ -55,7 +56,7 @@
 ## Part 5 — Browser Agents
 
 - [**Building Browser Agents with Stagehand — Browserbase**](https://www.youtube.com/@browserbasehq) (channel)
-- [**Claude Computer Use — official demo**](https://www.youtube.com/watch?v=vh9tDq1EZBU) (15m)
+- [**Computer use — official demo**](https://www.youtube.com/watch?v=vh9tDq1EZBU) (15m)
 - [**Browser-Use walkthrough**](https://www.youtube.com/watch?v=rz51-dCzKQA) (25m) — Python reference impl (50k+ stars)
 - 🆕 [**Playwright Agents — official docs & talks**](https://playwright.dev/docs/playwright-agents) (v1.56+) — NL test-gen + self-healing built directly into Playwright; start here if you already use it
 
@@ -63,7 +64,7 @@
 
 ## Part 6 — AI-Powered QA
 
-- [**Claude Code for Testing — Anthropic demos**](https://www.youtube.com/@anthropic-ai) (multiple videos)
+- [**AI coding agents for testing**](https://www.youtube.com/@anthropic-ai) (multiple videos) — whichever agent you picked in Module 16, the workflow is the same
 - [**Playwright — Best Practices talk**](https://www.youtube.com/@Playwrightdev) (30m)
 - [**LLM-powered test generation — Cursor/Windsurf demos**](https://www.youtube.com/@cursor-ai) (varied)
 
@@ -71,7 +72,7 @@
 
 ## Part 7 — Production & Cost
 
-- [**Prompt Caching deep dive — Anthropic**](https://www.youtube.com/watch?v=TBtojJ5qlzA) (20m)
+- [**Prompt caching deep dive**](https://www.youtube.com/watch?v=TBtojJ5qlzA) (20m) — one vendor's syntax, universal mechanics
 - [**Running LLMs at scale — Latent Space pods**](https://www.latent.space/) (audio, read transcripts instead)
 - [**LLM Observability with Langfuse**](https://www.youtube.com/@langfuse) (channel)
 
@@ -79,7 +80,7 @@
 
 ## Part 8 — AI Security
 
-- [**AI Red Teaming — Anthropic Research**](https://www.youtube.com/watch?v=-vK8WpDXFLI) (40m) — **mandatory**
+- [**AI Red Teaming — research talk**](https://www.youtube.com/watch?v=-vK8WpDXFLI) (40m) — **mandatory**
 - [**Prompt Injection at PyCon — Simon Willison**](https://www.youtube.com/watch?v=3Gt_OPBoTt0) (30m)
 - [**Embrace the Red — YouTube channel**](https://www.youtube.com/@embracethered) — the leading practical AI security channel
 - [**OWASP LLM Top 10 walkthrough**](https://www.youtube.com/results?search_query=OWASP+LLM+Top+10) (many options, pick any ~30m)
@@ -97,7 +98,7 @@
 
 ## YouTube channels to subscribe to
 
-- **[Anthropic](https://www.youtube.com/@anthropic-ai)** — official, high signal
+- **[Anthropic](https://www.youtube.com/@anthropic-ai)** / **[OpenAI](https://www.youtube.com/@OpenAI)** — official vendor channels, high signal
 - **[AI Jason](https://www.youtube.com/@AIJasonZ)** — practical builds, TypeScript-first
 - **[Matt Pocock](https://www.youtube.com/@mattpocockuk)** — TypeScript, type-system wizardry useful for LLM schemas
 - **[fireship](https://www.youtube.com/@Fireship)** — short, opinionated takes on new tools
@@ -118,7 +119,7 @@
 
 - 🎯 **Have 30 mins?** — Karpathy "Intro to LLMs" always pays dividends
 - 🔨 **About to build?** — find the most specific tutorial for that tool
-- 🧠 **Stuck understanding a concept?** — 3Blue1Brown or Anthropic explainers
+- 🧠 **Stuck understanding a concept?** — 3Blue1Brown or a vendor explainer
 - 🛡️ **Feeling complacent?** — Embrace the Red will fix that
 
 **Don't binge.** One video, then code. If you're watching three in a row without building, close the tab.

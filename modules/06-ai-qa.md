@@ -8,7 +8,7 @@
 
 ## Why this module matters
 
-QA is being rewired in 2026. Developers using Claude Code, Cursor, and Copilot can write tests faster than ever. The QA role is moving upstream: strategy, architecture, **tools that make other engineers' tests better**. This module teaches you to build those tools.
+QA is being rewired in 2026. Developers using AI coding agents — Claude Code, Cursor, Copilot, Codex, and the rest — can write tests faster than ever. The QA role is moving upstream: strategy, architecture, **tools that make other engineers' tests better**. This module teaches you to build those tools.
 
 ## Learning objectives
 
@@ -35,10 +35,10 @@ Outputs a valid `login.spec.ts` that:
 - Runs green against the site on first try
 
 ### Reading (90 min)
-- [Claude Code overview](https://docs.claude.com/en/docs/claude-code/overview)
+- Your AI coding agent's docs — whichever you settled on in Module 16
 - [Playwright — Best Practices](https://playwright.dev/docs/best-practices)
 - Revisit your own Week 2 summarizer — you already know structured streaming
-- [Prompt caching for code generation](https://docs.claude.com/en/docs/build-with-claude/prompt-caching) — critical for cost
+- Prompt caching in your provider's docs — critical for cost, and **provider-native**: it is one of the few features an OpenAI-compatible layer generally does not carry through (see [PROVIDERS.md](../PROVIDERS.md))
 
 ### Architecture sketch
 ```
@@ -54,7 +54,7 @@ Outputs a valid `login.spec.ts` that:
            │ structured page state
            ▼
 ┌──────────────────────┐
-│  Claude (Sonnet 5)   │
+│  LLM ($LLM_MODEL)    │
 │  system: testgen     │
 │  user: {page, task}  │
 │  tool: emit_test     │
@@ -79,11 +79,11 @@ Build the tool. See starter in [`/code/week-20-ai-test-generator/`](../code/week
 **Required features:**
 - [ ] Takes a URL
 - [ ] Uses Playwright's `page.accessibility.snapshot()` to extract structured page info (beats raw HTML)
-- [ ] Calls Claude with a carefully crafted system prompt
+- [ ] Calls the model with a carefully crafted system prompt
 - [ ] Uses structured output (Zod-validated TestSpec)
 - [ ] Emits valid TypeScript to disk
 - [ ] Runs the generated test against the page
-- [ ] On failure, sends the test + error back to Claude for one retry
+- [ ] On failure, sends the test + error back to the model for one retry
 - [ ] Prints cost at the end
 
 **Prompt caching tip:** Put your Playwright best-practices guide + system prompt in a cached prefix. You'll save 90% on repeated calls.
@@ -123,7 +123,7 @@ That's your self-healer.
 
 ### Reading (90 min)
 - [Testim AI — self-healing tests explainer](https://www.testim.ai/blog/ai-based-automated-testing/) — competitor research, understand the landscape
-- [Claude Code docs — editing existing files](https://docs.claude.com/en/docs/claude-code/overview)
+- Your coding agent's docs on editing existing files
 - [Octokit.js — programmatic GitHub PRs](https://github.com/octokit/octokit.js)
 
 ### Architecture sketch
@@ -138,7 +138,7 @@ class HealingLocator {
     } catch (err) {
       const dom = await this.page.content();
       const screenshot = await this.page.screenshot();
-      const fix = await claudeProposeFix({ intent: this.intent, dom, screenshot, error: err });
+      const fix = await llmProposeFix({ intent: this.intent, dom, screenshot, error: err });
       // Option A: retry live
       await this.page.locator(fix.suggestedSelector).click();
       // Option B: open PR
@@ -156,7 +156,7 @@ class HealingLocator {
 **Part 1 (2 hrs):** The wrapper
 - Accepts a semantic intent (`"submit button on the login form"`)
 - First tries role-based selectors derived from the intent
-- On failure, extracts the DOM + error, asks Claude for a new selector with a rubric
+- On failure, extracts the DOM + error, asks the model for a new selector with a rubric
 - Returns the new selector
 - Emits a JSON diff record: `{ testFile, oldSelector, newSelector, confidence, rationale }`
 
@@ -180,7 +180,7 @@ Target: 70% auto-fix rate with <5% false positives. Realistic for a v1.
 
 ### 🛡️ Security callout
 Your healer reads DOMs, including potentially sensitive pages. Rules:
-- Redact form inputs before sending to Claude (values, not structure)
+- Redact form inputs before sending them to the provider (values, not structure)
 - Redact URLs with tokens (`?token=...`)
 - Never log PII in your diff records
 - PRs go to a private repo or draft by default

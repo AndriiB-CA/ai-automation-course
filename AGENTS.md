@@ -20,6 +20,7 @@ Nothing here is a library or a service. There is no application to run, no test 
 | `ROADMAP.md` | Week-by-week plan (weeks 1–28) |
 | `SETUP.md` | Learner environment setup |
 | `VERSIONS.md` | **Freshness ledger** — fast-moving claims with last-verified dates. See "Facts that expire" below |
+| `PROVIDERS.md` | The provider contract: OpenAI-compatible base URLs, the `LLM_*` env convention, the compatibility matrix |
 | `modules/NN-*.md` | The 17 course modules (00–16). The main content |
 | `code/week-NN-*/`, `code/module-NN-*/` | Runnable starter projects (TypeScript, some Python notebooks) |
 | `daily-tasks/`, `resources/` | Practice prompts and curated tool/video/community lists |
@@ -33,9 +34,13 @@ Nothing here is a library or a service. There is no application to run, no test 
 There is no single build. Run whichever applies to what you touched:
 
 ```bash
-# Starter projects that have a package.json + lockfile (what CI runs)
-cd code/module-14-idp        && npm ci && npx tsc --noEmit
-cd code/module-12-multi-agent && npm ci && npx tsc --noEmit
+# Every starter with a package.json + lockfile + tsconfig (what CI runs).
+# The full list lives in .github/workflows/starters-typecheck.yml.
+for d in code/capstone-playwright-healer code/module-12-multi-agent code/module-14-idp \
+         code/week-02-first-api-call code/week-10-rag-pgvector code/week-15-mcp-agent \
+         code/week-20-ai-test-generator; do
+  ( cd "$d" && npm ci --silent && npx tsc --noEmit ) || echo "FAILED: $d"
+done
 
 # The portal's inline script — extract, then syntax-check it
 awk '/<script>/{f=1;next} /<\/script>/{f=0} f' index.html > /tmp/portal.js && node --check /tmp/portal.js
@@ -47,7 +52,13 @@ grep -rhoE '\]\(\.{1,2}/[^)#]+' --include="*.md" --exclude-dir=node_modules . | 
 done
 ```
 
-Other `code/` directories are illustrative snippets without lockfiles — do not add CI for them without being asked.
+```bash
+# No hardcoded model IDs or prices should exist outside labelled examples
+grep -rnE '(claude|gpt|gemini|grok|llama)-[0-9]' --include="*.ts" --include="*.md" \
+  --include="*.yaml" --exclude-dir=node_modules .
+```
+
+`code/week-06-structured-tools`, `code/week-07-promptfoo-evals` and `code/week-18-browser-agent` are illustrative snippets without a package.json — do not add CI for them without being asked.
 
 ## Conventions that matter
 
@@ -74,7 +85,9 @@ The two callout emojis (🧪 QA bridge, 🛡️ security) are load-bearing pedag
 
 **Cross-references travel in packs.** A new module needs entries in `README.md` (companion table), `ROADMAP.md` (week callout), and `index.html` (`modules` array). A new starter needs a pointer from its module *and* an entry in the `code` array. Check all of them before declaring a change done.
 
-**Secrets.** `.gitignore` blocks `.env*`, keys, and `.dev.vars`. Course examples read `ANTHROPIC_API_KEY` from the environment. Never write a real key into a file, an example, or a commit — use `sk-ant-...` placeholders.
+**The provider contract.** Every starter reads the same four variables — `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_MODEL_SMALL` — and talks to an OpenAI-compatible endpoint through the `openai` SDK. Adding a starter means following that convention, including a copy of `llm.ts` and a `check-provider` script. Module 3 additionally uses `EMBEDDING_*` because embeddings are a separate, less widely served endpoint. The contract is specified in `PROVIDERS.md`; change it there first.
+
+**Secrets.** `.gitignore` blocks `.env*`, keys, and `.dev.vars`. Never write a real key into a file, an example, or a commit — leave placeholder values empty in `.env.example`.
 
 ## Facts that expire — read this before writing any claim
 
@@ -83,14 +96,15 @@ This is the single most common way an agent damages this repo: confidently writi
 Rules:
 
 1. **Never state a model ID, price, context window, or "the current best X" from memory.** Verify against the vendor's live documentation first, then write it.
-2. **Record what you verified** in `VERSIONS.md` — the claim, where it's taught, the date, and a link that can re-check it. Update the "Last full verification" date when you sweep the table.
-3. Model IDs appear across `modules/`, `SETUP.md`, `code/**/*.ts`, and `code/week-07-promptfoo-evals/promptfooconfig.yaml`. Find them all with `grep -rn "claude-" --include="*.md" --include="*.ts" --include="*.yaml" .` and change them together — a partial migration is worse than none.
-4. Cost math in prose (Module 3's long-context sidebar, Module 7's model ladder) and cost constants in starter code (`PRICE_INPUT_PER_M`, `PRICING`) must be updated in the same pass as any price change, or the course teaches arithmetic that no longer holds.
+2. **Better: don't state it at all.** This repo deliberately contains **no model IDs and no per-token prices**. They live in the learner's `.env`, sourced from their own provider's page. `LLM_MODEL` has no default and fails fast; cost helpers print "unknown" rather than a stale figure. If you are about to add a model name or a dollar amount, you are almost certainly reintroducing the exact rot this design removed — teach the *ratio* or point at the provider's page instead.
+3. **Record what you verified** in `VERSIONS.md` — the claim, where it's taught, the date, and a link that can re-check it. Update the "Last full verification" date when you sweep the table.
+4. Where a vendor *is* named — as an example, a citation, or a documented compatibility gap — keep it plainly one option among several. Naming Anthropic's compat limitations is useful and specific; making Anthropic the assumed default is the thing this repo moved away from.
 
 ## Scope discipline
 
-- **The curriculum is Claude-first by design.** Modules 1–2 teach the raw Anthropic SDK deliberately, before any framework, and other providers appear as named alternatives. That is a pedagogical choice, not an oversight — do not "improve" it into provider-neutral abstraction unless asked.
-- **Module 16 and the tooling advice are the opposite:** deliberately tool-neutral across coding agents. Keep them that way; if you add a tool-specific detail, add it as an example, not as the assumed default.
+- **The curriculum is provider-neutral by design.** Everything runs on the OpenAI-compatible Chat Completions API so a learner can complete the course on a free tier, a local Ollama, or a frontier model without editing code. Do not reintroduce a vendor SDK as the default path.
+- **Provider-native features are taught as deliberate escape hatches, not defaults.** Prompt caching, reasoning-effort controls and native structured outputs are real and worth using — the course says so — but always framed as "here is what it costs you in portability", behind one function. Keep that framing.
+- **Module 16 and the tooling advice are tool-neutral across coding agents.** Same rule: if you add a tool-specific detail, add it as an example, not as the assumed default.
 - Don't restructure the week/phase numbering, rename modules, or rewrite voice across files on your own initiative. These ripple through every cross-reference and the portal's stored progress.
 - Prefer editing an existing module over adding a new one. The course is already dense; new material should earn its place against a learner's fixed 5–7 hours per week.
 

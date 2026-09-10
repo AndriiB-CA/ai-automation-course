@@ -26,7 +26,7 @@ Every prior module touched security briefly. This one pulls it into focus. You'l
 1. ⭐ [OWASP Top 10 for LLM Applications (2025)](https://owasp.org/www-project-top-10-for-large-language-model-applications/) — the definitive list
 2. ⭐ [OWASP Top 10 for Agentic AI Applications (2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) — **new, separate framework** covering autonomous agent risks: indirect prompt injection, tool-result injection, memory poisoning, supply chain attacks on agent frameworks
 2. ⭐ [Simon Willison — Prompt injection: Worst case scenarios](https://simonwillison.net/2023/Apr/14/worst-that-can-happen/)
-3. [Anthropic — Responsible disclosure & AI safety](https://www.anthropic.com/news/responsible-scaling-policy)
+3. Your provider's safety and responsible-disclosure policy — every major lab publishes one ([Anthropic](https://www.anthropic.com/news/responsible-scaling-policy), [OpenAI](https://openai.com/safety/), [Google](https://ai.google/responsibility/)). Read yours: it tells you what the model is *supposed* to refuse, which is the baseline your red-teaming probes against
 4. [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) — skim executive summary
 5. [Prompt Injection defense patterns — Lakera](https://www.lakera.ai/blog/guide-to-prompt-injection)
 
@@ -36,7 +36,7 @@ Every prior module touched security briefly. This one pulls it into focus. You'l
 - [Indirect Prompt Injection — Greshake et al.](https://arxiv.org/abs/2302.12173)
 
 ## Videos (90 min)
-- 🎥 [AI Red Teaming — Anthropic Research](https://www.youtube.com/watch?v=-vK8WpDXFLI) (~40 min)
+- 🎥 [AI Red Teaming — research talk](https://www.youtube.com/watch?v=-vK8WpDXFLI) (~40 min)
 - 🎥 [Prompt Injection — Simon Willison at PyCon](https://www.youtube.com/watch?v=3Gt_OPBoTt0) (~30 min)
 - 🎥 [Indirect Prompt Injection demos — Embrace the Red](https://www.youtube.com/@embracethered) (watch any two)
 
@@ -202,7 +202,7 @@ Keep these up even after Week 23 — security is a practice, not a module:
 
 **AI Security / AI Safety Engineer** is one of the fastest-growing roles in 2026. If you love this module more than the others, double down:
 - Earn the [AI/ML Pentesting certification from HADESS](https://hadess.io/) or similar
-- Apply to Anthropic's frontier red team, OpenAI's safety team, or Microsoft's AI Red Team
+- Apply to a frontier lab's red team (Anthropic, OpenAI, Google DeepMind) or Microsoft's AI Red Team
 - Contribute to OWASP LLM documentation (they accept PRs!)
 
 Your background (QA brain + building exploits) maps directly to this niche.

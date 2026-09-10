@@ -73,7 +73,7 @@ These close the gap between "AI engineer" and "AI **automation** engineer." Read
 
 | Module | Read it… | Why |
 |--------|----------|-----|
-| **[Multi-Agent Orchestration & the Claude Agent SDK](./modules/12-multi-agent-orchestration.md)** | during/after Week 15 | Manager/worker systems, Claude Agent SDK, **Constrained Autonomy**, agent cost control — the biggest 2026 skill upgrade |
+| **[Multi-Agent Orchestration](./modules/12-multi-agent-orchestration.md)** | during/after Week 15 | Manager/worker systems, **Constrained Autonomy**, the framework landscape, agent cost control — the biggest 2026 skill upgrade |
 | **[Business Translation](./modules/13-business-translation.md)** | skim in Phase 1, apply throughout, deep-read before capstone | Process mapping, ROI modeling, stakeholder comms — the #1 thing that separates this role from pure engineering |
 | **[Intelligent Document Processing](./modules/14-document-processing.md)** | as a project around Weeks 11–12 | The largest real-world automation use case; builds on your structured-outputs + RAG skills |
 | **[Interview Prep & System Design](./modules/15-interview-prep.md)** | after Week 24 | Automation-specific system design + your QA→AI story = offers |
@@ -119,6 +119,7 @@ Total: ~5–7 hrs. Sustainable indefinitely.
 | What you need | Where to go |
 |---|---|
 | Set up your environment | [SETUP.md](./SETUP.md) |
+| Pick an LLM provider (or swap later) | [PROVIDERS.md](./PROVIDERS.md) — base URLs, free tiers, compatibility gaps |
 | Week-by-week plan | [ROADMAP.md](./ROADMAP.md) |
 | Current module content | [`/modules`](./modules) |
 | Working code examples | [`/code`](./code) |

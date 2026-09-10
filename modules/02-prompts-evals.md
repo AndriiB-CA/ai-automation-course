@@ -26,8 +26,9 @@ LLM-as-Judge        =  an oracle for fuzzy assertions
 ## Week 5 — Prompt Engineering Patterns
 
 ### Reading (2 hours, split across week)
-1. [Anthropic Prompt Engineering Overview](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview)
-2. Work through every chapter of [Anthropic's Prompt Engineering Interactive Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial) — it's a Jupyter notebook, ~3 hours total
+1. [Anthropic Prompt Engineering Overview](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview) — written for one model family, but ~90% of it is general craft
+2. Work through every chapter of [Anthropic's Prompt Engineering Interactive Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial) — a Jupyter notebook, ~3 hours. Run it against **your** provider by changing the client setup in the first cell; where a technique works less well, you have learned something worth writing down
+3. [OpenAI's prompt engineering guide](https://platform.openai.com/docs/guides/prompt-engineering) — read straight after, and note where the two vendors' advice disagrees
 3. Skim: [Lilian Weng — Prompt Engineering](https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/)
 
 ### Key patterns to internalize
@@ -60,9 +61,9 @@ Write a 1-paragraph conclusion. **This is your first eval, done manually.** Next
 ## Week 6 — System Prompts, Personas, Refusals
 
 ### Reading (90 min)
-- [Anthropic's Claude character study](https://www.anthropic.com/news/claude-character)
-- [Leaked system prompt archive — Anthropic's own](https://docs.claude.com/en/release-notes/system-prompts)
-- Browse: [awesome-claude-prompts](https://github.com/langgptai/awesome-claude-prompts)
+- [Anthropic's Claude character study](https://www.anthropic.com/news/claude-character) — how one lab thinks about persona design
+- [Published system prompts](https://docs.claude.com/en/release-notes/system-prompts) — real production prompts, worth reading closely whichever model you use
+- Browse a prompt collection for your own model family and compare structure
 
 ### 🛡️ Security reading (45 min — don't skip)
 - [Prompt injection: What's the worst that can happen? (Simon Willison)](https://simonwillison.net/2023/Apr/14/worst-that-can-happen/)
@@ -147,7 +148,10 @@ jobs:
       - run: npm install -g promptfoo
       - name: Run evals
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # promptfoo's openai provider honours both; point them at any
+          # OpenAI-compatible vendor. Add these as repository secrets.
+          OPENAI_BASE_URL: ${{ secrets.LLM_BASE_URL }}
+          OPENAI_API_KEY: ${{ secrets.LLM_API_KEY }}
         run: promptfoo eval --max-concurrency 3 --output results.json
       - name: Comment on PR
         if: failure()
@@ -196,7 +200,7 @@ tests:
     assert:
       - type: llm-rubric
         value: "Response must flag SQL injection in severity='high' or 'critical'. Penalize any lower severity."
-        provider: anthropic:messages:claude-opus-5
+        provider: openai:chat:YOUR_JUDGE_MODEL_ID   # your strongest model
 ```
 
 **Part 3: Wire to CI with a regression threshold**

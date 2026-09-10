@@ -1,8 +1,8 @@
-# Module 12 — Multi-Agent Orchestration & the Claude Agent SDK
+# Module 12 — Multi-Agent Orchestration
 
 **Companion to the Agents phase (Weeks 13–16) · best read during/after Week 15 · ~8 hours**
 
-> 🧭 **Where this fits:** Module 4 taught you single-agent loops and tool use. This module is the 2026 upgrade: systems where multiple agents collaborate under guardrails, built on the SDK that fits a Claude-first stack. This is the single biggest skill gap between a 2025-era curriculum and what the market screens for now.
+> 🧭 **Where this fits:** Module 4 taught you single-agent loops and tool use. This module is the 2026 upgrade: systems where multiple agents collaborate under guardrails. This is the single biggest skill gap between a 2025-era curriculum and what the market screens for now.
 
 ---
 
@@ -13,7 +13,7 @@ In 2026 the bar moved. Calling one LLM in a loop with three tools is table stake
 ## Learning objectives
 
 - Build a manager/worker multi-agent system that completes a task no single agent could
-- Use the **Claude Agent SDK** (the natural fit for a Claude-centric stack)
+- Build the manager/worker loop yourself on the portable API, then map it onto whichever agent framework a team hands you
 - Apply the **Constrained Autonomy** pattern: tool whitelists, output validation, human-in-the-loop, audit logging
 - Know the 2026 framework landscape and pick correctly by workflow shape
 - Understand the emerging protocols: MCP, A2A, AGENTS.md
@@ -46,32 +46,35 @@ A single agent is a loop: think → act → observe → repeat. A **multi-agent 
 
 ### Reading (90 min)
 - Re-read with new eyes: [Building Effective Agents — Anthropic](https://www.anthropic.com/research/building-effective-agents) — focus on the "orchestrator-workers" and "evaluator-optimizer" sections
-- [Anthropic — How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system) — the canonical real-world writeup
+- [How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system) — the canonical real-world writeup. Vendor-published; the architecture and the cost lessons are what transfer
 - [Cognition — Don't build multi-agents](https://cognition.ai/blog/dont-build-multi-agents) — read the *counterargument* too. A good engineer knows when single-agent wins.
 
 ---
 
-## Part 2 — The Claude Agent SDK
+## Part 2 — Build it yourself first, then pick a framework
 
-Your course is Claude-centric, so this is your natural agent framework. The **Claude Agent SDK** shipped alongside Claude 4.6 and by 2026 overtook several older frameworks in enterprise production deployments. It gives you the agent loop, tool use, MCP integration, and a memory primitive without hand-rolling everything you built in Module 4.
+The starter for this module ([`/code/module-12-multi-agent/`](../code/module-12-multi-agent/)) is about 400 lines and has no agent framework in it at all — just the portable Chat Completions API, a manager, workers, a tool allow-list and budget guards. Read it before you touch any framework.
 
-### Reading + setup (60 min)
-- [Claude Agent SDK overview](https://docs.claude.com/en/api/agent-sdk/overview)
-- [Claude Agent SDK — TypeScript reference](https://docs.claude.com/en/api/agent-sdk/typescript)
-- [Agent SDK — tools & MCP](https://docs.claude.com/en/api/agent-sdk/mcp)
+That is not framework-phobia. It is that **every agent framework is the same loop plus opinions**, and you cannot evaluate the opinions until you have felt the loop. Once you have written it, Part 4's landscape reads as a menu instead of a mystery.
 
-```bash
-npm install @anthropic-ai/claude-agent-sdk
-```
-
-### What the SDK gives you (and what you still own)
-- **Gives you:** the loop, tool dispatch, MCP server connection, streaming, memory, sub-agent spawning
+### What a framework gives you (and what you still own)
+- **Gives you:** the loop, tool dispatch, MCP connection, streaming, memory, sub-agent spawning, retries
 - **You still own:** tool definitions, the guardrails (Part 3), evals (Module 11), and cost caps (Part 5)
 
-> 🧪 **QA bridge:** Think of the SDK as your test runner and the agent loop as the framework — you didn't write Playwright's executor, but you still write the tests, the fixtures, and the assertions. Same division of labor here.
+The second list is the one that decides whether your system is a product or a liability, and no framework writes it for you.
 
-### A note on staying provider-flexible
-The SDK couples you to Claude. That's fine for this course and for many production stacks, but in interviews you'll be asked "what if you had to swap models?" Know the alternatives in Part 4 and be ready to articulate the lock-in trade-off.
+> 🧪 **QA bridge:** Think of the framework as your test runner and the agent loop as the harness — you didn't write Playwright's executor, but you still write the tests, the fixtures, and the assertions. Same division of labor here.
+
+### The lock-in question you will be asked
+"What if you had to swap models?" is a standard interview question, and the honest answer has three tiers:
+
+| Coupling | What it costs to leave | Example |
+|---|---|---|
+| **Portable API** (this course's default) | an `.env` edit | OpenAI-compatible Chat Completions |
+| **Provider-neutral framework** | swap one adapter | LangGraph, Mastra, OpenAI Agents SDK with a custom base URL |
+| **Vendor-native agent SDK** | a rewrite of the orchestration layer | a lab's own agent SDK |
+
+None of these is wrong. Vendor-native SDKs expose new capabilities first and handle more for you; you pay for that in portability. What gets you marked down in an interview is not *having* coupling — it is not knowing where yours is.
 
 ---
 
@@ -119,7 +122,7 @@ You don't need to learn all of these. You need to *know* them so you choose well
 
 | Framework | Language | Pick it when… |
 |---|---|---|
-| **Claude Agent SDK** | TS / Python | Claude-first stack; want MCP + memory built in (your default for this course) |
+| **Vendor-native agent SDKs** | TS / Python | You've committed to one provider and want its newest agent features first, with MCP and memory built in. Trade portability for capability, knowingly. |
 | **LangGraph** | Python / JS | You need durable execution, checkpointing, time-travel debugging, graph-structured control flow. The serious-production default. |
 | **Mastra** | TypeScript | TS/Next.js stack, agent lives near the UI. Still the de-facto TS choice in 2026. |
 | **OpenAI Agents SDK** | Python / TS | OpenAI-native stack; "handoff" model; lowest friction for OpenAI-only. |
@@ -128,7 +131,7 @@ You don't need to learn all of these. You need to *know* them so you choose well
 | **Google ADK** | Python | Vertex AI ecosystem; A2A protocol; multimodal. |
 | **Microsoft Agent Framework** | .NET / Python | Microsoft/enterprise .NET shops. (Note: AutoGen is now in maintenance; AG2 is the community fork.) |
 
-**The interview-ready summary:** "The choice isn't which framework is best in the abstract — all of these ship production systems in 2026. It's which fits the workflow shape: graph-structured durable execution → LangGraph; TypeScript-native → Mastra; Claude-native with MCP → Claude Agent SDK; OpenAI-only → Agents SDK; fast role-based prototype → CrewAI."
+**The interview-ready summary:** "The choice isn't which framework is best in the abstract — all of these ship production systems in 2026. It's which fits the workflow shape: graph-structured durable execution → LangGraph; TypeScript-native → Mastra; provider-committed with MCP and memory built in → that vendor's agent SDK; fast role-based prototype → CrewAI. And if the requirement is *portability*, none of them — write the loop against the compatible API and keep the 400 lines."
 
 ### Emerging protocols to track
 - **MCP (Model Context Protocol)** — you already know this from Module 4. The leading standard for tool/context interop. Bet on it.
@@ -155,7 +158,7 @@ Multi-agent systems have a nasty failure mode: **token explosion.** A manager th
 
 Everything so far is stateless: each run starts from zero. That's fine for one-shot tasks, but real automations run the *same kind* of task repeatedly — and a stateless agent re-discovers the same facts, repeats the same mistakes, and re-pays the same exploration tokens every single run.
 
-**File-based memory** is the production pattern, and it's disarmingly simple: give the agent a directory it can read and write, tell it in the system prompt that the directory exists and what it's for, and instruct it to consult memory before starting and record learnings when done. The Claude API now ships a first-class **memory tool** (`memory_20250818`) with `view`/`create`/`str_replace`/`insert`/`delete` commands — you implement the storage backend (a local folder is fine), the model handles when to read and write.
+**File-based memory** is the production pattern, and it's disarmingly simple: give the agent a directory it can read and write, tell it in the system prompt that the directory exists and what it's for, and instruct it to consult memory before starting and record learnings when done. Some providers now ship a first-class **memory tool** with `view`/`create`/`str_replace`/`insert`/`delete` commands, where you implement the storage backend and the model decides when to read and write. Where yours doesn't, these are just five ordinary tools in your allow-list — which is a good reminder that the vendor feature is a convenience, not a capability you lack.
 
 What makes memory *work* is format discipline, not storage tech. Give the agent rules like:
 
@@ -186,7 +189,7 @@ Extend your Week 15 research agent into a multi-agent system:
 - **Writer worker** — produces the final structured report with citations
 
 Requirements (these are the rubric):
-- [ ] Built on the Claude Agent SDK (or Mastra if you prefer to compare)
+- [ ] Built on the portable API (extend the starter), or on a framework of your choice if you'd rather compare
 - [ ] **Tool whitelist** enforced per worker (research worker cannot write files; writer cannot search)
 - [ ] **Output validation** — final report validated against a Zod schema before it's returned
 - [ ] **One HITL checkpoint** — manager pauses for human approval before spawning expensive workers OR before finalizing
@@ -217,7 +220,7 @@ Run it on 5 different research questions. Produce a short report: cost per task,
 
 ## Daily 15-min tasks
 
-- **Mon:** Read one section of the Anthropic multi-agent research writeup
+- **Mon:** Read one section of the multi-agent research writeup from Part 1
 - **Tue:** Run your system with the manager on a cheaper model — where does quality break?
 - **Wed:** Tighten one worker's tool list or prompt; re-measure
 - **Thu:** Skim one competing framework's quickstart (LangGraph, CrewAI) — note one idea worth stealing
