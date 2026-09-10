@@ -263,7 +263,7 @@ Process mapping (BPMN), automation-candidate selection, ROI modeling, stakeholde
 The standard 4–5 stage loop, a repeatable framework for automation-specific system-design questions, take-home strategy, and your QA→AI story. Your job-hunt launchpad.
 
 ### 📎 [Module 16 — Working with AI Coding Agents](./modules/16-ai-coding-agents.md) *(Week 1–2, then throughout)*
-The meta-skill thread: mental model, repo setup (`CLAUDE.md`/`AGENTS.md`, guardrail tests), task scoping, the AI-diff review protocol, verification loops, and Constrained Autonomy applied to your own tools. Keep a delegation log — it becomes interview evidence.
+The meta-skill thread: mental model, repo setup (`AGENTS.md`, guardrail tests), task scoping, the AI-diff review protocol, verification loops, and Constrained Autonomy applied to your own tools. Keep a delegation log — it becomes interview evidence.
 
 ---
 

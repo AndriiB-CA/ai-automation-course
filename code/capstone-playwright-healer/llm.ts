@@ -40,7 +40,7 @@ type PriceTier = {
 
 const PRICING: Record<string, PriceTier> = {
   // Sonnet 5
-  "claude-sonnet-5": { inputPerMTok: 3.0, outputPerMTok: 15.0 },
+  "claude-sonnet-5": { inputPerMTok: 2.0, outputPerMTok: 10.0 },
   // Opus 5
   "claude-opus-5": { inputPerMTok: 5.0, outputPerMTok: 25.0 },
   // Haiku 4.5 — included so helpers that call it don't error

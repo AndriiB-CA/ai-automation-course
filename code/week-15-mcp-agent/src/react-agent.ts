@@ -24,7 +24,7 @@ const MAX_ITERATIONS = 15;
 const BUDGET_CAP_USD = 0.5;
 
 const PRICING = {
-  [CHAT_MODEL]: { input: 3.0, output: 15.0 },
+  [CHAT_MODEL]: { input: 2.0, output: 10.0 },
   [CHEAP_MODEL]: { input: 1.0, output: 5.0 },
 } as const;
 
@@ -37,7 +37,7 @@ interface TokenUsage { model: string; inputTokens: number; outputTokens: number;
 let totalCostUsd = 0;
 
 function trackCost(usage: TokenUsage): void {
-  const prices = PRICING[usage.model as keyof typeof PRICING] ?? { input: 3, output: 15 };
+  const prices = PRICING[usage.model as keyof typeof PRICING] ?? { input: 2, output: 10 };
   totalCostUsd += (usage.inputTokens / 1_000_000) * prices.input + (usage.outputTokens / 1_000_000) * prices.output;
 }
 

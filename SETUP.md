@@ -88,7 +88,7 @@ source ~/.ai-course.env
 ## 4. VS Code extensions
 
 Install these (the ID is in parentheses — `Cmd+P` → paste):
-- **Claude Code** (`anthropic.claude-code`) — CLI agent in your editor
+- **An AI coding agent** — pick one and stick with it for the course: **Claude Code** (`anthropic.claude-code`), **GitHub Copilot** (`github.copilot`), or a purpose-built editor like Cursor or Windsurf. [Module 16](./modules/16-ai-coding-agents.md) teaches the operator skill, which transfers across all of them; the repo-level `AGENTS.md` context file you'll write works with any of them.
 - **ESLint** (`dbaeumer.vscode-eslint`)
 - **Prettier** (`esbenp.prettier-vscode`)
 - **Playwright Test** (`ms-playwright.playwright`)

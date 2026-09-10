@@ -18,7 +18,7 @@ export function calcCost(
   inputTokens: number,
   outputTokens: number
 ): UsageStats {
-  const prices = PRICING[model as keyof typeof PRICING] ?? { input: 3.0, output: 15.0 };
+  const prices = PRICING[model as keyof typeof PRICING] ?? { input: 2.0, output: 10.0 };
   const estimatedCostUSD =
     (inputTokens / 1_000_000) * prices.input +
     (outputTokens / 1_000_000) * prices.output;

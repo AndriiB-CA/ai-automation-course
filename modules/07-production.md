@@ -35,7 +35,7 @@ Prototypes are fun. Production bills are not. The difference between "cool demo"
 ### 1. Model selection
 You paid for Sonnet and Haiku has the same capability for your task. Always ask: can this step use Haiku? Benchmark it. Usually the answer is yes.
 
-The 2026 ladder has four rungs — Haiku 4.5 ($1/$5) → Sonnet 5 ($3/$15) → Opus 5 ($5/$25) → Fable 5 ($10/$50) — and the discipline is to *earn* each step up with an eval, not vibes. Fable 5 exists for the hardest long-running agent work; most production pipelines never need to route above Opus 5, and most individual steps sit happily on Haiku or Sonnet.
+The 2026 ladder has four rungs — Haiku 4.5 ($1/$5) → Sonnet 5 ($2/$10) → Opus 5 ($5/$25) → Fable 5.1 ($10/$50) — and the discipline is to *earn* each step up with an eval, not vibes. The Fable tier exists for the hardest long-running agent work; most production pipelines never need to route above Opus 5, and most individual steps sit happily on Haiku or Sonnet. Note that Sonnet 5 costs *less* than the Sonnet 4.6 it replaced — when a new generation ships, re-check prices as well as capabilities.
 
 One more 2026 lever inside a single model: Claude 5 models use **adaptive thinking**, controlled by the `effort` parameter (defaults to `high` on the API). Dropping `effort` on simple, high-volume steps cuts latency and output tokens without changing models — benchmark it the same way you benchmark a model downgrade.
 

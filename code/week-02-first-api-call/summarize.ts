@@ -67,7 +67,7 @@ Tone for today: ${TONE_INSTRUCTIONS[tone]}`;
 
 // ---- Cost tracking --------------------------------------------------------
 const PRICES_PER_MTOK = {
-  "claude-sonnet-5": { input: 3.0, output: 15.0 },
+  "claude-sonnet-5": { input: 2.0, output: 10.0 },
   "claude-haiku-4-5-20251001": { input: 1.0, output: 5.0 },
 };
 

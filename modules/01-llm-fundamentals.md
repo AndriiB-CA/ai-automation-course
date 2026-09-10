@@ -23,7 +23,7 @@ By the end of this module you will:
 
 ### Reading (90 min, spread across weekdays)
 1. [Anthropic Messages API reference](https://docs.claude.com/en/api/messages) — skim the params, then focus on `system`, `messages`, `max_tokens`, `temperature`, `stream`
-2. [Anthropic Pricing page](https://www.anthropic.com/pricing) — memorize roughly, for the Claude 5 family (current as of July 2026): Fable 5 = top-tier frontier model (~$10/$50 per MTok), Opus 5 = flagship for agentic/complex work (~$5/$25, released July 2026), Sonnet 5 = balanced workhorse (~$3/$15; intro pricing $2/$10 through Aug 2026), Haiku 4.5 = fast/cheap (~$1/$5). Sonnet 5, Opus 5, and Fable 5 all have 1M-token context windows. Prompt caching cuts cached-input cost ~10× (Sonnet $3 → $0.30).
+2. [Anthropic Pricing page](https://www.anthropic.com/pricing) — memorize roughly, for the Claude 5 family (current as of September 2026): Fable 5.1 = top-tier frontier model (~$10/$50 per MTok; Fable 5 is still served at the same price), Opus 5 = flagship for agentic/complex work (~$5/$25), Sonnet 5 = balanced workhorse (~$2/$10), Haiku 4.5 = fast/cheap (~$1/$5). Sonnet 5, Opus 5, and the Fable models all have 1M-token context windows. Prompt caching cuts cached-input cost ~10× (Sonnet $2 → $0.20).
 3. Blog post: [A Brief Intro to LLM Inference (Chip Huyen)](https://huyenchip.com/2024/01/16/sampling.html)
 
 ### Videos (pick one, ~1 hour)
