@@ -10,7 +10,7 @@ A CLI: `npx ai-testgen <url>` → emits a valid `*.spec.ts` file that runs green
 
 ```bash
 npm init -y
-npm install @anthropic-ai/sdk zod @playwright/test commander
+npm install openai zod @playwright/test commander
 npm install -D tsx typescript @types/node
 npx playwright install chromium
 ```
@@ -29,8 +29,8 @@ npx playwright install chromium
 └───────┬───────────┘
         ▼
 ┌─────────────────────┐
-│ Claude Sonnet 5     │
-│ • cached system prompt (Playwright best practices) │
+│ Your LLM ($LLM_MODEL) │
+│ • system prompt (Playwright best practices) │
 │ • user: { a11y tree, url, task? } │
 │ • tool: emit_spec    │
 └───────┬─────────────┘

@@ -10,14 +10,16 @@
   "scripts": {
     "start": "tsx index.ts",
     "test": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check-provider": "tsx check-provider.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.27.0",
     "@playwright/test": "^1.47.0",
     "commander": "^12.1.0",
-    "dotenv": "^16.4.5",
-    "zod": "^3.23.8"
+    "dotenv": "^17.4.2",
+    "openai": "^7.15.0",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

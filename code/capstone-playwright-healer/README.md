@@ -22,7 +22,7 @@ capstone-playwright-healer/
 │   │   ├── locator.ts        # HealingLocator wrapper
 │   │   └── propose.ts        # LLM: proposes new selector
 │   ├── shared/
-│   │   ├── llm.ts            # Anthropic client w/ caching
+│   │   ├── llm.ts            # provider-neutral client + cost helpers
 │   │   ├── trace.ts          # Langfuse integration
 │   │   └── cost-cap.ts       # Budget enforcement
 │   └── schemas.ts            # Zod schemas for LLM outputs
@@ -81,7 +81,7 @@ test("login", async () => {
 
 When a locator fails, `heal()`:
 1. Captures the DOM + screenshot at failure
-2. Sends both + the intent to Claude
+2. Sends both + the intent to the model
 3. Gets a proposed selector back (with confidence + rationale)
 4. **If confidence ≥ threshold:** retries with new selector, records the heal
 5. **Otherwise:** throws as normal; emits a heal-proposal record for human review

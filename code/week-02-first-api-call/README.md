@@ -1,7 +1,7 @@
 # Week 2 — Your First Real API Call
 
 A streaming URL summarizer. Your introduction to:
-- The Anthropic Messages API
+- The Chat Completions API (the shape every provider speaks)
 - System prompts vs user messages
 - Streaming with `messages.stream()`
 - Cost tracking per call
@@ -11,15 +11,17 @@ A streaming URL summarizer. Your introduction to:
 ```bash
 cd code/week-02-first-api-call
 npm install
-export ANTHROPIC_API_KEY=sk-ant-...
+cp .env.example .env      # fill in LLM_BASE_URL / LLM_API_KEY / LLM_MODEL
+npm install
 
-npx tsx summarize.ts https://www.anthropic.com/research/building-effective-agents
+npx tsx summarize.ts https://en.wikipedia.org/wiki/Large_language_model
 npx tsx summarize.ts https://example.com --tone=snarky
 ```
 
 ## Things to try after it works
 
-1. Swap the model to `claude-haiku-4-5-20251001` — how much does quality drop? Cost?
+1. Swap `LLM_MODEL` to the smallest model your provider offers — how much does quality drop? Cost?
+   Then point `LLM_BASE_URL` at a *different* provider entirely and re-run. Same code, different vendor.
 2. Add a `--language=fr` flag that makes the summary French
 3. Add a `--bullets=5` flag (configurable bullet count)
 4. Add error handling for 404s, paywalls, and non-HTML responses

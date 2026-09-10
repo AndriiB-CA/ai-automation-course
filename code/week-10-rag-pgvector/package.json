@@ -5,13 +5,13 @@
   "scripts": {
     "ingest": "tsx src/ingest.ts",
     "search": "tsx src/search.ts",
-    "eval": "tsx src/eval.ts"
+    "eval": "tsx src/eval.ts",
+    "check-provider": "tsx src/check-provider.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.27.0",
-    "dotenv": "^16.4.5",
-    "pg": "^8.12.0",
-    "voyageai": "^0.0.5"
+    "dotenv": "^17.4.2",
+    "openai": "^7.15.0",
+    "pg": "^8.12.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

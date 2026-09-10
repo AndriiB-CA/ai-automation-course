@@ -5,7 +5,7 @@ An end-to-end pipeline that extracts structured data from invoices and receipts 
 ## What it does
 
 1. **Ingest** (`src/ingest.ts`) — detects whether a document has a native text layer (PDF with >50 chars of extractable text) or must be handled via vision (scanned PDF, JPEG, PNG).
-2. **Extract** (`src/extract.ts`) — calls `claude-sonnet-5` with a cached system prompt and a forced `emit_invoice` tool call. Returns a Zod-validated `InvoiceExtraction`.
+2. **Extract** (`src/extract.ts`) — calls your configured model with a forced `emit_invoice` tool call. Returns a Zod-validated `InvoiceExtraction`.
 3. **Validate** (`src/validate.ts`) — pure deterministic checks: line-item sums, subtotal+tax=total, date parseability, ISO currency code recognition.
 4. **Pipeline** (`src/pipeline.ts`) — orchestrates the three steps and routes output:
    - `output/<filename>.json` — high-confidence, validation-passing extractions
@@ -18,7 +18,7 @@ An end-to-end pipeline that extracts structured data from invoices and receipts 
 cd code/module-14-idp
 npm install
 cp .env.example .env
-# edit .env and set ANTHROPIC_API_KEY=sk-ant-...
+# edit .env: LLM_BASE_URL, LLM_API_KEY, LLM_MODEL  (see PROVIDERS.md)
 ```
 
 ## Running
@@ -41,7 +41,7 @@ npx tsx src/cli.ts 'sample-docs/*' --threshold=0.8
 ## Module 14 Rubric Checklist
 
 - [x] Native text extraction for text-layer PDFs (`pdf-parse`)
-- [x] Vision fallback for scanned PDFs and images (base64 → Claude image block)
+- [x] Vision fallback for scanned PDFs and images (base64 → `image_url` data URI)
 - [x] Structured extraction via forced tool call (`emit_invoice`)
 - [x] Prompt caching on system prompt (`cache_control: { type: "ephemeral" }`)
 - [x] Zod schema validation before trusting LLM output

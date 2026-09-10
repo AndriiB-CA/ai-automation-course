@@ -29,7 +29,7 @@ See [MCP TypeScript SDK README](https://github.com/modelcontextprotocol/typescri
 Recommended framework: **Mastra** (TypeScript-first, MCP-native)
 
 ```bash
-npm install @mastra/core @anthropic-ai/sdk
+npm install @mastra/core openai
 ```
 
 Your agent needs:
@@ -39,9 +39,12 @@ Your agent needs:
 - Max iterations cap (default 15)
 - Streaming console output with `[think]`, `[act]`, `[observe]` tags
 
-## Wiring MCP → Claude Desktop
+## Wiring MCP → an MCP-capable client
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+MCP is an open protocol with many hosts — Claude Desktop, Cursor, Windsurf, Zed, VS Code extensions,
+and your own agent via the MCP SDK. Each keeps its server list in its own config file; the JSON below is
+the shape they share. For Claude Desktop that file is
+`~/Library/Application Support/Claude/claude_desktop_config.json`; check your client's docs for its path.
 
 ```json
 {
@@ -54,12 +57,12 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 }
 ```
 
-Restart Claude Desktop. Your tools appear in the 🔌 menu.
+Restart the client. Your tools appear in its tool menu.
 
 ## Success criteria
 
 - [ ] MCP server starts without errors
-- [ ] Claude Desktop lists your tools
+- [ ] Your MCP client lists your tools
 - [ ] Agent completes a 500-word research task end-to-end
 - [ ] Budget cap fires when deliberately exceeded
 - [ ] Langfuse traces show every tool call

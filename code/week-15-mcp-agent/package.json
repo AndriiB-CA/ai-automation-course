@@ -4,12 +4,13 @@
   "type": "module",
   "scripts": {
     "server": "tsx src/server.ts",
-    "agent": "tsx src/react-agent.ts"
+    "agent": "tsx src/react-agent.ts",
+    "check-provider": "tsx src/check-provider.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
     "@modelcontextprotocol/sdk": "^1.12.0",
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.4.2",
+    "openai": "^7.15.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

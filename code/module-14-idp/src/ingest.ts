@@ -38,7 +38,7 @@ export async function detectAndExtract(filePath: string): Promise<IngestResult> 
     }
 
     // Scanned PDF — fall back to vision using the raw bytes as base64.
-    // We send the PDF bytes directly; Claude's vision endpoint accepts PDF.
+    // We send the PDF bytes directly; vision-capable models accept PDF pages as images.
     const imageBase64 = buffer.toString("base64");
     return { imageBase64, imageMimeType: "application/pdf", method: "vision" };
   }

@@ -12,8 +12,9 @@
  */
 
 import type { Page } from "@playwright/test";
-import Anthropic from "@anthropic-ai/sdk";
+import type OpenAI from "openai";
 import { z } from "zod";
+import { createClient, estimateCost, getModel } from "./llm.js";
 
 // ---- Proposal schema (what the LLM returns) -------------------------------
 const HealProposal = z.object({
@@ -35,7 +36,8 @@ export interface HealRecord {
   proposal: HealProposal;
   screenshotPath?: string;
   timestamp: string;
-  cost_usd: number;
+  /** null when LLM_PRICE_*_PER_MTOK are unset — see PROVIDERS.md. */
+  cost_usd: number | null;
 }
 
 // ---- Config ---------------------------------------------------------------
@@ -49,12 +51,14 @@ interface HealConfig {
 
 // ---- The HealingLocator ---------------------------------------------------
 export class HealingLocator {
-  private anthropic: Anthropic;
+  private client: OpenAI;
   private readonly threshold: number;
   private readonly maxRetries: number;
+  /** Cost of the most recent heal proposal, for the audit record. */
+  private lastCostUsd: number | null = null;
 
   constructor(private page: Page, private config: HealConfig) {
-    this.anthropic = new Anthropic();
+    this.client = createClient();
     this.threshold = config.confidenceThreshold ?? 0.75;
     this.maxRetries = config.maxRetries ?? 1;
   }
@@ -126,21 +130,24 @@ export class HealingLocator {
     const screenshot = await this.page.screenshot({ fullPage: false, type: "png" });
     const base64Image = screenshot.toString("base64");
 
-    const tool = {
-      name: "propose_heal",
-      description: "Propose a new Playwright-compatible locator",
-      input_schema: {
-        type: "object" as const,
-        properties: {
-          suggestedSelector: { type: "string" },
-          selectorType: {
-            type: "string",
-            enum: ["role", "testid", "text", "css", "xpath"],
+    const tool: OpenAI.Chat.Completions.ChatCompletionTool = {
+      type: "function",
+      function: {
+        name: "propose_heal",
+        description: "Propose a new Playwright-compatible locator",
+        parameters: {
+          type: "object",
+          properties: {
+            suggestedSelector: { type: "string" },
+            selectorType: {
+              type: "string",
+              enum: ["role", "testid", "text", "css", "xpath"],
+            },
+            confidence: { type: "number", minimum: 0, maximum: 1 },
+            rationale: { type: "string" },
           },
-          confidence: { type: "number", minimum: 0, maximum: 1 },
-          rationale: { type: "string" },
+          required: ["suggestedSelector", "selectorType", "confidence", "rationale"],
         },
-        required: ["suggestedSelector", "selectorType", "confidence", "rationale"],
       },
     };
 
@@ -172,33 +179,38 @@ ${ariaSnapshot.slice(0, 4000)}
 
 Propose a new locator.`;
 
-    const msg = await this.anthropic.messages.create({
-      model: this.config.model ?? "claude-sonnet-5",
+    // The screenshot travels as a data: URI — the portable encoding for vision
+    // across OpenAI-compatible providers. If yours is text-only it returns a
+    // 400 here; drop the image part and heal from the ARIA snapshot alone,
+    // which works surprisingly well (see Module 5 on DOM vs vision).
+    const completion = await this.client.chat.completions.create({
+      model: this.config.model ?? getModel(),
       max_tokens: 600,
-      system: [
-        { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
-      ],
-      tools: [tool],
-      tool_choice: { type: "tool", name: "propose_heal" },
+      temperature: 0,
       messages: [
+        { role: "system", content: SYSTEM },
         {
           role: "user",
           content: [
             {
-              type: "image",
-              source: { type: "base64", media_type: "image/png", data: base64Image },
+              type: "image_url",
+              image_url: { url: `data:image/png;base64,${base64Image}` },
             },
             { type: "text", text: userText },
           ],
         },
       ],
+      tools: [tool],
+      tool_choice: { type: "function", function: { name: "propose_heal" } },
     });
 
-    const toolUse = msg.content.find((b) => b.type === "tool_use");
-    if (!toolUse || toolUse.type !== "tool_use") {
+    this.lastCostUsd = estimateCost(completion.usage).usd;
+
+    const call = completion.choices[0]?.message?.tool_calls?.[0];
+    if (!call || !("function" in call)) {
       throw new Error("[healer] LLM did not call propose_heal tool");
     }
-    return HealProposal.parse(toolUse.input);
+    return HealProposal.parse(JSON.parse(call.function.arguments));
   }
 
   private async recordProposal(error: string, proposal: HealProposal): Promise<void> {
@@ -212,7 +224,7 @@ Propose a new locator.`;
       originalError: error.slice(0, 500),
       proposal,
       timestamp: new Date().toISOString(),
-      cost_usd: 0, // TODO: compute from message.usage in proposeHeal
+      cost_usd: this.lastCostUsd,
     };
     const fname = path.join(
       dir,

@@ -2,7 +2,7 @@
  * Zod schemas for the TestSpec data model.
  *
  * Step  — a single user interaction or assertion within a test.
- * TestSpec — the full, Claude-generated test specification that is
+ * TestSpec — the full, model-generated test specification that is
  *            validated before rendering to .spec.ts source code.
  */
 

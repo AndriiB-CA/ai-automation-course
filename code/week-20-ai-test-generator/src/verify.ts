@@ -41,7 +41,7 @@ export function verify(
         cwd,
         // Merge stderr into stdout for a single output stream
         stdio: ["ignore", "pipe", "pipe"],
-        // Inherit env so PATH and ANTHROPIC_API_KEY are available
+        // Inherit env so PATH and the LLM_* variables are available
         env: process.env,
       },
     );

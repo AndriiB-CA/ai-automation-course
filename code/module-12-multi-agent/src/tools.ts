@@ -1,6 +1,6 @@
 import https from "node:https";
 import { z } from "zod";
-import type Anthropic from "@anthropic-ai/sdk";
+import type OpenAI from "openai";
 
 // ── In-memory note store ──────────────────────────────────────────────────────
 
@@ -98,40 +98,54 @@ export function handleSaveNote(raw: unknown): string {
   return `Note "${title}" saved (${notes.length} total notes in memory).`;
 }
 
-// ── Anthropic tool definitions ────────────────────────────────────────────────
+// ── Tool definitions (OpenAI-compatible function schema) ─────────────────────
+//
+// This shape is what every provider in PROVIDERS.md accepts. Note the schemas
+// here are for the *model*; the Zod schemas above are for *you*. The model's
+// copy steers behaviour, yours decides what you accept — never skip the second
+// one because the first one looks strict.
 
-export const TOOL_DEFINITIONS: Record<string, Anthropic.Tool> = {
+export const TOOL_DEFINITIONS: Record<string, OpenAI.Chat.Completions.ChatCompletionTool> = {
   web_search: {
-    name: "web_search",
-    description: "Search the web for information on a topic. Returns mock results.",
-    input_schema: {
-      type: "object" as const,
-      required: ["query"],
-      properties: {
-        query: { type: "string", description: "The search query." },
+    type: "function",
+    function: {
+      name: "web_search",
+      description: "Search the web for information on a topic. Returns mock results.",
+      parameters: {
+        type: "object",
+        required: ["query"],
+        properties: {
+          query: { type: "string", description: "The search query." },
+        },
       },
     },
   },
   web_fetch: {
-    name: "web_fetch",
-    description: "Fetch the text content of a URL.",
-    input_schema: {
-      type: "object" as const,
-      required: ["url"],
-      properties: {
-        url: { type: "string", description: "Fully-qualified URL to fetch." },
+    type: "function",
+    function: {
+      name: "web_fetch",
+      description: "Fetch the text content of a URL.",
+      parameters: {
+        type: "object",
+        required: ["url"],
+        properties: {
+          url: { type: "string", description: "Fully-qualified URL to fetch." },
+        },
       },
     },
   },
   save_note: {
-    name: "save_note",
-    description: "Save a note (title + content) to the in-memory notes store.",
-    input_schema: {
-      type: "object" as const,
-      required: ["title", "content"],
-      properties: {
-        title: { type: "string", description: "Short title for the note." },
-        content: { type: "string", description: "Full markdown content of the note." },
+    type: "function",
+    function: {
+      name: "save_note",
+      description: "Save a note (title + content) to the in-memory notes store.",
+      parameters: {
+        type: "object",
+        required: ["title", "content"],
+        properties: {
+          title: { type: "string", description: "Short title for the note." },
+          content: { type: "string", description: "Full markdown content of the note." },
+        },
       },
     },
   },

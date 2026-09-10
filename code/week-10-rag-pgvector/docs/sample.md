@@ -48,7 +48,7 @@ LIMIT 5;
 
 ## Embedding models
 
-Voyage AI's `voyage-3.5-lite` model produces 1024-dimensional embeddings
+A typical small embedding model produces 1024-dimensional embeddings
 optimised for retrieval tasks. Its small size keeps inference fast and
 API costs low, making it a good default for course projects.
 

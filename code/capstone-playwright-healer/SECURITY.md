@@ -31,7 +31,7 @@ production source, CI configuration).
 
 ## 2. DOM sanitisation
 
-When the healer captures page state to send to Claude, it:
+When the healer captures page state to send to the model, it:
 
 - Uses the **ARIA accessibility snapshot** (`page.locator("body").ariaSnapshot()`)
   rather than raw HTML. ARIA snapshots contain structural/semantic information
@@ -51,7 +51,7 @@ production URLs that handle real user data.
 
 ## 3. Rate limits and cost controls
 
-The healer calls the Anthropic API on every locator failure. To prevent
+The healer calls your LLM provider on every locator failure. To prevent
 runaway spend:
 
 - **Per-call cost** is logged after every LLM response (`computeCost()`).
@@ -67,7 +67,7 @@ runaway spend:
 
 ## 4. LLM output validation
 
-Every response from Claude is validated against a Zod schema before use:
+Every model response is validated against a Zod schema before use:
 
 - `HealProposalSchema` validates `suggestedSelector`, `confidence`, `selectorType`,
   and `rationale`. A response that fails validation causes the heal to abort

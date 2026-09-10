@@ -1,11 +1,14 @@
 /**
  * ReAct-style multi-tool research agent
  *
- * Loop: build messages → call Claude → execute tool_use blocks → feed results
+ * Loop: build messages → call the model → execute tool calls → feed results
  *       back → repeat until a final text answer or max 15 iterations.
  *
- * Budget cap: stops when estimated cost exceeds $0.50.
- *   Pricing (per million tokens): Sonnet $3 in / $15 out, Haiku $1 in / $5 out.
+ * Runs on any OpenAI-compatible provider. Set LLM_BASE_URL / LLM_API_KEY /
+ * LLM_MODEL (and optionally LLM_MODEL_SMALL) — see PROVIDERS.md.
+ *
+ * Budget cap: a token ceiling always applies; a USD ceiling applies as well
+ * once you've set LLM_PRICE_IN_PER_MTOK / LLM_PRICE_OUT_PER_MTOK.
  *
  * Usage:
  *   npm run agent
@@ -13,32 +16,52 @@
  */
 
 import "dotenv/config";
-import Anthropic from "@anthropic-ai/sdk";
+import type OpenAI from "openai";
 import { writeFileSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-
-const CHAT_MODEL = "claude-sonnet-5";
-const CHEAP_MODEL = "claude-haiku-4-5-20251001";
+import { createClient, estimateCost, explainError, getModel, getSmallModel } from "./llm.js";
 
 const MAX_ITERATIONS = 15;
-const BUDGET_CAP_USD = 0.5;
 
-const PRICING = {
-  [CHAT_MODEL]: { input: 2.0, output: 10.0 },
-  [CHEAP_MODEL]: { input: 1.0, output: 5.0 },
-} as const;
+/** Always-available ceiling: every provider reports token counts. */
+const TOKEN_CAP = 120_000;
+/** Extra ceiling, only enforceable once .env knows what tokens cost. */
+const BUDGET_CAP_USD = Number(process.env.BUDGET_CAP_USD) || 0.5;
 
 const NOTES_DIR = resolve(process.cwd(), "notes");
 
-const anthropic = new Anthropic();
+const client = createClient();
+const CHAT_MODEL = getModel();
+const CHEAP_MODEL = getSmallModel();
 
-interface TokenUsage { model: string; inputTokens: number; outputTokens: number; }
+let totalInputTokens = 0;
+let totalOutputTokens = 0;
 
-let totalCostUsd = 0;
+function trackUsage(usage: OpenAI.CompletionUsage | undefined): void {
+  totalInputTokens += usage?.prompt_tokens ?? 0;
+  totalOutputTokens += usage?.completion_tokens ?? 0;
+}
 
-function trackCost(usage: TokenUsage): void {
-  const prices = PRICING[usage.model as keyof typeof PRICING] ?? { input: 2, output: 10 };
-  totalCostUsd += (usage.inputTokens / 1_000_000) * prices.input + (usage.outputTokens / 1_000_000) * prices.output;
+function totalCostUsd(): number | null {
+  return estimateCost({
+    prompt_tokens: totalInputTokens,
+    completion_tokens: totalOutputTokens,
+  }).usd;
+}
+
+function spendLabel(): string {
+  const usd = totalCostUsd();
+  const tokens = (totalInputTokens + totalOutputTokens).toLocaleString();
+  return usd === null ? `${tokens} tok` : `$${usd.toFixed(4)} (${tokens} tok)`;
+}
+
+/** Returns a reason when a ceiling is hit, or null to keep going. */
+function capReached(): string | null {
+  const tokens = totalInputTokens + totalOutputTokens;
+  if (tokens >= TOKEN_CAP) return `token cap ${TOKEN_CAP.toLocaleString()} reached`;
+  const usd = totalCostUsd();
+  if (usd !== null && usd >= BUDGET_CAP_USD) return `budget cap $${BUDGET_CAP_USD} reached`;
+  return null;
 }
 
 function log(tag: "[think]" | "[act]" | "[observe]" | "[budget]" | "[done]", msg: string): void {
@@ -72,14 +95,15 @@ async function web_fetch(url: string): Promise<string> {
 }
 
 async function summarize(text: string, target_words: number): Promise<string> {
-  const response = await anthropic.messages.create({
+  // Note this uses the *small* model. Summarising is exactly the kind of
+  // narrow, high-volume step that doesn't need your best model — Module 7.
+  const response = await client.chat.completions.create({
     model: CHEAP_MODEL,
     max_tokens: Math.min(target_words * 2, 2048),
     messages: [{ role: "user", content: `Summarise the following text in approximately ${target_words} words. Be concise and factual.\n\n${text}` }],
   });
-  trackCost({ model: CHEAP_MODEL, inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens });
-  const block = response.content[0];
-  return block.type === "text" ? block.text : "";
+  trackUsage(response.usage);
+  return response.choices[0]?.message?.content ?? "";
 }
 
 function save_note(title: string, content: string): string {
@@ -116,12 +140,12 @@ async function dispatchTool(name: string, input: ToolInput): Promise<string> {
   }
 }
 
-const TOOL_DEFINITIONS: Anthropic.Tool[] = [
-  { name: "web_search", description: "Search the web for information.", input_schema: { type: "object" as const, properties: { query: { type: "string" } }, required: ["query"] } },
-  { name: "web_fetch", description: "Fetch URL contents as plain text.", input_schema: { type: "object" as const, properties: { url: { type: "string" } }, required: ["url"] } },
-  { name: "summarize", description: "Summarise text to a target word count.", input_schema: { type: "object" as const, properties: { text: { type: "string" }, target_words: { type: "number" } }, required: ["text"] } },
-  { name: "save_note", description: "Save a markdown note to ./notes/.", input_schema: { type: "object" as const, properties: { title: { type: "string" }, content: { type: "string" } }, required: ["title", "content"] } },
-  { name: "list_notes", description: "List saved notes.", input_schema: { type: "object" as const, properties: {} } },
+const TOOL_DEFINITIONS: OpenAI.Chat.Completions.ChatCompletionTool[] = [
+  { type: "function", function: { name: "web_search", description: "Search the web for information.", parameters: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } } },
+  { type: "function", function: { name: "web_fetch", description: "Fetch URL contents as plain text.", parameters: { type: "object", properties: { url: { type: "string" } }, required: ["url"] } } },
+  { type: "function", function: { name: "summarize", description: "Summarise text to a target word count.", parameters: { type: "object", properties: { text: { type: "string" }, target_words: { type: "number" } }, required: ["text"] } } },
+  { type: "function", function: { name: "save_note", description: "Save a markdown note to ./notes/.", parameters: { type: "object", properties: { title: { type: "string" }, content: { type: "string" } }, required: ["title", "content"] } } },
+  { type: "function", function: { name: "list_notes", description: "List saved notes.", parameters: { type: "object", properties: {} } } },
 ];
 
 const SYSTEM_PROMPT = `You are a precise research assistant with access to web search, web fetching, summarisation, and note-saving tools.
@@ -130,57 +154,77 @@ Follow the ReAct pattern: think before acting, call tools when needed, incorpora
 Rules: cite sources by URL; when saving a note include at least 5 source URLs; when done, stop calling tools.`;
 
 async function runAgent(task: string): Promise<void> {
-  console.log(`\n${"=".repeat(70)}\nTask: ${task}\n${"=".repeat(70)}\n`);
+  console.log(`\n${"=".repeat(70)}\nTask: ${task}`);
+  console.log(`Model: ${CHAT_MODEL}${CHEAP_MODEL !== CHAT_MODEL ? ` | small: ${CHEAP_MODEL}` : ""}`);
+  console.log(`${"=".repeat(70)}\n`);
 
-  const messages: Anthropic.MessageParam[] = [{ role: "user", content: task }];
+  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: task },
+  ];
 
   for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
-    if (totalCostUsd >= BUDGET_CAP_USD) {
-      log("[budget]", `Cap reached: $${totalCostUsd.toFixed(4)}. Stopping.`);
+    const cap = capReached();
+    if (cap) {
+      log("[budget]", `${cap}. Stopping.`);
       break;
     }
 
-    console.log(`\n--- Iteration ${iteration} / ${MAX_ITERATIONS} | Cost so far: $${totalCostUsd.toFixed(4)} ---`);
+    console.log(`\n--- Iteration ${iteration} / ${MAX_ITERATIONS} | Spent: ${spendLabel()} ---`);
 
-    const response = await anthropic.messages.create({
+    const response = await client.chat.completions.create({
       model: CHAT_MODEL,
       max_tokens: 4096,
-      system: SYSTEM_PROMPT,
-      tools: TOOL_DEFINITIONS,
       messages,
+      tools: TOOL_DEFINITIONS,
     });
 
-    trackCost({ model: CHAT_MODEL, inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens });
+    trackUsage(response.usage);
 
-    const toolUseBlocks: Anthropic.ToolUseBlock[] = [];
-    for (const block of response.content) {
-      if (block.type === "tool_use") toolUseBlocks.push(block);
-      else if (block.type === "text" && block.text.trim()) log("[think]", block.text.trim());
-    }
+    const message = response.choices[0]?.message;
+    if (!message) break;
 
-    if (toolUseBlocks.length === 0 && response.stop_reason === "end_turn") {
-      log("[done]", `Agent finished. Total cost: $${totalCostUsd.toFixed(4)}`);
+    if (message.content?.trim()) log("[think]", message.content.trim());
+
+    const toolCalls = message.tool_calls ?? [];
+    if (toolCalls.length === 0) {
+      log("[done]", `Agent finished. Total: ${spendLabel()}`);
       break;
     }
 
-    messages.push({ role: "assistant", content: response.content });
+    // Push the assistant turn verbatim: the tool_call ids inside it are what
+    // the tool messages below refer back to.
+    messages.push(message);
 
-    const toolResults: Anthropic.ToolResultBlockParam[] = [];
-    for (const toolCall of toolUseBlocks) {
-      log("[act]", `→ ${toolCall.name}(${JSON.stringify(toolCall.input)})`);
-      const result = await dispatchTool(toolCall.name, toolCall.input as ToolInput);
+    for (const toolCall of toolCalls) {
+      if (!("function" in toolCall)) continue;
+      const { name, arguments: argsJson } = toolCall.function;
+      log("[act]", `→ ${name}(${argsJson})`);
+
+      let result: string;
+      try {
+        result = await dispatchTool(name, JSON.parse(argsJson) as ToolInput);
+      } catch (err) {
+        result = `tool error: ${err instanceof Error ? err.message : String(err)}`;
+      }
+
       const truncated = result.length > 2_000 ? result.slice(0, 2_000) + "\n…[truncated]" : result;
       log("[observe]", truncated);
-      toolResults.push({ type: "tool_result", tool_use_id: toolCall.id, content: result });
-      if (totalCostUsd >= BUDGET_CAP_USD) { log("[budget]", `Cap hit: $${totalCostUsd.toFixed(4)}.`); break; }
+
+      // Every tool call must get a reply, even after a cap is hit — a dangling
+      // tool_call id makes the next request malformed. Break *after* the loop.
+      messages.push({ role: "tool", tool_call_id: toolCall.id, content: truncated });
     }
 
-    messages.push({ role: "user", content: toolResults });
-    if (totalCostUsd >= BUDGET_CAP_USD) break;
+    const capAfterTools = capReached();
+    if (capAfterTools) {
+      log("[budget]", `${capAfterTools}.`);
+      break;
+    }
   }
 
-  console.log(`\n${"=".repeat(70)}\nAgent stopped. Total cost: $${totalCostUsd.toFixed(4)}\n${"=".repeat(70)}\n`);
+  console.log(`\n${"=".repeat(70)}\nAgent stopped. Total: ${spendLabel()}\n${"=".repeat(70)}\n`);
 }
 
 const task = process.argv.slice(2).join(" ") || "Research the current state of MCP adoption in 2026 and save a 500-word note with 5 sources.";
-runAgent(task).catch((err) => { console.error("Agent error:", err); process.exit(1); });
+runAgent(task).catch((err) => { console.error("Agent error:", explainError(err)); process.exit(1); });
