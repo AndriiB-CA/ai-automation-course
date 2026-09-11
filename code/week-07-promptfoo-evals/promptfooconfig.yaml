@@ -1,6 +1,17 @@
 # Promptfoo eval config for the PR Review Bot
 # Run with: promptfoo eval
 # Docs: https://www.promptfoo.dev/docs/configuration/guide/
+#
+# ── Provider setup (any OpenAI-compatible provider) ────────────────────────
+# promptfoo's `openai:` provider reads these two environment variables, so
+# pointing the whole suite at a different vendor is two exports:
+#
+#   export OPENAI_BASE_URL=https://api.groq.com/openai/v1   # or x.ai, ollama, ...
+#   export OPENAI_API_KEY=your-key-for-that-provider
+#
+# Then replace the two model IDs below with current ones from your provider.
+# They are placeholders on purpose — see PROVIDERS.md for why this repo pins
+# no model IDs anywhere.
 
 description: "PR Review Bot — eval suite"
 
@@ -8,16 +19,18 @@ description: "PR Review Bot — eval suite"
 prompts:
   - file://prompts/pr-reviewer.txt
 
-# The providers to test against
-# Multiple providers = auto-compare quality/cost
+# The providers to test against.
+# Two rows = an automatic quality/cost comparison, which is the entire point of
+# running evals. Use a mid-tier and a small model from the same provider, or the
+# same tier from two different providers — both comparisons are worth doing.
 providers:
-  - id: anthropic:messages:claude-sonnet-5
-    label: sonnet
+  - id: openai:chat:YOUR_MODEL_ID          # ← e.g. the model in your LLM_MODEL
+    label: main
     config:
       max_tokens: 800
       temperature: 0.2
-  - id: anthropic:messages:claude-haiku-4-5-20251001
-    label: haiku
+  - id: openai:chat:YOUR_SMALL_MODEL_ID    # ← e.g. the model in LLM_MODEL_SMALL
+    label: small
     config:
       max_tokens: 800
       temperature: 0.2
@@ -66,7 +79,7 @@ tests:
         value: |
           Response must flag SQL injection. Severity must be 'high' or 'critical'.
           Must mention parameterized queries or prepared statements as the fix.
-        provider: anthropic:messages:claude-opus-5
+        provider: openai:chat:YOUR_JUDGE_MODEL_ID   # ← use your strongest model
 
   - description: "Hardcoded secret"
     vars:
@@ -78,7 +91,7 @@ tests:
         value: ["secret", "credential", "hardcoded", "environment"]
       - type: llm-rubric
         value: "Must flag as critical severity. Must recommend env var or secret manager."
-        provider: anthropic:messages:claude-opus-5
+        provider: openai:chat:YOUR_JUDGE_MODEL_ID   # ← use your strongest model
 
   - description: "XSS via innerHTML"
     vars:
@@ -167,7 +180,7 @@ tests:
     assert:
       - type: llm-rubric
         value: "Response should identify the off-by-one error (using <= instead of <)"
-        provider: anthropic:messages:claude-opus-5
+        provider: openai:chat:YOUR_JUDGE_MODEL_ID   # ← use your strongest model
 
   - description: "Race condition"
     vars:
@@ -180,7 +193,7 @@ tests:
     assert:
       - type: llm-rubric
         value: "Response should identify the race condition or concurrency issue"
-        provider: anthropic:messages:claude-opus-5
+        provider: openai:chat:YOUR_JUDGE_MODEL_ID   # ← use your strongest model
 
   # ——————————————————————————————
   # Global assertions (applied to every test)

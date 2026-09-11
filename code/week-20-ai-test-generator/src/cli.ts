@@ -7,7 +7,7 @@
  * Steps:
  *   1. Launch headless Chromium, navigate to URL
  *   2. Capture accessibility snapshot (a11y tree)
- *   3. Call Claude to generate a TestSpec (with cached system prompt)
+ *   3. Call the configured model to generate a TestSpec
  *   4. Render the TestSpec to a .spec.ts source string
  *   5. Write the file to --out (default: tests/generated.spec.ts)
  *   6. Run the spec with `npx playwright test`
@@ -28,7 +28,7 @@ import { heal } from "./heal.js";
 
 program
   .name("ai-testgen")
-  .description("Generate a Playwright spec for any URL using Claude")
+  .description("Generate a Playwright spec for any URL using an LLM")
   .version("0.1.0")
   .argument("<url>", "The URL to generate a test for")
   .option("--out <path>", "Output path for the .spec.ts file", "tests/generated.spec.ts")
@@ -40,8 +40,8 @@ const opts = program.opts<{ out: string; task?: string }>();
 const outPath = resolve(process.cwd(), opts.out);
 
 async function main(): Promise<void> {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.error("Error: ANTHROPIC_API_KEY is not set.");
+  if (!process.env.LLM_BASE_URL || !process.env.LLM_MODEL) {
+    console.error("Error: LLM_BASE_URL and LLM_MODEL are not set. See PROVIDERS.md.");
     console.error("Copy .env.example → .env and add your key.");
     process.exit(1);
   }
@@ -59,17 +59,20 @@ async function main(): Promise<void> {
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
     await page.waitForTimeout(1500);
-    const snapshotObj = await page.accessibility.snapshot();
-    a11ySnapshot = snapshotObj
-      ? JSON.stringify(snapshotObj, null, 2)
+    // ariaSnapshot() returns the accessibility tree as YAML. It replaced the
+    // removed page.accessibility API, and the YAML happens to be far cheaper
+    // in tokens than the old JSON tree — the same information at ~half the cost.
+    const snapshot = await page.locator("body").ariaSnapshot();
+    a11ySnapshot = snapshot?.trim()
+      ? snapshot
       : "(empty — page may be fully JS-rendered or behind auth)";
   } finally {
     await browser.close();
   }
 
-  console.log("2/4  Calling Claude to generate the test spec…");
+  console.log("2/4  Calling the model to generate the test spec…");
 
-  const totalUsage: UsageStats = { inputTokens: 0, outputTokens: 0, cacheWriteTokens: 0, cacheReadTokens: 0, estimatedCostUSD: 0 };
+  const totalUsage: UsageStats = { inputTokens: 0, outputTokens: 0, estimatedCostUSD: null };
 
   const { spec, usage: genUsage } = await generate({ url, a11ySnapshot, task: opts.task });
   addUsage(totalUsage, genUsage);
@@ -116,18 +119,22 @@ async function main(): Promise<void> {
 function addUsage(acc: UsageStats, delta: UsageStats): void {
   acc.inputTokens += delta.inputTokens;
   acc.outputTokens += delta.outputTokens;
-  acc.cacheWriteTokens += delta.cacheWriteTokens;
-  acc.cacheReadTokens += delta.cacheReadTokens;
-  acc.estimatedCostUSD += delta.estimatedCostUSD;
+  // Cost is null until .env carries per-token prices. Keep it null rather than
+  // coercing to 0, so an unpriced run reports "unknown" instead of "free".
+  if (delta.estimatedCostUSD !== null) {
+    acc.estimatedCostUSD = (acc.estimatedCostUSD ?? 0) + delta.estimatedCostUSD;
+  }
 }
 
 function printCostSummary(usage: UsageStats): void {
   console.log("── Cost summary ───────────────────────────────────────────────");
   console.log(`   Input tokens:       ${usage.inputTokens.toLocaleString()}`);
-  console.log(`   Cache writes:       ${usage.cacheWriteTokens.toLocaleString()}`);
-  console.log(`   Cache reads:        ${usage.cacheReadTokens.toLocaleString()}`);
   console.log(`   Output tokens:      ${usage.outputTokens.toLocaleString()}`);
-  console.log(`   Estimated cost:     $${usage.estimatedCostUSD.toFixed(4)} USD`);
+  console.log(
+    usage.estimatedCostUSD === null
+      ? "   Estimated cost:     unknown — set LLM_PRICE_IN_PER_MTOK / LLM_PRICE_OUT_PER_MTOK"
+      : `   Estimated cost:     $${usage.estimatedCostUSD.toFixed(4)} USD`,
+  );
   console.log("─────────────────────────────────────────────────────────────\n");
 }
 

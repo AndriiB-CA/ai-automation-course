@@ -14,7 +14,7 @@ Your job in this module: combine what you already know (Playwright, waits, trace
 
 ## Learning objectives
 
-- Wire Playwright to Claude so an LLM controls the browser
+- Wire Playwright to an LLM so a model controls the browser
 - Compare selector-based automation vs vision-based (screenshot + coordinates)
 - Ship a browser agent in Docker that runs at scale with retries and observability
 - Understand the security model: what a malicious page can do to your agent
@@ -25,17 +25,17 @@ Your job in this module: combine what you already know (Playwright, waits, trace
 
 ### Two architectural patterns
 
-**Pattern A: Claude generates Playwright code**
+**Pattern A: the model generates Playwright code**
 - You describe the task in English
-- Claude outputs a `.spec.ts` file
+- The model outputs a `.spec.ts` file
 - You (or CI) run it
 - Pros: fast, deterministic replay, fits existing QA workflows
-- Cons: Claude's generated code can be wrong in subtle ways
+- Cons: generated code can be wrong in subtle ways
 
-**Pattern B: Claude drives Playwright live, step by step**
-- Claude calls tools (`click`, `type`, `wait_for`, `screenshot`) via tool use
+**Pattern B: the model drives Playwright live, step by step**
+- The model calls tools (`click`, `type`, `wait_for`, `screenshot`) via tool use
 - Tool implementations call Playwright under the hood
-- Claude sees state (DOM snippet, screenshot) after each action
+- The model sees state (DOM snippet, screenshot) after each action
 - Pros: adapts to UI changes on the fly
 - Cons: slower, more expensive, less reproducible
 
@@ -45,7 +45,7 @@ Week 17 focuses on **Pattern B**. You'll build Pattern A in Module 6.
 - **Stagehand** (Browserbase) — TypeScript-first, DOM-driven AI augmentation on Playwright. Cleanest abstraction for this pattern.
 - **Browser Use** — 50k+ GitHub stars, fastest-growing AI browser project in 2025–26. Self-hosted, works with any LLM. Worth knowing even if you stay in TS.
 - **Playwright Agents** (v1.56+, Oct 2025) — natural-language test generation and self-healing built directly into Playwright. If you're already using Playwright, start here.
-- **Anthropic Computer Use** — vision-based, needs a VM. Use when DOM access is unavailable.
+- **Computer-use / OS-control agents** — vision-based, need a sandboxed VM. Several vendors now ship one. Use when DOM access is unavailable.
 
 **Architectural rule of thumb (2026 data):** DOM-driven stacks (Stagehand, Playwright Agents) are 12–17 percentage points more reliable than pure vision stacks for common form/navigation tasks. Use DOM for the predictable 80%, vision for the stubborn 20%.
 
@@ -54,10 +54,10 @@ Week 17 focuses on **Pattern B**. You'll build Pattern A in Module 6.
 - [Browserbase blog — Stagehand design](https://www.browserbase.com/blog/introducing-stagehand)
 - [Playwright Agents — official docs](https://playwright.dev/docs/playwright-agents) (v1.56+)
 - [Browser Use — GitHub](https://github.com/browser-use/browser-use)
-- [Anthropic Computer Use overview](https://www.anthropic.com/news/3-5-models-and-computer-use)
+- [Computer use — one vendor's implementation](https://www.anthropic.com/news/3-5-models-and-computer-use), for the architecture
 
 ### Video (45 min)
-- 🎥 [Building a browser agent with Claude — live demo](https://www.youtube.com/watch?v=vh9tDq1EZBU)
+- 🎥 [Building a browser agent — live demo](https://www.youtube.com/watch?v=vh9tDq1EZBU)
 
 ### Weekend project (4 hours)
 
@@ -79,7 +79,7 @@ Starter in [`/code/week-18-browser-agent/stagehand-starter.ts`](../code/week-18-
 
 ### Key design decisions you'll make
 - How do you represent the page to the LLM? Full HTML (too long), accessibility tree (compact, great), screenshot (vision, slow)?
-- How do you give Claude the ability to refer to elements? DOM IDs (`stagehand-id-42`), coordinates, or semantic descriptions?
+- How do you give the model a way to refer to elements? DOM IDs (`stagehand-id-42`), coordinates, or semantic descriptions?
 - How do you verify the action worked? Next page state? Explicit LLM check? Both?
 
 ### 🧪 QA bridge
@@ -102,7 +102,7 @@ The action verification step is your **implicit assertion**. You've done this in
 
 ### The third architecture — computer use (OS-level control)
 
-Your Week 17 agent controls a *browser* through Playwright's API. Your vision variant still executes through Playwright — it just *perceives* through screenshots. **Computer use** goes one level lower: Claude's [computer-use tool](https://docs.claude.com/en/docs/agents-and-tools/computer-use) perceives via screenshots *and* acts via OS-level mouse/keyboard events on a whole desktop, usually inside a sandboxed VM or container. No DOM, no selectors, no browser API at all.
+Your Week 17 agent controls a *browser* through Playwright's API. Your vision variant still executes through Playwright — it just *perceives* through screenshots. **Computer use** goes one level lower: a computer-use tool perceives via screenshots *and* acts via OS-level mouse/keyboard events on a whole desktop, usually inside a sandboxed VM or container. No DOM, no selectors, no browser API at all. Several vendors ship one ([Anthropic](https://docs.claude.com/en/docs/agents-and-tools/computer-use), [OpenAI](https://platform.openai.com/docs/guides/tools-computer-use), among others); the shapes differ, so this is firmly provider-native territory.
 
 Where the three sit:
 
@@ -117,16 +117,27 @@ The decision rule extends naturally: **DOM for the predictable 80%, vision for t
 🛡️ Note the security gradient too: a computer-use agent holds *the whole machine* — every pillar of Constrained Autonomy (Module 12) matters more. Run it in a disposable VM, never on your own desktop session, and treat everything it reads on screen as untrusted input.
 
 ### Reading (90 min)
-- [Claude vision capabilities](https://docs.claude.com/en/docs/build-with-claude/vision)
-- [Anthropic Computer Use: Reference implementation](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo)
+- Your provider's vision docs — check first that the model you configured **accepts images at all**; many small and open-weight models don't
+- [Computer-use reference implementation](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo) — one vendor's, but the container/loop design is the transferable part
 - [Browser-Use (Python reference)](https://github.com/browser-use/browser-use) — skim their vision loop
+
+**How images travel.** In the OpenAI-compatible shape a screenshot is a content part on the user message:
+
+```ts
+{ role: "user", content: [
+    { type: "image_url", image_url: { url: `data:image/png;base64,${b64}` } },
+    { type: "text", text: "Click the checkout button." },
+] }
+```
+
+A text-only model returns a `400` here rather than silently dropping the image — a good failure, and one worth confirming before you build the loop around it.
 
 ### Weekend project (4 hours)
 
 Take your **Week 17 agent** and build a vision-only variant:
 - Use Playwright to take full-page screenshots
-- Send screenshot to Claude with the user's task
-- Claude returns: action to take (`{type: "click", x: 400, y: 300}` or `{type: "type", text: "hello"}`)
+- Send the screenshot to a vision-capable model with the user's task
+- The model returns the action to take (`{type: "click", x: 400, y: 300}` or `{type: "type", text: "hello"}`)
 - Playwright executes the action via coordinates
 - Loop
 
@@ -140,7 +151,7 @@ Take your **Week 17 agent** and build a vision-only variant:
 
 Write up findings. This is excellent blog post material. 🎯
 
-**Stretch (2–3 hours):** Run the same 5 tasks through the [Anthropic computer-use reference container](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo) and add a third column to your table. You should see the reliability/cost gradient from the architecture comparison above reproduce in your own data — DOM > vision-via-Playwright > computer use for web tasks. If it doesn't, that's even better blog material: figure out why.
+**Stretch (2–3 hours):** Run the same 5 tasks through a [computer-use reference container](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo) and add a third column to your table. You should see the reliability/cost gradient from the architecture comparison above reproduce in your own data — DOM > vision-via-Playwright > computer use for web tasks. If it doesn't, that's even better blog material: figure out why.
 
 ### 🛡️ Security callout — read this twice
 A browser agent reads arbitrary web pages. Those pages can contain instructions addressed to the agent itself. Real example:

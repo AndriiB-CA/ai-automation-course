@@ -4,32 +4,37 @@
  * A CLI tool that fetches a URL, extracts readable text,
  * and streams a 3-bullet summary to stdout.
  *
+ * Works with any provider — set LLM_BASE_URL / LLM_API_KEY / LLM_MODEL first.
+ * See PROVIDERS.md at the repo root.
+ *
  * Usage:
- *   export ANTHROPIC_API_KEY=sk-ant-...
+ *   cp .env.example .env && $EDITOR .env
  *   npx tsx summarize.ts https://example.com
  *   npx tsx summarize.ts https://example.com --tone=snarky
  *
  * Focus concepts:
- *   - Messages API basics
- *   - System vs user prompts
+ *   - The Chat Completions request shape (the one every provider speaks)
+ *   - System vs user messages
  *   - Streaming responses
  *   - Cost tracking
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import "dotenv/config";
 import { JSDOM } from "jsdom";
 import process from "node:process";
+import { createClient, explainError, formatUsage, getModel } from "./llm.js";
 
 // ---- Parse args -----------------------------------------------------------
 const args = process.argv.slice(2);
-const url = args.find((a) => !a.startsWith("--"));
+const urlArg = args.find((a) => !a.startsWith("--"));
 const toneArg = args.find((a) => a.startsWith("--tone="))?.split("=")[1];
 const tone = (toneArg as "formal" | "casual" | "snarky") ?? "casual";
 
-if (!url) {
+if (!urlArg) {
   console.error("Usage: summarize <url> [--tone=formal|casual|snarky]");
   process.exit(1);
 }
+const url: string = urlArg;
 
 // ---- Fetch + extract text -------------------------------------------------
 async function fetchReadableText(target: string): Promise<string> {
@@ -65,31 +70,26 @@ Rules:
 
 Tone for today: ${TONE_INSTRUCTIONS[tone]}`;
 
-// ---- Cost tracking --------------------------------------------------------
-const PRICES_PER_MTOK = {
-  "claude-sonnet-5": { input: 2.0, output: 10.0 },
-  "claude-haiku-4-5-20251001": { input: 1.0, output: 5.0 },
-};
-
-function formatUSD(n: number): string {
-  return `$${n.toFixed(6)}`;
-}
-
 // ---- Main -----------------------------------------------------------------
 async function main() {
   console.error(`→ Fetching ${url}...`);
   const pageText = await fetchReadableText(url);
   console.error(`→ Extracted ${pageText.length} chars. Summarizing...\n`);
 
-  const client = new Anthropic();
-  const model = "claude-sonnet-5";
+  const client = createClient();
+  const model = getModel();
 
-  // Streaming: print tokens as they arrive
-  const stream = client.messages.stream({
+  // Streaming: print tokens as they arrive.
+  // `stream_options.include_usage` asks for a final chunk carrying token counts.
+  // Not every provider honours it — hence the null check further down. That is
+  // your first taste of "OpenAI-compatible" meaning "mostly".
+  const stream = await client.chat.completions.create({
     model,
     max_tokens: 400,
-    system: SYSTEM_PROMPT,
+    stream: true,
+    stream_options: { include_usage: true },
     messages: [
+      { role: "system", content: SYSTEM_PROMPT },
       {
         role: "user",
         content: `<page_url>${url}</page_url>\n\n<page_text>\n${pageText}\n</page_text>\n\nSummarize.`,
@@ -97,26 +97,24 @@ async function main() {
     ],
   });
 
-  for await (const event of stream) {
-    if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-      process.stdout.write(event.delta.text);
-    }
+  let usage;
+  for await (const chunk of stream) {
+    const delta = chunk.choices[0]?.delta?.content;
+    if (delta) process.stdout.write(delta);
+    if (chunk.usage) usage = chunk.usage;
   }
   console.log("\n");
 
-  // Final usage stats
-  const finalMsg = await stream.finalMessage();
-  const prices = PRICES_PER_MTOK[model as keyof typeof PRICES_PER_MTOK];
-  const inputCost = (finalMsg.usage.input_tokens / 1_000_000) * prices.input;
-  const outputCost = (finalMsg.usage.output_tokens / 1_000_000) * prices.output;
-
   console.error(`---`);
-  console.error(`Model: ${model}`);
-  console.error(`Tokens: in=${finalMsg.usage.input_tokens} out=${finalMsg.usage.output_tokens}`);
-  console.error(`Cost: ${formatUSD(inputCost + outputCost)}`);
+  if (usage) {
+    console.error(formatUsage(model, usage));
+  } else {
+    console.error(`${model} · this provider didn't report token usage on a stream.`);
+    console.error(`  Re-run without streaming if you need exact counts.`);
+  }
 }
 
 main().catch((err) => {
-  console.error("✗ Failed:", err.message);
+  console.error("✗ Failed:", explainError(err));
   process.exit(1);
 });

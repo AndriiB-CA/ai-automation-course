@@ -32,7 +32,10 @@ jobs:
 
       - name: Run evals
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Any OpenAI-compatible provider. Set both repo secrets to match:
+          # LLM_BASE_URL is your provider's endpoint, LLM_API_KEY its key.
+          OPENAI_BASE_URL: ${{ secrets.LLM_BASE_URL }}
+          OPENAI_API_KEY: ${{ secrets.LLM_API_KEY }}
         run: |
           promptfoo eval \
             --config promptfooconfig.yaml \

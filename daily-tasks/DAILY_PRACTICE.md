@@ -36,7 +36,7 @@ Each weekday has a micro-task drawn from your current module. **Rotate through t
 - Open your most recent project. Rewrite one prompt to be 20% shorter. Run it. Did quality drop?
 
 **Thu — Explore (15 min)**
-- Browse the [Anthropic cookbook](https://github.com/anthropics/anthropic-cookbook). Find one example you haven't seen. Read it.
+- Browse a cookbook — [OpenAI](https://cookbook.openai.com/), [Anthropic](https://github.com/anthropics/anthropic-cookbook), [Google](https://github.com/google-gemini/cookbook). Find one example you haven't seen. Read it.
 
 **Fri — Review (15 min)**
 - Diff your current prompts vs the ones you wrote two weeks ago. What changed?
@@ -46,7 +46,7 @@ Each weekday has a micro-task drawn from your current module. **Rotate through t
 ## 🟩 Module 2 — Prompt Engineering + Evals (Weeks 5–8)
 
 **Mon — Read**
-- One chapter from Anthropic's [Prompt Engineering Interactive Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial)
+- One chapter from the [Prompt Engineering Interactive Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial) — run it against your own provider
 
 **Tue — Experiment**
 - Add one new assertion type to an existing eval suite. Run it.
@@ -84,7 +84,7 @@ Each weekday has a micro-task drawn from your current module. **Rotate through t
 ## 🟧 Module 4 — Agents & MCP (Weeks 13–16)
 
 **Mon — Read**
-- One [Anthropic research post](https://www.anthropic.com/research) or one [MCP blog post](https://modelcontextprotocol.io/blog)
+- One frontier-lab research post ([Anthropic](https://www.anthropic.com/research), [OpenAI](https://openai.com/research/), [DeepMind](https://deepmind.google/research/)) or one [MCP blog post](https://modelcontextprotocol.io/blog)
 
 **Tue — Experiment**
 - Run your agent with the cheapest model (Haiku). Where does quality break?
@@ -141,7 +141,7 @@ Each weekday has a micro-task drawn from your current module. **Rotate through t
 ## 🟥 Module 7 — Production (Week 22)
 
 **Mon — Check dashboards**
-- Anthropic usage. Langfuse costs. Anything unexpected?
+- Your provider's usage dashboard. Langfuse costs. Anything unexpected?
 
 **Tue — Experiment**
 - Enable prompt caching on one more prompt. Measure savings over 10 calls.

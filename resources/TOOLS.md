@@ -8,12 +8,12 @@
 
 | Tool | What it is | Cost | When you need it |
 |---|---|---|---|
-| **Anthropic API** | Claude access | Pay-per-use, ~$20 lasts weeks | From Week 2 onward |
-| **OpenAI API** | GPT-5.x access for comparison | Pay-per-use | Optional but useful |
+| **An LLM provider** | Any OpenAI-compatible endpoint — see [PROVIDERS.md](../PROVIDERS.md) | Free tier (Groq, Google) or ~$20 lasts weeks | From Week 2 onward |
+| **A second provider** | For eval comparisons — a free tier is enough | Free | From Week 7 |
 | **Node.js 20+** | JavaScript runtime | Free | Daily |
 | **uv** | Modern Python package manager | Free | Module 3+ |
 | **Docker** | Containers | Free | Module 3+ |
-| **VS Code + Claude Code ext** | Editor | Free | Daily |
+| **VS Code + an AI coding agent** | Editor — see [Module 16](../modules/16-ai-coding-agents.md) | Free tier available | Daily |
 | **GitHub + GitHub Actions** | Repos + CI | Free for public repos | From Week 7 |
 
 ---
@@ -22,13 +22,15 @@
 
 | SDK | Best for | My take |
 |---|---|---|
-| `@anthropic-ai/sdk` | Claude direct | Most explicit. Start here. |
-| `openai` | GPT direct | Same shape as Anthropic, easy swap |
-| `ai` (Vercel AI SDK) | Provider-agnostic, streaming-first | Great for Next.js projects |
+| `openai` | **Any** OpenAI-compatible provider via `baseURL` | What this course uses. One dependency, every vendor. |
+| Vendor-native SDKs (`@anthropic-ai/sdk`, `@google/genai`, …) | That vendor's newest features first | Prompt caching, native structured outputs, reasoning controls. Reach for one deliberately, behind a single function. |
+| `ai` (Vercel AI SDK) | Provider-agnostic with typed provider adapters | Nicer abstractions than raw compat; great for Next.js |
 | `@mastra/core` | Agent framework | TypeScript-native, MCP-aware, 2026-ready |
 | `langchain` | Everything | Heavy, but huge ecosystem if you need it |
 
-**Recommendation for course:** Learn the raw Anthropic SDK first (Modules 1–2). Move to Vercel AI SDK or Mastra when building apps (Modules 3–5).
+**Recommendation for course:** the `openai` SDK pointed at whichever provider you chose (Modules 1–2). Move to the Vercel AI SDK or Mastra when building apps (Modules 3–5).
+
+**On compatibility:** "OpenAI-compatible" means the request *shape* matches, not that every field is honoured. `tools` is portable; `response_format`, `strict`, `seed` and reasoning controls are not. The matrix in [PROVIDERS.md](../PROVIDERS.md) says which is which.
 
 ---
 
@@ -67,11 +69,14 @@
 
 | Model | Notes |
 |---|---|
-| **voyage-3-large / voyage-3.5-lite** | 2026 MTEB leaders for accuracy/cost; Anthropic-recommended |
-| **text-embedding-3-large** (OpenAI) | Solid, widely available alternative |
+| **OpenAI `text-embedding-3-*`** | The widely-available default; served by the compat endpoint |
+| **Voyage** | Consistently near the top of MTEB for accuracy/cost |
 | **Cohere embed v3** | Strong multilingual + native reranking pairing |
+| **Open-weight via Ollama** | Free, local, private. Good enough for most retrieval, and the only option if your data can't leave the building |
 
-**Recommendation:** `voyage-3.5-lite` for cost-sensitive workloads, `voyage-3-large` when retrieval quality is the bottleneck.
+**Recommendation:** check the [MTEB leaderboard](https://huggingface.co/spaces/mteb/leaderboard) rather than trusting any list's ranking — this one included, it ages fast.
+
+⚠️ **Embeddings are a separate endpoint from chat, and less widely served.** Several good chat providers (xAI, Groq) don't offer them at all, so mixing vendors here is normal — that's why Module 3 uses its own `EMBEDDING_*` variables. And every model has its own vector width and its own vector space: changing models means re-creating the column and re-ingesting, never a partial migration.
 
 ---
 
@@ -81,8 +86,8 @@
 |---|---|---|---|
 | **Vercel AI SDK** | TS | Low-level, explicit | Start here — teaches you patterns |
 | **Mastra v1.0** | TS | Medium, MCP-native | Best fit for 2026 TS-first building (used by PayPal/Adobe/Docker) |
-| **OpenAI Agents SDK** | TS / Python | Provider-agnostic | Handoffs, guardrails, tracing built in — works with Claude too |
-| **Claude Agent SDK** | TS / Python | Anthropic-native | Same engine that powers Claude Code; best for Claude-only pipelines |
+| **OpenAI Agents SDK** | TS / Python | Provider-agnostic | Handoffs, guardrails, tracing built in — accepts any compatible base URL |
+| **Vendor-native agent SDKs** | TS / Python | Single-vendor | Newest agent features first, orchestration-layer lock-in in exchange |
 | **LangGraph.js** | TS | Higher-level, graph-based | Powerful but steep learning |
 | **LangChain.js** | TS | Batteries-included | Massive but opinionated |
 | **CrewAI** | Python | Multi-agent roles | Python-only, good for multi-agent exploration |
@@ -100,7 +105,7 @@
 | **Playwright Agents** | NL test-gen + self-healing built into Playwright (v1.56+) | If you already use Playwright, start here |
 | **Stagehand** | LLM-driven wrapper over Playwright | Week 17's starting point |
 | **Browser-Use** | Python, LLM-first | Reference reading |
-| **Anthropic Computer Use** | Vision + coordinates | When selectors fail entirely |
+| **Computer-use agents** | Vision + OS-level coordinates | When there is no DOM at all — desktop apps, Citrix, legacy ERP |
 | **Browserbase** | Hosted, headless, sandboxed | Production scale |
 
 **Recommendation:** Playwright + Stagehand in dev. Move to Browserbase when you need scale or anti-bot resilience.
@@ -150,14 +155,14 @@
 ## CLI helpers worth installing
 
 ```bash
-# Anthropic CLI — poke at the API from your shell
-npm install -g @anthropic-ai/sdk
-
 # Promptfoo — evals as a binary
 npm install -g promptfoo
 
-# Claude Code — agent in your terminal
-npm install -g @anthropic-ai/claude-code
+# An AI coding agent in your terminal — pick one (Module 16)
+npm install -g @anthropic-ai/claude-code    # or @openai/codex, or use Cursor/Windsurf
+
+# Ollama — run models locally, free and offline
+curl -fsSL https://ollama.com/install.sh | sh
 
 # uv — faster pip
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -182,9 +187,10 @@ brew install jq yq
 
 ## Reference + learning
 
-- **[Anthropic cookbook](https://github.com/anthropics/anthropic-cookbook)** — definitive examples
-- **[Anthropic API docs](https://docs.claude.com/)** — your daily reference
-- **[OpenAI cookbook](https://cookbook.openai.com/)** — GPT patterns
+- **Your provider's own docs** — your daily reference, and the only copy that stays current
+- **[OpenAI cookbook](https://cookbook.openai.com/)** — patterns for the API shape this course uses
+- **[Anthropic cookbook](https://github.com/anthropics/anthropic-cookbook)** — excellent examples; the prompting craft transfers even if the SDK calls don't
+- **[Google Gemini cookbook](https://github.com/google-gemini/cookbook)** — same idea, third perspective
 - **[Prompt Engineering Guide](https://www.promptingguide.ai/)** — community knowledge base
 - **[RAG Techniques](https://github.com/NirDiamant/RAG_Techniques)** — catalog of RAG approaches
 

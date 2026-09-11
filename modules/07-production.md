@@ -20,30 +20,46 @@ Prototypes are fun. Production bills are not. The difference between "cool demo"
 
 ## Reading (3 hours, front-loaded)
 
-1. ⭐ [Anthropic — Prompt Caching](https://docs.claude.com/en/docs/build-with-claude/prompt-caching) — read in full
-2. [Anthropic — Message Batches API](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+1. ⭐ **Your provider's prompt-caching docs** — read in full. Every major vendor has this feature; the shapes differ ([Anthropic](https://docs.claude.com/en/docs/build-with-claude/prompt-caching) uses explicit `cache_control` markers, [OpenAI](https://platform.openai.com/docs/guides/prompt-caching) caches automatically on long prefixes, others vary). Read one other vendor's page too, so you can tell the concept from the API.
+2. **Your provider's batch API docs** — the ~50% discount for non-urgent work is near-universal; the endpoint is not.
 3. [Caching LLM API responses — Pinecone](https://www.pinecone.io/learn/series/vector-databases-in-production-for-busy-engineers/llm-caching/)
 4. Blog: [How we reduced our OpenAI costs by 50% — Pulse AI](https://www.pulseapi.com/blog/reducing-llm-costs)
 
 ## Video (30 min)
-- 🎥 [Prompt caching deep dive — Anthropic](https://www.youtube.com/watch?v=TBtojJ5qlzA)
+- 🎥 [Prompt caching deep dive](https://www.youtube.com/watch?v=TBtojJ5qlzA) — one vendor's, but the mechanics generalise
 
 ---
 
 ## The four cost levers (in order of impact)
 
 ### 1. Model selection
-You paid for Sonnet and Haiku has the same capability for your task. Always ask: can this step use Haiku? Benchmark it. Usually the answer is yes.
+You paid for the mid-tier model and the small one has the same capability for your task. Always ask: can this step use the cheap model? Benchmark it. Usually the answer is yes.
 
-The 2026 ladder has four rungs — Haiku 4.5 ($1/$5) → Sonnet 5 ($2/$10) → Opus 5 ($5/$25) → Fable 5.1 ($10/$50) — and the discipline is to *earn* each step up with an eval, not vibes. The Fable tier exists for the hardest long-running agent work; most production pipelines never need to route above Opus 5, and most individual steps sit happily on Haiku or Sonnet. Note that Sonnet 5 costs *less* than the Sonnet 4.6 it replaced — when a new generation ships, re-check prices as well as capabilities.
+Every vendor sells the same ladder, and the *ratios* between rungs are far more stable than the prices:
 
-One more 2026 lever inside a single model: Claude 5 models use **adaptive thinking**, controlled by the `effort` parameter (defaults to `high` on the API). Dropping `effort` on simple, high-volume steps cuts latency and output tokens without changing models — benchmark it the same way you benchmark a model downgrade.
+| Rung | Typical use | Relative cost |
+|---|---|---|
+| **Open-weight on a fast host** (Groq, Together, or local Ollama) | classification, routing, extraction, first-pass filtering | 1× (baseline; local is free per token) |
+| **Small / fast** (every vendor's cheapest hosted tier) | summarisation, simple structured output | ~2–10× |
+| **Mid-tier workhorse** | most production work | ~10–30× |
+| **Frontier** | hard reasoning, long-running agents, judging other models | ~50–200× |
+
+The discipline is to *earn* each step up with an eval, not vibes. Most pipelines never need the top rung, and most individual steps sit happily on the bottom two. That is what `LLM_MODEL` and `LLM_MODEL_SMALL` are for — configure both and route deliberately.
+
+Two things that surprise people, both worth internalising:
+
+- **A new generation is not automatically more expensive.** Vendors have shipped better models at *lower* prices more than once. When a generation lands, re-check price as well as capability — the migration might pay for itself.
+- **A new generation can cost more at identical per-token prices**, because tokenizers change between generations and the same text becomes more tokens. Measure spend per *request*, not per token.
+
+One more lever inside a single model: most frontier models now expose some **reasoning-effort** control — how much the model thinks before answering. Dialling it down on simple, high-volume steps cuts latency and output tokens without changing models. The catch is that this parameter is thoroughly **provider-specific** (`reasoning_effort`, `thinking`, and others) and is one of the fields OpenAI-compatible layers most often ignore. Verify it took effect by watching output-token counts move — not by reading the docs.
 
 ### 2. Prompt caching
-For repeated system prompts, examples, and context windows:
+For repeated system prompts, examples, and context windows. **This is provider-native** — the example below is one vendor's syntax, and prompt caching is generally *not* carried by OpenAI-compatible layers. It is the clearest case in this course for a deliberate escape hatch: keep the portable path, put the native call behind one function, and write down what it buys you.
+
+
 ```ts
 const msg = await client.messages.create({
-  model: "claude-sonnet-5",
+  model: process.env.LLM_MODEL,
   max_tokens: 1024,
   system: [
     {
@@ -55,7 +71,7 @@ const msg = await client.messages.create({
   messages: [{ role: "user", content: userInput }]
 });
 ```
-First call: full price. Cached cache reads: ~10% of original price. Within 5 minutes. Saves huge money on any loop that reuses a system prompt.
+First call: full price. Cached reads: roughly 10% of the original input price, within a short TTL. Vendors differ on whether you mark the cache boundary explicitly or they detect long repeated prefixes automatically — check yours. Either way it saves serious money on any loop that reuses a system prompt.
 
 ### 3. Batch API
 For anything that doesn't need real-time response (evals, bulk ingestion, async processing):
@@ -66,7 +82,7 @@ const batch = await client.messages.batches.create({
 });
 // Poll / webhook for completion
 ```
-50% discount. Runs within 24 hours. Perfect for eval suites and nightly regenerations.
+Around a 50% discount, typically within 24 hours. Near-universal as a concept; the endpoint shape is vendor-specific, so this is another deliberate escape hatch. Perfect for eval suites and nightly regenerations.
 
 ### 4. Response caching
 When users ask the same (or semantically similar) question:
@@ -76,7 +92,9 @@ When users ask the same (or semantically similar) question:
 Redis LangCache or a simple pgvector-backed cache both work. Semantic caching delivers up to 73% cost reduction on high-repetition workloads; cache hits return in milliseconds.
 
 ### 5. Model routing
-Route simple queries to cheaper models automatically. Haiku 4.5 handles 60–80% of typical production queries with identical user-perceived quality. Teams that implement routing report 40–60% reduction in total token spend. Simple heuristic: if the query is under N tokens and contains no code/structured data, try Haiku first; fall back to Sonnet on validation failure.
+Route simple queries to cheaper models automatically. A small model handles 60–80% of typical production queries with identical user-perceived quality, and teams that implement routing report 40–60% reductions in total token spend. Simple heuristic: if the query is short and contains no code or structured data, try `LLM_MODEL_SMALL` first; fall back to `LLM_MODEL` on validation failure.
+
+Routing *across providers* is the same code — the fallback client just has a different `baseURL`. That makes a second provider a cheap insurance policy against one vendor's outage or rate limit, not just a cost lever.
 
 ---
 
@@ -92,7 +110,7 @@ Run 50 realistic requests. Record:
 - Request failure rate
 
 **Step 2 (60 min) — Model optimization**
-For each LLM call in your pipeline, ask: does this need Sonnet? Try Haiku. Re-run evals. If quality stays ≥95% of baseline, ship it.
+For each LLM call in your pipeline, ask: does this need the mid-tier model? Try `LLM_MODEL_SMALL`. Re-run evals. If quality stays ≥95% of baseline, ship it. Then try an open-weight model on a fast host for the same step and re-measure — that is often another 5–20× down.
 
 **Step 3 (60 min) — Prompt caching**
 Mark large static prefixes with `cache_control`. Re-run the 50 requests. Record savings.
@@ -114,9 +132,9 @@ Re-run the benchmark. Write a markdown report:
 
 ### Stretch — the model-migration drill (2 hours, do this once per model generation)
 
-The most realistic maintenance task in this field isn't building something new — it's upgrading a running system when a new model generation ships (Claude 4 → 5, and the one after that). Practice it on your own project *before* an employer asks you to do it on theirs:
+The most realistic maintenance task in this field isn't building something new — it's upgrading a running system when a new model generation ships. Practice it on your own project *before* an employer asks you to do it on theirs. Do it twice: once to a newer model from the same vendor, once to a **different vendor entirely** — the second is where you find out what you accidentally depended on:
 
-1. **Branch**, then swap every model ID in one project to the current generation (`grep -rn "claude-" src/` finds them all — if that grep is painful, that's finding number one: centralize your model IDs in one config file).
+1. **Branch**, then swap the model. If you followed this course's convention it is one line in `.env`; if it is a `grep -rn` across `src/`, that's finding number one — centralise your model IDs in one config file before going further.
 2. **Re-run your eval suite** from Module 2 against both branches. Diff pass rates per test case, not just the aggregate.
 3. **Re-run your cost baseline** (Step 1 above) on both. New generations change tokenizers and verbosity, so cost per request can move in either direction even at identical per-token prices.
 4. **Write the migration verdict** in three lines: quality delta, cost delta, and go/no-go. That artifact — "I upgraded, measured, and shipped/rolled back" — is a senior-engineer signal in interviews.
@@ -127,9 +145,10 @@ The QA framing: a model upgrade is a **dependency bump with non-deterministic be
 
 ## Cost alerts (set these today)
 
-### Anthropic Console
-- Settings → Limits → monthly usage cap
-- Add a daily alert email
+### Your provider's console
+Every major provider has a spend cap and a usage alert. Find both today — this is a five-minute task that has saved people four-figure surprises:
+- A hard monthly usage cap
+- A daily alert email at a threshold you'd want to know about
 
 ### Your code
 Wrap every LLM call in a cost-logger:
@@ -177,17 +196,18 @@ Know your use case. Don't stream reflexively.
 
 ## Self-check
 
-- [ ] You can quote the pricing of Haiku 4.5, Sonnet 5, Opus 5 within 20%
+- [ ] You can quote your own model's input and output price within 20%, and name a model one rung cheaper
+- [ ] You can name which cost levers on this page are portable and which are provider-native
 - [ ] You've measured a >50% cost reduction on one of your projects
-- [ ] You have a cost alert set in the Anthropic console
+- [ ] You have a spend cap and a cost alert set on your provider's console
 - [ ] Your main projects have a response cache layer
 
 ---
 
 ## Daily 15-min tasks
 
-- **Mon:** Check your Anthropic usage dashboard. Anything unexpected?
-- **Tue:** Swap one Sonnet call to Haiku in a side project. Does quality survive?
+- **Mon:** Check your provider's usage dashboard. Anything unexpected?
+- **Tue:** Swap one call to `LLM_MODEL_SMALL` in a side project. Does quality survive?
 - **Wed:** Read one [Latent Space post on production LLM ops](https://www.latent.space/)
 - **Thu:** Look at one Langfuse trace. Find the most expensive single call. Why is it so big?
 - **Fri:** Add `cache_control` to one more system prompt

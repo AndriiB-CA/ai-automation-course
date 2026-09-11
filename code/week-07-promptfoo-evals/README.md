@@ -10,7 +10,8 @@ Your **first CI-gated eval pipeline**. By the end of this weekend you'll have:
 ```bash
 cd code/week-07-promptfoo-evals
 npm install -g promptfoo
-export ANTHROPIC_API_KEY=sk-ant-...
+export OPENAI_BASE_URL=https://api.groq.com/openai/v1   # your provider
+export OPENAI_API_KEY=your-key-for-that-provider
 ```
 
 ## Run the eval
@@ -50,7 +51,7 @@ The default assertions (`contains`, `javascript`) are deterministic. For fuzzy q
     1. Flag any SQL injection pattern as severity='high' or 'critical'
     2. Provide a specific code fix, not generic advice
     3. Stay under 500 tokens total
-  provider: anthropic:messages:claude-opus-5
+  provider: openai:chat:YOUR_JUDGE_MODEL_ID
 ```
 
 This uses a **stronger model to judge a weaker model** — a common eval pattern.

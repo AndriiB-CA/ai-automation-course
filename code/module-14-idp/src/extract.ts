@@ -1,21 +1,13 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
+import { createClient, estimateCost, getModel } from "./llm.js";
 import { InvoiceExtraction } from "./schemas.js";
 import type { InvoiceExtraction as InvoiceExtractionT } from "./schemas.js";
-
-const MODEL = "claude-sonnet-5";
-
-// Pricing (USD per million tokens)
-const PRICE_INPUT_PER_M = 2.0;
-const PRICE_CACHE_WRITE_PER_M = 3.75;
-const PRICE_CACHE_READ_PER_M = 0.3;
-const PRICE_OUTPUT_PER_M = 10.0;
 
 export interface UsageStats {
   inputTokens: number;
   outputTokens: number;
-  cacheWriteTokens: number;
-  cacheReadTokens: number;
-  estimatedCostUSD: number;
+  /** USD, or null when LLM_PRICE_*_PER_MTOK are unset. */
+  estimatedCostUSD: number | null;
 }
 
 export interface ExtractInput {
@@ -43,97 +35,81 @@ Rules:
 - Never guess amounts; use 0 if unreadable.
 - Call emit_invoice with all extracted data.`;
 
-const EMIT_INVOICE_TOOL: Anthropic.Tool = {
-  name: "emit_invoice",
-  description: "Emit structured invoice/receipt data extracted from the document.",
-  input_schema: {
-    type: "object" as const,
-    required: [
-      "vendor",
-      "invoice_number",
-      "date",
-      "line_items",
-      "subtotal",
-      "tax",
-      "total",
-      "currency",
-      "confidence",
-    ],
-    properties: {
-      vendor: { type: "string", description: "Vendor or supplier name." },
-      invoice_number: { type: "string", description: "Invoice or receipt number." },
-      date: { type: "string", description: "Invoice date as written on the document." },
-      line_items: {
-        type: "array",
-        description: "All line items on the invoice.",
-        items: {
-          type: "object",
-          required: ["description", "quantity", "unitPrice", "total"],
-          properties: {
-            description: { type: "string" },
-            quantity: { type: "number" },
-            unitPrice: { type: "number" },
-            total: { type: "number" },
+const EMIT_INVOICE_TOOL: OpenAI.Chat.Completions.ChatCompletionTool = {
+  type: "function",
+  function: {
+    name: "emit_invoice",
+    description: "Emit structured invoice/receipt data extracted from the document.",
+    parameters: {
+      type: "object",
+      required: [
+        "vendor",
+        "invoice_number",
+        "date",
+        "line_items",
+        "subtotal",
+        "tax",
+        "total",
+        "currency",
+        "confidence",
+      ],
+      properties: {
+        vendor: { type: "string", description: "Vendor or supplier name." },
+        invoice_number: { type: "string", description: "Invoice or receipt number." },
+        date: { type: "string", description: "Invoice date as written on the document." },
+        line_items: {
+          type: "array",
+          description: "All line items on the invoice.",
+          items: {
+            type: "object",
+            required: ["description", "quantity", "unitPrice", "total"],
+            properties: {
+              description: { type: "string" },
+              quantity: { type: "number" },
+              unitPrice: { type: "number" },
+              total: { type: "number" },
+            },
           },
         },
-      },
-      subtotal: { type: "number", description: "Subtotal before tax." },
-      tax: { type: "number", description: "Total tax amount." },
-      total: { type: "number", description: "Grand total including tax." },
-      currency: { type: "string", description: "3-letter ISO currency code." },
-      confidence: {
-        type: "number",
-        description: "Extraction confidence 0–1.",
-        minimum: 0,
-        maximum: 1,
+        subtotal: { type: "number", description: "Subtotal before tax." },
+        tax: { type: "number", description: "Total tax amount." },
+        total: { type: "number", description: "Grand total including tax." },
+        currency: { type: "string", description: "3-letter ISO currency code." },
+        confidence: {
+          type: "number",
+          description: "Extraction confidence 0–1.",
+          minimum: 0,
+          maximum: 1,
+        },
       },
     },
   },
 };
-
-function calcCost(usage: {
-  input_tokens: number;
-  output_tokens: number;
-  cache_creation_input_tokens?: number | null;
-  cache_read_input_tokens?: number | null;
-}): UsageStats {
-  const inputTokens = usage.input_tokens;
-  const outputTokens = usage.output_tokens;
-  const cacheWriteTokens = usage.cache_creation_input_tokens ?? 0;
-  const cacheReadTokens = usage.cache_read_input_tokens ?? 0;
-
-  const estimatedCostUSD =
-    (inputTokens / 1_000_000) * PRICE_INPUT_PER_M +
-    (cacheWriteTokens / 1_000_000) * PRICE_CACHE_WRITE_PER_M +
-    (cacheReadTokens / 1_000_000) * PRICE_CACHE_READ_PER_M +
-    (outputTokens / 1_000_000) * PRICE_OUTPUT_PER_M;
-
-  return { inputTokens, outputTokens, cacheWriteTokens, cacheReadTokens, estimatedCostUSD };
-}
 
 export async function extractInvoice(input: ExtractInput): Promise<ExtractResult> {
   if (!input.text && !input.imageBase64) {
     throw new Error("extractInvoice requires either text or imageBase64");
   }
 
-  const client = new Anthropic();
+  const client = createClient();
+  const model = getModel();
 
-  type UserContentBlock =
-    | { type: "text"; text: string }
-    | { type: "image"; source: { type: "base64"; media_type: string; data: string } };
-
-  const userContent: UserContentBlock[] = [];
+  // Vision travels as an image_url part with a data: URI. That encoding is the
+  // portable one — it's what the OpenAI-compatible schema specifies, and what
+  // providers that support vision at all will accept. Providers that don't
+  // support vision return a 400 here rather than silently dropping the image,
+  // which is the failure mode you want.
+  const userContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [];
 
   if (input.imageBase64 && input.imageMimeType) {
     userContent.push({
-      type: "image",
-      source: {
-        type: "base64",
-        media_type: input.imageMimeType,
-        data: input.imageBase64,
-      },
+      type: "image_url",
+      image_url: { url: `data:${input.imageMimeType};base64,${input.imageBase64}` },
     });
-    userContent.push({ type: "text", text: "Extract all invoice data from this document using the emit_invoice tool." });
+    userContent.push({
+      type: "text",
+      text: "Extract all invoice data from this document using the emit_invoice tool.",
+    });
   } else {
     userContent.push({
       type: "text",
@@ -141,33 +117,31 @@ export async function extractInvoice(input: ExtractInput): Promise<ExtractResult
     });
   }
 
-  const response = await client.messages.create({
-    model: MODEL,
+  const response = await client.chat.completions.create({
+    model,
     max_tokens: 2048,
-    system: [
-      {
-        type: "text",
-        text: SYSTEM_PROMPT,
-        // Cache the system prompt — extraction instructions are stable across documents.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        cache_control: { type: "ephemeral" } as any,
-      },
+    temperature: 0,
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userContent },
     ],
     tools: [EMIT_INVOICE_TOOL],
-    tool_choice: { type: "tool", name: "emit_invoice" },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    messages: [{ role: "user", content: userContent as any }],
+    tool_choice: { type: "function", function: { name: "emit_invoice" } },
   });
 
-  const toolUse = response.content.find((block) => block.type === "tool_use");
-  if (!toolUse || toolUse.type !== "tool_use") {
+  const call = response.choices[0]?.message?.tool_calls?.[0];
+  if (!call || !("function" in call)) {
     throw new Error(
-      "Claude did not call emit_invoice. Response:\n" + JSON.stringify(response.content, null, 2),
+      "Model did not call emit_invoice. Response:\n" +
+        JSON.stringify(response.choices[0]?.message, null, 2),
     );
   }
 
-  const extraction = InvoiceExtraction.parse(toolUse.input);
-  const usage = calcCost(response.usage);
+  const extraction = InvoiceExtraction.parse(JSON.parse(call.function.arguments));
 
-  return { extraction, usage };
+  const { inputTokens, outputTokens, usd } = estimateCost(response.usage);
+  return {
+    extraction,
+    usage: { inputTokens, outputTokens, estimatedCostUSD: usd },
+  };
 }

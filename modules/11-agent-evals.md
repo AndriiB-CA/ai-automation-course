@@ -48,7 +48,7 @@ Every serious agent eval measures some mix of these. Name them; you'll design te
 - [τ-bench (tau-bench): a benchmark for tool-agents in real workflows](https://github.com/sierra-research/tau-bench) — how the field measures task success + rule-following
 - [Berkeley Function-Calling Leaderboard (BFCL)](https://gorilla.cs.berkeley.edu/leaderboard.html) — how tool-use accuracy is measured at scale
 - [DeepEval — agentic metrics (task completion, tool correctness)](https://github.com/confident-ai/deepeval)
-- Re-skim: [Building Effective Agents — Anthropic](https://www.anthropic.com/research/building-effective-agents) (the "how to evaluate" mindset)
+- Re-skim: [Building Effective Agents — Anthropic](https://www.anthropic.com/research/building-effective-agents) (for the "how to evaluate" mindset — vendor-published, but the evaluation thinking is general)
 
 ### The mental model
 
@@ -161,7 +161,7 @@ Add an `agent-evals` GitHub Actions job (model the structure on your Week 7 `eva
 
 ```yaml
 - name: Agent quality + safety evals
-  env: { ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }} }
+  env: { LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}, LLM_API_KEY: ${{ secrets.LLM_API_KEY }}, LLM_MODEL: ${{ vars.LLM_MODEL }} }
   run: |
     npm run eval:agent:quality -- --runs 3 --baseline .baseline/agent.json
     npm run eval:agent:safety   # exits non-zero if ANY invariant fails

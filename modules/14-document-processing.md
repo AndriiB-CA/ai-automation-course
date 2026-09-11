@@ -40,9 +40,11 @@ The canonical pattern is four stages. Each is a place where things break, so eac
 4. **Structure & Output.** Emit schema-valid data to the target system, and route low-confidence or rule-failing extractions to a human queue (Constrained Autonomy from Module 12 — autonomous for the clean ones, human for the exceptions).
 
 ### Reading (75 min)
-- [Claude vision & document understanding](https://docs.claude.com/en/docs/build-with-claude/vision)
-- [Working with PDFs in the Claude API](https://docs.claude.com/en/docs/build-with-claude/pdf-support)
-- [Structured outputs recap](https://docs.claude.com/en/docs/build-with-claude/extracting-structured-data) — you've done this; now apply it to documents
+- **Your provider's vision docs** — confirm first that the model you configured accepts images at all. Many small and open-weight models don't, and a document pipeline without vision can only handle text-layer PDFs
+- **Your provider's PDF support** — some accept PDFs directly; where yours doesn't, rasterise pages to PNG and send them as images (the starter does this)
+- Structured outputs recap — Module 1, Week 3. Same forced-tool-call + Zod validate-and-retry pattern, now applied to documents
+
+> ⚠️ **This is the module most sensitive to your provider choice.** Extraction quality on smudged scans varies enormously between models, far more than on text tasks. Budget for running Week 11's evals against two providers here — it is the clearest demonstration in the whole course of why evals beat vibes.
 - Skim one vendor's framing to understand the market: [What is IDP — AWS](https://aws.amazon.com/what-is/intelligent-document-processing/)
 
 ---

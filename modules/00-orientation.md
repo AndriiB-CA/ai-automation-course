@@ -62,7 +62,7 @@ Watch, in one sitting:
 - 🎥 **[Intro to LLMs — Andrej Karpathy (1h)](https://www.youtube.com/watch?v=zjkBMFhNj_g)** — **mandatory**
 
 Then read:
-- **[Building Effective Agents — Anthropic](https://www.anthropic.com/research/building-effective-agents)** — skim for now, re-read around Week 13
+- **[Building Effective Agents — Anthropic](https://www.anthropic.com/research/building-effective-agents)** — skim for now, re-read around Week 13. Written by one vendor, but it is the clearest statement of the patterns and they apply everywhere.
 
 Then, relax. The next 23 weeks you'll be building. This weekend you're just absorbing.
 
@@ -110,7 +110,8 @@ You'll know you're good when you're the person your team asks to review LLM feat
 
 - [ ] Read README, ROADMAP
 - [ ] Walk through SETUP, smoke test passed
-- [ ] Anthropic API key active with spend cap
+- [ ] An LLM provider chosen and working (`npm run check-provider` passes) — see [PROVIDERS.md](../PROVIDERS.md)
+- [ ] A spend cap or budget alert set on that provider's console
 - [ ] VS Code + extensions installed
 - [ ] Journal started (private file, first entry written)
 - [ ] Interactive portal bookmarked on phone + desktop
@@ -123,7 +124,7 @@ You'll know you're good when you're the person your team asks to review LLM feat
 
 - Browse one blog post from [Simon Willison](https://simonwillison.net/)
 - Play with [chat.lmsys.org](https://chat.lmsys.org/) — blind-test models on prompts you care about
-- Look at one [Anthropic cookbook example](https://github.com/anthropics/anthropic-cookbook), read but don't run
+- Look at one cookbook example from your provider ([OpenAI](https://cookbook.openai.com/), [Anthropic](https://github.com/anthropics/anthropic-cookbook), [Google](https://github.com/google-gemini/cookbook)), read but don't run
 
 **Don't** jump into Week 2 content early. Let it sink in. Momentum comes from rhythm, and the rhythm starts next week.
 

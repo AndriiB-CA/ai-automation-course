@@ -11,7 +11,7 @@
 import "dotenv/config";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { pool, embedBatch, toVectorLiteral } from "./db.js";
+import { EMBEDDING_DIMS, EMBEDDING_MODEL, pool, embedBatch, toVectorLiteral } from "./db.js";
 
 // ---------------------------------------------------------------------------
 // Schema bootstrap (idempotent)
@@ -24,13 +24,16 @@ async function ensureSchema(): Promise<void> {
     // pgvector extension
     await client.query("CREATE EXTENSION IF NOT EXISTS vector");
 
-    // Chunks table — embedding column is vector(1024) matching Voyage 3.5-lite
+    // Chunks table — the embedding column width must match your model's output.
+    // EMBEDDING_DIMS is interpolated rather than parameterised because a column
+    // type cannot be a bind parameter; it is coerced to a number in db.ts, so
+    // it can't carry SQL. Change models → drop this table and re-ingest.
     await client.query(`
       CREATE TABLE IF NOT EXISTS chunks (
         id          BIGSERIAL PRIMARY KEY,
         document_id TEXT        NOT NULL,
         content     TEXT        NOT NULL,
-        embedding   vector(1024),
+        embedding   vector(${EMBEDDING_DIMS}),
         metadata    JSONB,
         created_at  TIMESTAMPTZ DEFAULT NOW()
       )
@@ -47,7 +50,7 @@ async function ensureSchema(): Promise<void> {
     `);
 
     await client.query("COMMIT");
-    console.log("Schema ready (extension + table + HNSW index).");
+    console.log(`Schema ready (extension + table + HNSW index) — ${EMBEDDING_MODEL}, ${EMBEDDING_DIMS} dims.`);
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;

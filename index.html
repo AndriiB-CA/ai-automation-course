@@ -860,7 +860,7 @@ const COURSE = {
       tasks: [
         { id: "w1-read", label: "Read README + ROADMAP end to end", time: "30m" },
         { id: "w1-setup", label: "Walk through SETUP.md completely", time: "90m" },
-        { id: "w1-keys", label: "Get Anthropic API key, set spend cap to $25/mo", time: "15m" },
+        { id: "w1-keys", label: "Pick an LLM provider (PROVIDERS.md), get a key, set a spend cap", time: "15m" },
         { id: "w1-smoke", label: "Pass the smoke test (print 'It works.')", time: "10m" },
         { id: "w1-karp", label: "Watch Karpathy — Intro to LLMs (1h)", time: "60m" },
         { id: "w1-journal", label: "Start a private journal.md with baseline self-rating", time: "15m" },
@@ -871,9 +871,9 @@ const COURSE = {
         { kind: "read", label: "Building Effective Agents (Anthropic)", url: "https://www.anthropic.com/research/building-effective-agents" },
         { kind: "video", label: "Intro to LLMs — Karpathy (1h)", url: "https://www.youtube.com/watch?v=zjkBMFhNj_g" }
       ],
-      project: "Screenshot of a successful anthropic.messages.create response",
+      project: "Screenshot of a successful chat.completions.create response",
       module_link: "modules/00-orientation.md",
-      companion: { label: "Module 16 — Working with AI Coding Agents", file: "modules/16-ai-coding-agents.md", note: "Read this week or next: the meta-skill of driving Claude Code / Cursor-class tools — context files, task scoping, reviewing AI diffs. Set it up now and every weekend project goes faster." }
+      companion: { label: "Module 16 — Working with AI Coding Agents", file: "modules/16-ai-coding-agents.md", note: "Read this week or next: the meta-skill of driving Claude Code / Cursor / Copilot-class tools — context files, task scoping, reviewing AI diffs. Set it up now and every weekend project goes faster." }
     },
     {
       n: 2, module: 1, moduleTitle: "LLM API Fundamentals",
@@ -881,15 +881,15 @@ const COURSE = {
       goal: "Understand tokens, temperature, streaming, system prompts",
       phase: 1,
       tasks: [
-        { id: "w2-msgs", label: "Read Anthropic Messages API docs", time: "30m" },
-        { id: "w2-pricing", label: "Memorize Haiku/Sonnet/Opus pricing ballpark", time: "10m" },
+        { id: "w2-msgs", label: "Read the Chat Completions API reference", time: "30m" },
+        { id: "w2-pricing", label: "Learn your provider's pricing ladder; put the 2 numbers in .env", time: "10m" },
         { id: "w2-cli", label: "Build summarize-url CLI with streaming", time: "2h" },
         { id: "w2-tone", label: "Add --tone flag (formal/casual/snarky)", time: "30m" },
         { id: "w2-cost", label: "Print cost per run using usage tokens", time: "30m" }
       ],
       resources: [
         { kind: "build", label: "Starter code: week-02-first-api-call", url: "code/week-02-first-api-call/" },
-        { kind: "read", label: "Anthropic Messages API reference", url: "https://docs.claude.com/en/api/messages" },
+        { kind: "read", label: "Chat Completions API reference", url: "https://platform.openai.com/docs/api-reference/chat" },
         { kind: "video", label: "Prompt Engineering Overview (30m)", url: "https://www.youtube.com/watch?v=T9aRN5JkmL8" }
       ],
       project: "A CLI that summarizes a URL in 3 bullets with tone control and cost printout",
@@ -908,7 +908,7 @@ const COURSE = {
       ],
       resources: [
         { kind: "build", label: "Starter: bug-parser.ts", url: "code/week-06-structured-tools/" },
-        { kind: "read", label: "Extracting structured data with Claude", url: "https://docs.claude.com/en/docs/build-with-claude/extracting-structured-data" },
+        { kind: "read", label: "Function calling guide", url: "https://platform.openai.com/docs/guides/function-calling" },
         { kind: "read", label: "Zod docs — Object schemas", url: "https://zod.dev/?id=objects" }
       ],
       project: "A parser that transforms messy bug reports into validated ticket JSON",
@@ -920,14 +920,14 @@ const COURSE = {
       goal: "LLM can call your TypeScript functions and chain tool calls iteratively",
       phase: 1,
       tasks: [
-        { id: "w4-toolread", label: "Read: Tool use with Claude (full doc)", time: "45m" },
+        { id: "w4-toolread", label: "Read: function calling (full doc)", time: "45m" },
         { id: "w4-react", label: "Read: ReAct paper (abstract + section 2)", time: "30m" },
         { id: "w4-repo", label: "Build repo-assistant with 3 tools", time: "3h" },
         { id: "w4-loop", label: "Cap the agent loop at 10 iterations + total tokens", time: "30m" }
       ],
       resources: [
-        { kind: "read", label: "Tool use with Claude", url: "https://docs.claude.com/en/docs/build-with-claude/tool-use" },
-        { kind: "read", label: "Anthropic cookbook — tool_use", url: "https://github.com/anthropics/anthropic-cookbook/tree/main/tool_use" },
+        { kind: "read", label: "Function calling guide", url: "https://platform.openai.com/docs/guides/function-calling" },
+        { kind: "read", label: "Cookbook — tool use examples", url: "https://github.com/anthropics/anthropic-cookbook/tree/main/tool_use" },
         { kind: "video", label: "Function Calling Explained (AI Jason, 20m)", url: "https://www.youtube.com/watch?v=0lOSvOoF2to" }
       ],
       project: "Natural-language Q&A over a GitHub repo via 3 tools with capped iteration",
@@ -939,7 +939,7 @@ const COURSE = {
       goal: "Fluent with zero-shot, few-shot, CoT, XML tags, prefill, role prompting",
       phase: 1,
       tasks: [
-        { id: "w5-guide", label: "Read Anthropic's prompt engineering guide in full", time: "45m" },
+        { id: "w5-guide", label: "Read a vendor prompt-engineering guide in full", time: "45m" },
         { id: "w5-tutorial", label: "Do every chapter of the prompt-eng interactive tutorial", time: "3h" },
         { id: "w5-upgrade", label: "Upgrade Week 4 agent with XML tags + few-shot + CoT", time: "2h" },
         { id: "w5-measure", label: "Manually score 4 prompt versions on 10 identical inputs", time: "1h" }
@@ -958,15 +958,15 @@ const COURSE = {
       goal: "Craft system prompts that are testable and survive adversarial inputs",
       phase: 1,
       tasks: [
-        { id: "w6-char", label: "Read Claude character & system prompt posts", time: "30m" },
+        { id: "w6-char", label: "Read published production system prompts", time: "30m" },
         { id: "w6-inject", label: "Read 5 Simon Willison posts on prompt injection", time: "45m" },
         { id: "w6-pr", label: "Build PR review bot with strict refusals", time: "2.5h" },
         { id: "w6-redteam", label: "Red-team your own bot with 5+ adversarial inputs", time: "1h" }
       ],
       resources: [
-        { kind: "read", label: "Claude system prompts (Anthropic)", url: "https://docs.claude.com/en/release-notes/system-prompts" },
+        { kind: "read", label: "Published production system prompts", url: "https://docs.claude.com/en/release-notes/system-prompts" },
         { kind: "read", label: "Prompt injection tag (Simon Willison)", url: "https://simonwillison.net/tags/prompt-injection/" },
-        { kind: "read", label: "Awesome Claude Prompts", url: "https://github.com/langgptai/awesome-claude-prompts" }
+        { kind: "read", label: "A system-prompt collection", url: "https://github.com/langgptai/awesome-claude-prompts" }
       ],
       project: "PR review bot that stays in character under adversarial inputs",
       module_link: "modules/02-prompts-evals.md"
@@ -1113,20 +1113,20 @@ const COURSE = {
     {
       n: 14, module: 4, moduleTitle: "Agents & MCP",
       title: "Model Context Protocol (MCP)",
-      goal: "Ship a custom MCP server; wire it to Claude Desktop",
+      goal: "Ship a custom MCP server; wire it to an MCP client",
       phase: 2,
       tasks: [
         { id: "w14-docs", label: "Read MCP docs & spec", time: "1.5h" },
         { id: "w14-browse", label: "Browse official MCP servers repo", time: "30m" },
         { id: "w14-build", label: "Build a custom MCP server with 3+ tools", time: "3h" },
-        { id: "w14-wire", label: "Wire it to Claude Desktop, verify tools appear", time: "45m" }
+        { id: "w14-wire", label: "Wire it to your MCP client, verify tools appear", time: "45m" }
       ],
       resources: [
         { kind: "build", label: "Starter: week-15-mcp-agent", url: "code/week-15-mcp-agent/" },
         { kind: "read", label: "MCP docs", url: "https://modelcontextprotocol.io/" },
         { kind: "read", label: "Official MCP servers", url: "https://github.com/modelcontextprotocol/servers" }
       ],
-      project: "MCP server exposing test-run or filesystem tools, live in Claude Desktop",
+      project: "MCP server exposing test-run or filesystem tools, live in an MCP client",
       module_link: "modules/04-agents.md"
     },
     {
@@ -1146,7 +1146,7 @@ const COURSE = {
       ],
       project: "Research agent that handles a '500 word note with 5 sources' task end-to-end",
       module_link: "modules/04-agents.md",
-      companion: { label: "Module 12 — Multi-Agent Orchestration & the Claude Agent SDK", file: "modules/12-multi-agent-orchestration.md", note: "The biggest 2026 skill upgrade: manager/worker systems, Constrained Autonomy, Claude Agent SDK, framework landscape. Its weekend project upgrades this agent into a multi-agent system." }
+      companion: { label: "Module 12 — Multi-Agent Orchestration", file: "modules/12-multi-agent-orchestration.md", note: "The biggest 2026 skill upgrade: manager/worker systems, Constrained Autonomy, the framework landscape. Its weekend project upgrades this agent into a multi-agent system." }
     },
     {
       n: 16, module: 4, moduleTitle: "Agents & MCP",
@@ -1169,18 +1169,18 @@ const COURSE = {
     {
       n: 17, module: 5, moduleTitle: "Browser Agents",
       title: "Playwright Meets LLMs",
-      goal: "Claude drives Playwright via natural language through tool use",
+      goal: "An LLM drives Playwright via natural language through tool use",
       phase: 2,
       tasks: [
         { id: "w17-stagehand", label: "Read Stagehand docs", time: "45m" },
-        { id: "w17-cu", label: "Skim Anthropic Computer Use overview", time: "30m" },
+        { id: "w17-cu", label: "Skim a computer-use overview", time: "30m" },
         { id: "w17-build", label: "Build appointment-booker agent (5+ step flow)", time: "3h" },
         { id: "w17-verify", label: "Add LLM-based action verification step", time: "1h" }
       ],
       resources: [
         { kind: "build", label: "Starter: week-18-browser-agent", url: "code/week-18-browser-agent/" },
         { kind: "read", label: "Stagehand docs", url: "https://docs.stagehand.dev/" },
-        { kind: "read", label: "Computer Use overview (Anthropic)", url: "https://www.anthropic.com/news/3-5-models-and-computer-use" }
+        { kind: "read", label: "Computer use overview", url: "https://www.anthropic.com/news/3-5-models-and-computer-use" }
       ],
       project: "Agent that completes a 5-step browser task with self-verification",
       module_link: "modules/05-browser-agents.md"
@@ -1191,13 +1191,13 @@ const COURSE = {
       goal: "Screenshot + coordinates as an alternative to selectors",
       phase: 2,
       tasks: [
-        { id: "w18-read", label: "Read Claude vision capabilities + Computer Use ref impl", time: "1h" },
+        { id: "w18-read", label: "Read your provider's vision docs + a computer-use ref impl", time: "1h" },
         { id: "w18-vision", label: "Rebuild agent with screenshots + coords (no selectors)", time: "3h" },
         { id: "w18-compare", label: "Compare 10 runs: selector vs vision (cost, reliability, time)", time: "1.5h" },
         { id: "w18-writeup", label: "Write a comparison report (blog-post material)", time: "1h" }
       ],
       resources: [
-        { kind: "read", label: "Claude vision docs", url: "https://docs.claude.com/en/docs/build-with-claude/vision" },
+        { kind: "read", label: "Vision docs (check your model accepts images)", url: "https://docs.claude.com/en/docs/build-with-claude/vision" },
         { kind: "read", label: "Computer Use reference impl", url: "https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo" }
       ],
       project: "Side-by-side comparison of selector vs vision-based automation",
@@ -1228,7 +1228,7 @@ const COURSE = {
       goal: "CLI: npx ai-testgen <url> → valid Playwright spec that runs green",
       phase: 3,
       tasks: [
-        { id: "w20-cc", label: "Read Claude Code docs + Playwright best practices", time: "1h" },
+        { id: "w20-cc", label: "Read your coding agent's docs + Playwright best practices", time: "1h" },
         { id: "w20-a11y", label: "Use page.accessibility.snapshot() instead of raw HTML", time: "45m" },
         { id: "w20-gen", label: "Build generator with Zod-validated TestSpec schema", time: "2.5h" },
         { id: "w20-cache", label: "Add prompt caching on system prompt + best-practices", time: "45m" },
@@ -1270,14 +1270,14 @@ const COURSE = {
       tasks: [
         { id: "w22-cache", label: "Read prompt caching docs thoroughly", time: "45m" },
         { id: "w22-base", label: "Benchmark pre-optimization on 50 real requests", time: "30m" },
-        { id: "w22-model", label: "Try Haiku for each step; keep if evals hold", time: "1h" },
+        { id: "w22-model", label: "Try LLM_MODEL_SMALL for each step; keep if evals hold", time: "1h" },
         { id: "w22-prompt", label: "Apply prompt caching to large system prefixes", time: "1h" },
         { id: "w22-resp", label: "Add exact-match + semantic response cache layer", time: "1.5h" },
         { id: "w22-report", label: "Write before/after delta report", time: "30m" }
       ],
       resources: [
-        { kind: "read", label: "Prompt caching (Anthropic)", url: "https://docs.claude.com/en/docs/build-with-claude/prompt-caching" },
-        { kind: "read", label: "Batch API (Anthropic)", url: "https://docs.claude.com/en/docs/build-with-claude/batch-processing" },
+        { kind: "read", label: "Prompt caching (provider-native)", url: "https://docs.claude.com/en/docs/build-with-claude/prompt-caching" },
+        { kind: "read", label: "Batch API (provider-native)", url: "https://docs.claude.com/en/docs/build-with-claude/batch-processing" },
         { kind: "read", label: "LLM caching (Pinecone)", url: "https://www.pinecone.io/learn/series/vector-databases-in-production-for-busy-engineers/llm-caching/" }
       ],
       project: "Before/after report showing ≥50% cost reduction + evals still green",
@@ -1298,7 +1298,7 @@ const COURSE = {
       resources: [
         { kind: "read", label: "OWASP LLM Top 10", url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/" },
         { kind: "read", label: "Prompt injection primer", url: "https://simonwillison.net/2023/May/2/prompt-injection-explained/" },
-        { kind: "video", label: "AI Red Teaming — Anthropic", url: "https://www.youtube.com/watch?v=-vK8WpDXFLI" }
+        { kind: "video", label: "AI Red Teaming — research talk", url: "https://www.youtube.com/watch?v=-vK8WpDXFLI" }
       ],
       project: "RED_TEAM_REPORT.md documenting 10 attacks and mitigations",
       module_link: "modules/08-security.md"
@@ -1328,13 +1328,13 @@ const COURSE = {
     },
     {
       n: 25, module: 10, moduleTitle: "n8n Automation",
-      title: "n8n Fundamentals + Claude Integration",
-      goal: "Self-host n8n, call Claude from a workflow, build Slack → AI → Slack bot",
+      title: "n8n Fundamentals + LLM Integration",
+      goal: "Self-host n8n, call an LLM from a workflow, build Slack → AI → Slack bot",
       phase: 4,
       tasks: [
         { id: "w25-spin", label: "Spin up n8n with Docker Compose", time: "30m" },
         { id: "w25-docs", label: "Read HTTP Request node + expressions docs", time: "45m" },
-        { id: "w25-slack", label: "Build Slack → Claude classifier → Slack workflow", time: "2h" },
+        { id: "w25-slack", label: "Build Slack → LLM classifier → Slack workflow", time: "2h" },
         { id: "w25-error", label: "Add error-handling workflow with Slack alert", time: "45m" },
         { id: "w25-creds", label: "Move all secrets to n8n credential vault", time: "20m" }
       ],
@@ -1343,7 +1343,7 @@ const COURSE = {
         { kind: "read", label: "HTTP Request node", url: "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/" },
         { kind: "video", label: "n8n in 15 minutes (official)", url: "https://www.youtube.com/watch?v=1MwSoB0gnM4" }
       ],
-      project: "Slack bot that classifies QA alerts via Claude and posts verdicts back to thread",
+      project: "Slack bot that classifies QA alerts via an LLM and posts verdicts back to thread",
       module_link: "modules/10-n8n.md"
     },
     {
@@ -1352,10 +1352,10 @@ const COURSE = {
       goal: "Wire n8n to your test runner, eval DB, and MCP tools",
       phase: 4,
       tasks: [
-        { id: "w26-triage", label: "Build CI failure triage pipeline (GitHub → Claude → Jira + Slack)", time: "2h" },
+        { id: "w26-triage", label: "Build CI failure triage pipeline (GitHub → LLM → Jira + Slack)", time: "2h" },
         { id: "w26-api", label: "Wrap MCP tools in a thin HTTP API with auth", time: "1.5h" },
         { id: "w26-webhook", label: "n8n webhook → trigger test suite → post results", time: "1.5h" },
-        { id: "w26-digest", label: "Nightly AI quality digest (Langfuse + evals → Claude → Slack)", time: "1h" },
+        { id: "w26-digest", label: "Nightly AI quality digest (Langfuse + evals → LLM → Slack)", time: "1h" },
         { id: "w26-boundary", label: "Document your personal n8n-vs-code-agent decision criteria", time: "20m" }
       ],
       resources: [
@@ -1438,6 +1438,7 @@ const COURSE = {
     { tag: "Capstone", title: "Playwright Healer", desc: "Self-healing test framework", url: "code/capstone-playwright-healer/" }
   ],
   resources: [
+    { tag: "Setup", title: "Providers — one API, any model", desc: "Base URLs, free tiers, and the compatibility matrix. Read before Week 2.", url: "PROVIDERS.md" },
     { tag: "Videos", title: "Curated Video Library", desc: "Every talk, tutorial, and podcast worth your time", url: "resources/VIDEOS.md" },
     { tag: "Tools", title: "Tools Cheat Sheet", desc: "Every SDK, framework, DB, and platform you'll touch", url: "resources/TOOLS.md" },
     { tag: "Communities", title: "Communities", desc: "Where AI engineers actually hang out", url: "resources/COMMUNITIES.md" },

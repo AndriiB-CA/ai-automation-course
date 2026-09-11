@@ -4,13 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "code/module-14-idp/**"
-      - "code/module-12-multi-agent/**"
+      - "code/**"
       - ".github/workflows/starters-typecheck.yml"
   pull_request:
     paths:
-      - "code/module-14-idp/**"
-      - "code/module-12-multi-agent/**"
+      - "code/**"
       - ".github/workflows/starters-typecheck.yml"
 
 jobs:
@@ -20,9 +18,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Every starter that has a package.json + lockfile + tsconfig.
+        # Starters without one (week-06, week-07, week-18) are illustrative
+        # snippets, not installable projects.
         project:
-          - code/module-14-idp
+          - code/capstone-playwright-healer
           - code/module-12-multi-agent
+          - code/module-14-idp
+          - code/week-02-first-api-call
+          - code/week-10-rag-pgvector
+          - code/week-15-mcp-agent
+          - code/week-20-ai-test-generator
     defaults:
       run:
         working-directory: ${{ matrix.project }}

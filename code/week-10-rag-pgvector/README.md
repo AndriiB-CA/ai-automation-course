@@ -31,7 +31,7 @@ SQL
 
 # 3. Install deps
 npm init -y
-npm install @anthropic-ai/sdk pg voyageai dotenv
+npm install openai pg dotenv
 npm install -D tsx typescript @types/pg @types/node
 ```
 

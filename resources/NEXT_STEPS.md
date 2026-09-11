@@ -36,10 +36,10 @@ If Module 8 was your favorite, this niche is booming and under-staffed.
 **Communities:**
 - Embrace the Red blog + Discord
 - HackerOne's AI vulnerability programs
-- Anthropic's [bug bounty](https://www.anthropic.com/responsible-disclosure-policy)
+- Frontier-lab bug bounties — [Anthropic](https://www.anthropic.com/responsible-disclosure-policy), OpenAI, Google all run one
 
 **Target roles:**
-- AI Red Team @ Anthropic / OpenAI / Microsoft
+- AI Red Team @ a frontier lab (Anthropic, OpenAI, Google DeepMind) or Microsoft
 - AI Security Engineer @ Lakera, Protect AI, HiddenLayer
 - General security engineer with AI specialization
 

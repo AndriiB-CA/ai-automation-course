@@ -7,6 +7,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+- **Provider-neutral rewrite.** The healer now talks to any OpenAI-compatible
+  endpoint via `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` instead of a single
+  vendor SDK. Cost estimation reads per-token prices from the environment
+  rather than a hardcoded table, and reports "unknown" when they are unset.
+- Screenshots are sent as `image_url` data URIs, the portable vision encoding.
+- Fixed `.ts` import specifiers (now `.js`, as NodeNext ESM requires) so the
+  package typechecks.
+
 ### Planned
 - Real-time Playwright reporter integration for the `watch` sub-command
 - `render.ts` module for richer TestSpec → .spec.ts rendering (multi-step flows, helpers)

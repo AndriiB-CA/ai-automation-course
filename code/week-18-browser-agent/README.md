@@ -12,7 +12,7 @@ Full guidance in [module 5](../../modules/05-browser-agents.md).
 
 ```bash
 npm init -y
-npm install @browserbasehq/stagehand @anthropic-ai/sdk zod
+npm install @browserbasehq/stagehand openai zod
 npm install -D tsx typescript @types/node @playwright/test
 npx playwright install chromium
 ```
@@ -26,8 +26,11 @@ import { Stagehand } from "@browserbasehq/stagehand";
 
 const stagehand = new Stagehand({
   env: "LOCAL",
-  modelName: "claude-sonnet-5",
-  modelClientOptions: { apiKey: process.env.ANTHROPIC_API_KEY }
+  modelName: process.env.LLM_MODEL,
+  modelClientOptions: {
+    apiKey: process.env.LLM_API_KEY,
+    baseURL: process.env.LLM_BASE_URL,   // any OpenAI-compatible provider
+  }
 });
 
 await stagehand.init();
@@ -50,12 +53,14 @@ await stagehand.close();
 
 Replace Stagehand's DOM-based actions with:
 1. `page.screenshot()` → full-page image
-2. Send to Claude with task + image
-3. Claude returns `{ action: "click", x: 400, y: 300 }` or `{ action: "type", text: "..." }`
+2. Send to a vision-capable model with task + image
+3. The model returns `{ action: "click", x: 400, y: 300 }` or `{ action: "type", text: "..." }`
 4. Your code executes via Playwright coordinates
 5. Loop
 
-See the [Anthropic Computer Use reference](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo) for the vision pattern.
+Screenshots travel as an `image_url` part with a `data:image/png;base64,...` URI — that encoding is
+the portable one across OpenAI-compatible providers. Check your provider supports vision first; text-only
+models return a 400 rather than silently ignoring the image.
 
 ## Evaluation
 
