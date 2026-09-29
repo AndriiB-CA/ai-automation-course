@@ -94,7 +94,7 @@ Your capstone (the Playwright Healer) is effectively a take-home you've already 
 You're not a junior. You're a senior QA engineer who retooled into AI. Own that framing.
 
 - **The 60-second pitch:** "I spent X years in QA automation with Playwright and TypeScript — flaky systems, CI/CD, regression suites, golden data. I moved into AI engineering because those exact skills — evals, reliability, edge-case thinking — are what production AI systems need. I've shipped [capstone], [RAG app], and [multi-agent system], and I write [blog]." Practice until it's natural.
-- **Quantify your stories.** Not "I built a test healer" but "I built an open-source tool that auto-heals Playwright selectors with 78% success on synthetic mutations at $0.04/heal." (Module 13 habit, again — it compounds.)
+- **Quantify your stories.** Not "I built a test healer" but "I built an open-source tool that, on N synthetic mutations, correctly patched locator drift in X cases and refused Y product bugs, at $Z per heal." Those numbers come from your mutation table. (Module 13 habit — it compounds.)
 - **Turn the "gap" into an edge.** When asked "you don't have years of ML experience" — agree and pivot: "Right, I'm not training models. I build *reliable* AI systems, and reliability is exactly the unsolved problem — which is why I lead with evals and constrained autonomy." 
 - **Have three stories ready:** a technical-depth story, a stakeholder/ambiguity story, and a failure-and-recovery story.
 

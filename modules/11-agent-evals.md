@@ -65,11 +65,13 @@ assert on output                   assert on the trajectory AND the outcome
                                      + safety invariants hold every step
 ```
 
-### Build: an eval harness for your Week 15 research agent (4 hours)
+### Build: extend the Week 15 harness (4 hours)
 
-You already instrumented that agent with Langfuse traces (Week 16). Now grade them.
+You already have a structural harness. [`code/week-15-mcp-agent`](../code/week-15-mcp-agent/) `npm run eval` runs 10 tasks at N=3 and asserts the allow-list, required tools, forbidden tools, step cap, and cost ceiling. It does not judge the answer, and it does not try to break the agent.
 
-**Step 1 — A task-based golden set (60 min).** Write 15 tasks, not input/output pairs. Each task is `{ id, prompt, success_criteria, must_use_tools?, must_not_use_tools?, max_steps, max_cost_usd }`. Cover: easy single-tool tasks, multi-tool tasks, tasks needing recovery (a tool returns an error), and 2–3 "trap" tasks where the obvious tool is wrong.
+You also instrumented that agent with Langfuse traces (Week 16). Now grade the traces.
+
+**Step 1 — Grow the golden set (60 min).** The starter already has 10 structural tasks. Add tasks until you have 15, still as `{ id, prompt, success_criteria, must_use_tools?, must_not_use_tools?, max_steps, max_cost_usd }` rather than input/output pairs. Cover recovery (a tool returns an error) and 2–3 traps where the obvious tool is wrong. The starter's 10 do not cover those.
 
 **Step 2 — Capture trajectories (30 min).** Run each task; record the full trace as structured JSON: the ordered list of `{ tool, args, result, tokens }` plus the final answer, total cost, and step count. (Pull from Langfuse, or log it yourself.)
 
@@ -167,7 +169,7 @@ Add an `agent-evals` GitHub Actions job (model the structure on your Week 7 `eva
     npm run eval:agent:safety   # exits non-zero if ANY invariant fails
 ```
 
-🎯 **The moment this job blocks a PR because the agent regressed from 92% → 78% task success, or because a prompt tweak reopened an injection hole — you are doing the work almost nobody does well.** Screenshot it for your portfolio.
+🎯 **The moment this job blocks a PR because the agent's task-success rate fell through the threshold you committed to, or because a prompt tweak reopened an injection hole — you are doing the work almost nobody does well.** Screenshot it for your portfolio. The threshold is yours, from your harness, not a number from this page.
 
 ### Tooling landscape (2026)
 - **LangSmith** — first-class trajectory evaluators; best if you're on LangGraph

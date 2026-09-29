@@ -2,7 +2,7 @@
 
 AI moves fast; this course pins its fast-moving claims here so they can be re-verified on a schedule instead of rotting silently. **Cadence: re-check this table every ~3 months** (or whenever a major model generation ships) and update the modules it points to.
 
-**Last full verification: 2026-09-10**
+**Last full verification: 2026-09-29**
 
 > 🤖 **Working on this repo with an AI agent?** Read [AGENTS.md](./AGENTS.md) first — it explains why this file exists and the rule that matters most: never write a model ID, price, or "current best practice" from memory.
 
@@ -29,15 +29,17 @@ If you find a hardcoded model ID or dollar figure anywhere outside a clearly-lab
 | Anthropic's OpenAI-compat layer is positioned for **testing and comparison, not production**, and drops `response_format`, `strict`, and prompt caching | PROVIDERS.md, Module 1 Week 3 | 2026-09-10 | [same](https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk) |
 | Google's OpenAI endpoint serves **Chat Completions and Embeddings only** | PROVIDERS.md, Module 3 | 2026-09-10 | [ai.google.dev](https://ai.google.dev/gemini-api/docs/openai) |
 | Embeddings are less widely served than chat; xAI and Groq are chat-only | PROVIDERS.md, Module 3, TOOLS.md | 2026-09-10 | provider docs |
-| Tokenizers change between generations of the same family — a documented case produced ~30% more tokens for identical text | Module 1 | 2026-09-10 | vendor release notes |
+| Tokenizers change between generations of the same family. One vendor's release notes document roughly 30% more tokens for the same text (the exact increase depends on the content). The module states the shape and points here; it does not name a model. | Module 1 | 2026-09-29 | [Claude platform release notes](https://platform.claude.com/docs/en/release-notes/overview) |
 | Batch APIs ≈ 50% discount, near-universal as a concept | Modules 7, 14 | 2026-09-10 | provider pricing pages |
-| `openai` SDK pinned at `^7.15.0`; `zod` at `^3.24.0` with `zod-to-json-schema` | all `code/*/package.json` | 2026-09-10 | `npm view openai version` |
+| `openai` SDK pinned at `^7.15.0`; `zod` at `^3.24.0` with `zod-to-json-schema`. `@modelcontextprotocol/sdk` in the Week 15 starter is `^1.31.0` (`registerTool` still matches the server). Latest on npm the day this was checked: openai 7.25.0, MCP SDK 1.31.0. Do not bump openai across starters without a typecheck. | Week 15 `package.json`; other starters keep openai `^7.15.0` | 2026-09-29 | `npm view openai version` and `npm view @modelcontextprotocol/sdk version` |
 | pgvector 0.8.0+ iterative index scans (~5.7× faster filtered queries) | Module 3, TOOLS.md | 2026-07 | [pgvector releases](https://github.com/pgvector/pgvector/releases) |
-| MCP: Linux Foundation donation (Dec 2025), 9,400+ public servers, 78% enterprise adoption | Module 4, TOOLS.md | 2026-07 | [modelcontextprotocol.io](https://modelcontextprotocol.io/) |
-| Playwright Agents (v1.56+, Oct 2025): NL test-gen + self-healing. `page.accessibility` is removed — use `locator.ariaSnapshot()` | Module 5, TOOLS.md, week-20 starter | 2026-09-10 | [Playwright release notes](https://playwright.dev/docs/release-notes) |
+| MCP spec **2026-07-28**: stateless Streamable HTTP (no protocol session), `Mcp-Method` / `Mcp-Name` headers, OAuth 2.1 with audience-bound tokens for remote servers. Stdio stays the local default. Public server counts and enterprise-adoption percentages are not pinned — they were being cited without a source. | Module 4, TOOLS.md, week-15 starter | 2026-09-29 | [2026-07-28 spec post](https://blog.modelcontextprotocol.io/posts/2026-07-28/), [authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization) |
+| Playwright Test Agents (planner, generator, healer) are documented at `/docs/test-agents`. `/docs/playwright-agents` returns 404. `page.accessibility` was removed in 1.57 — use `locator.ariaSnapshot()`. Stable release notes document a `boxes` option (`[box=x,y,width,height]`) for model consumption. Playwright MCP getting started: `@playwright/mcp`. Release notes also document `npx playwright mcp`. | Modules 5–6, TOOLS.md, week-18 and week-20 starters, capstone | 2026-09-29 | [Test agents](https://playwright.dev/docs/test-agents), [MCP](https://playwright.dev/docs/getting-started-mcp), [release notes](https://playwright.dev/docs/release-notes) |
 | OWASP LLM Top 10 (2025) + OWASP Agentic Top 10 (2026) as the security taxonomies | Modules 8, 11 | 2026-07 | [genai.owasp.org](https://genai.owasp.org/) |
-| DOM-driven browser agents ~12–17 pp more reliable than pure vision | Module 5 | 2026-07 | re-search current benchmarks |
+| DOM-vs-vision reliability is something the learner measures on their own tasks. An unsourced percentage-point gap was removed from the teaching text. | Module 5 | 2026-09-29 | re-search current benchmarks before putting a number back |
 | AGENTS.md is the cross-tool context-file standard | Modules 12, 16; repo root | 2026-09-09 | [agents.md](https://agents.md) |
+| OpenAI recommends the Responses API for new OpenAI projects. Chat Completions remains supported and is still what other vendors implement, so it stays the course default. The Assistants API was sunset on 26 August 2026. | PROVIDERS.md, Module 1 | 2026-09-29 | [Migrate to Responses](https://developers.openai.com/api/docs/guides/migrate-to-responses) |
+| Stagehand v4: `Stagehand.create()`, `stagehand.act(instruction)`, unified `model` object. `page.act({ action })` and `modelName` / `modelClientOptions` are old. The Week 17 path is Playwright MCP plus the hand-rolled loop, not Stagehand. | Module 5, week-18 README | 2026-09-29 | [v3 → v4 migration](https://docs.stagehand.dev/v4/migrations/v3) |
 | US salary band ~$86K–$204K+, median ~$135K for AI automation roles | Module 15 | 2026-07 | current salary aggregators |
 
 ---

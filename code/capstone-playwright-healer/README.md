@@ -7,7 +7,18 @@ Starter scaffold for your Week 20–24 capstone project. **Copy this to a new pu
 A tool that:
 1. **Generates** Playwright specs from a URL (`playwright-healer gen <url>`)
 2. **Heals** broken selectors when tests fail (`HealingLocator` wrapper)
-3. **Auto-opens PRs** with proposed fixes (GitHub Action)
+3. **Opens PRs** with proposed fixes for a human to apply (GitHub Action)
+
+`HealingLocator` records a verdict and **does not click** the suggested selector. A live retry can hide a product bug.
+
+## Mutation table (required in your public README)
+
+Twenty rows. Include locator drift and at least one product bug. Leave the measured cells blank until you have run them. Do not copy a success rate from anywhere, including this course.
+
+| # | Mutation | Expected verdict | Healer verdict | Correct fix? | Would the patch have hidden a real bug? |
+|---|---|---|---|---|---|
+| 1 | rename a test id | locator-drift | | | |
+| 2 | remove the control | product-bug | | | |
 
 ## Directory layout
 

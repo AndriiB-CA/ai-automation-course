@@ -57,7 +57,7 @@ By the end of this roadmap you will have:
 | 0 | 1 | **Orientation & Setup** | Environment, API keys, mental models |
 | 1 | 2–4 | **LLM API Fundamentals** | The raw clay. Structured outputs. Tool use. |
 | 2 | 5–8 | **Prompt Engineering + Evals** | QA brain goes brrr. This is your edge. |
-| 3 | 9–12 | **RAG Systems** | The #1 production AI pattern in 2026 |
+| 3 | 9–12 | **RAG Systems** | The grounding layer: hybrid retrieval, rerank, citations |
 | 4 | 13–16 | **Agents & MCP** | Multi-step reasoning + tool use at scale |
 | 5 | 17–19 | **Browser Agents** | Your Playwright skills become superpowers |
 | 6 | 20–21 | **AI-Powered QA** | Test generation + self-healing (your track) |
@@ -110,7 +110,7 @@ Designed for a working engineer with a job and a life:
 - **Tue/Thu — OFF** or reading on commute (no typing required)
 - **One weekend session (3–4 hrs)** → The week's main project. This is where the real learning happens.
 
-Total: ~5–7 hrs. Sustainable indefinitely.
+Total for a **core week**: ~5–7 hrs. Companion modules add hours on top. [ROADMAP.md](./ROADMAP.md#hours-with-companions) says which of those projects can slide when the week is already full. Module 14 can move. Module 12 replaces further Week 15 scope instead of stacking on it.
 
 ---
 

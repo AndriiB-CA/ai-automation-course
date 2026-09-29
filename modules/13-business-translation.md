@@ -111,7 +111,7 @@ Write a one-page brief for the process you modeled, aimed at a manager who contr
 From here on, **every project README in this course gets an Impact section with numbers.** The difference between a junior and senior portfolio is the difference between:
 
 - ❌ "Built an automation that processes invoices."
-- ✅ "Automated a 47-step procurement workflow; reduced cycle time 60% and error rate 85%; ~$X/year saved at current volume; $0.04 per invoice in API cost; payback in 3 months."
+- ✅ "Automated a 47-step procurement workflow; reduced cycle time 60% and error rate 85%; ~$X/year saved at current volume; $X per invoice in API cost; payback in N months." The percentages and the dollar figures are yours to measure. This course does not supply them.
 
 Even for a learning project, *estimate* the impact. The habit of quantifying is what hiring managers screen for.
 

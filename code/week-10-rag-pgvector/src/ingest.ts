@@ -49,6 +49,18 @@ async function ensureSchema(): Promise<void> {
         USING hnsw (embedding vector_cosine_ops)
     `);
 
+    // Lexical half of hybrid search. Generated so it stays in sync with content.
+    await client.query(`
+      ALTER TABLE chunks
+        ADD COLUMN IF NOT EXISTS content_tsvector tsvector
+        GENERATED ALWAYS AS (to_tsvector('english', content)) STORED
+    `);
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS chunks_content_tsv_idx
+        ON chunks
+        USING GIN (content_tsvector)
+    `);
+
     await client.query("COMMIT");
     console.log(`Schema ready (extension + table + HNSW index) — ${EMBEDDING_MODEL}, ${EMBEDDING_DIMS} dims.`);
   } catch (err) {

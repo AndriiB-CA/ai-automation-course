@@ -35,12 +35,19 @@ npm install openai pg dotenv
 npm install -D tsx typescript @types/pg @types/node
 ```
 
-## Files you'll create here
+## Scripts
 
-- `ingest.ts` — read docs, chunk, embed, insert
-- `search.ts` — take query, embed, SELECT ... ORDER BY embedding <=> $1 LIMIT k
-- `eval.ts` — measure Recall@5 on labeled queries
-- `docker-compose.yml` — reproducible Postgres + pgvector
+```bash
+npm run explore   # Week 9 — cosine matrix, no Postgres. Writes similarities.csv
+npm run ingest    # chunks + embeddings + tsvector column
+npm run search -- "your query"
+npm run eval      # Recall@5, vector only
+npm run compare   # Week 11 — vector vs hybrid (RRF) vs hybrid+rerank
+```
+
+`explore` replaces the notebook this folder used to point at. That notebook was never in the repo.
+
+Hybrid search uses reciprocal rank fusion, not a 0.7/0.3 blend of cosine and `ts_rank`. The reranker calls `LLM_MODEL_SMALL`. A hosted reranker can replace `src/rerank.ts` later, after `compare` says it wins.
 
 ## Reference queries
 

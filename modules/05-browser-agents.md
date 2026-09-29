@@ -41,20 +41,23 @@ Your job in this module: combine what you already know (Playwright, waits, trace
 
 Week 17 focuses on **Pattern B**. You'll build Pattern A in Module 6.
 
-### Libraries you'll compare
-- **Stagehand** (Browserbase) — TypeScript-first, DOM-driven AI augmentation on Playwright. Cleanest abstraction for this pattern.
-- **Browser Use** — 50k+ GitHub stars, fastest-growing AI browser project in 2025–26. Self-hosted, works with any LLM. Worth knowing even if you stay in TS.
-- **Playwright Agents** (v1.56+, Oct 2025) — natural-language test generation and self-healing built directly into Playwright. If you're already using Playwright, start here.
-- **Computer-use / OS-control agents** — vision-based, need a sandboxed VM. Several vendors now ship one. Use when DOM access is unavailable.
+### What you will actually run
+1. **Playwright MCP** — the official server (`@playwright/mcp`, and `npx playwright mcp` on current Playwright). A coding agent calls `browser_snapshot`, `browser_click`, and the rest. Do one task this way before you write a loop. Docs: [Playwright MCP](https://playwright.dev/docs/getting-started-mcp).
+2. **The hand-rolled loop** in [`/code/week-18-browser-agent`](../code/week-18-browser-agent/). Same job, your code, role and accessible name, ARIA snapshot with bounding boxes. This is the one you can debug.
+3. **Playwright Test Agents** — planner, generator, and healer (`npx playwright init-agents`). Those write and repair *tests*. They are not this week's browser loop. Docs: [Test agents](https://playwright.dev/docs/test-agents). You use them in Module 6.
 
-**Architectural rule of thumb (2026 data):** DOM-driven stacks (Stagehand, Playwright Agents) are 12–17 percentage points more reliable than pure vision stacks for common form/navigation tasks. Use DOM for the predictable 80%, vision for the stubborn 20%.
+**Stagehand** (Browserbase) is a real DOM-driven library. Its API has broken across majors — v4 is `Stagehand.create()` and `stagehand.act("instruction")`, not `new Stagehand` plus `page.act({ action })`. If you try it, pin the version whose migration guide you just read: [v3 → v4](https://docs.stagehand.dev/v4/migrations/v3). It is not the Week 17 path.
+
+**Browser Use** is the Python project worth skimming for ideas. **Computer-use** agents act through OS mouse and keyboard inside a sandbox. Use them when there is no DOM.
+
+**Rule of thumb:** prefer the accessibility tree for ordinary web tasks. Vision is for canvas, pixels-only desktops, and the cases where the tree is a lie. Any percentage-point gap you have seen quoted for "DOM versus vision" is a claim to re-measure on your five tasks. Your comparison table is the evidence.
 
 ### Reading (90 min)
-- [Stagehand docs](https://docs.stagehand.dev/)
-- [Browserbase blog — Stagehand design](https://www.browserbase.com/blog/introducing-stagehand)
-- [Playwright Agents — official docs](https://playwright.dev/docs/playwright-agents) (v1.56+)
-- [Browser Use — GitHub](https://github.com/browser-use/browser-use)
+- [Playwright MCP — getting started](https://playwright.dev/docs/getting-started-mcp)
+- [Playwright Test Agents](https://playwright.dev/docs/test-agents)
+- [Browser Use — GitHub](https://github.com/browser-use/browser-use) — skim
 - [Computer use — one vendor's implementation](https://www.anthropic.com/news/3-5-models-and-computer-use), for the architecture
+- Stagehand's current migration guide, only if you install it
 
 ### Video (45 min)
 - 🎥 [Building a browser agent — live demo](https://www.youtube.com/watch?v=vh9tDq1EZBU)
@@ -75,7 +78,7 @@ Your agent should:
 5. Loop until task is complete or 15 steps reached
 6. Emit a final `success: boolean` + trace
 
-Starter in [`/code/week-18-browser-agent/stagehand-starter.ts`](../code/week-18-browser-agent/).
+Starter in [`/code/week-18-browser-agent`](../code/week-18-browser-agent/) (`npm run agent`).
 
 ### Key design decisions you'll make
 - How do you represent the page to the LLM? Full HTML (too long), accessibility tree (compact, great), screenshot (vision, slow)?
@@ -83,7 +86,7 @@ Starter in [`/code/week-18-browser-agent/stagehand-starter.ts`](../code/week-18-
 - How do you verify the action worked? Next page state? Explicit LLM check? Both?
 
 ### 🧪 QA bridge
-The action verification step is your **implicit assertion**. You've done this in Playwright every day — `await expect(locator).toBeVisible()`. Now you're doing it with an LLM as oracle. Document which model makes the best verifier (Hint: Haiku is often plenty).
+The action verification step is your **implicit assertion**. You've done this in Playwright every day — `await expect(locator).toBeVisible()`. Now you're doing it with an LLM as oracle. Run the verifier on `LLM_MODEL_SMALL` as well as `LLM_MODEL`. The small model is often enough, and the eval is how you know.
 
 ---
 
@@ -108,11 +111,11 @@ Where the three sit:
 
 | | Perceives via | Acts via | Reach | Reliability on web forms | Cost/speed |
 |---|---|---|---|---|---|
-| **DOM-driven** (Stagehand, Playwright Agents) | accessibility tree / DOM | Playwright API | web only | highest (the 12–17 pp advantage above) | cheapest, fastest |
+| **DOM-driven** (Playwright MCP, your Week 17 loop) | accessibility tree / DOM | Playwright API | web only | highest on ordinary web forms — measure it | cheapest, fastest |
 | **Vision + Playwright** (your Week 18 build) | screenshots | Playwright coordinates | web only | mid | mid |
 | **Computer use** | screenshots | OS mouse/keyboard | **anything on screen** — desktop apps, Citrix/RDP, Electron, legacy ERP | lowest for web | most expensive, slowest |
 
-The decision rule extends naturally: **DOM for the predictable 80%, vision for the stubborn 20%, computer use only when there's no DOM to talk to.** In enterprise automation the "no DOM" case is real and lucrative — the RPA industry exists because so much business software is a legacy desktop app. Computer use is the LLM-native successor to that niche, which is why it belongs in your interview vocabulary even if you rarely deploy it.
+The decision rule: **accessibility tree for ordinary pages, vision when the tree is missing or lying, computer use only when there is no DOM.** In enterprise automation the "no DOM" case is real and lucrative — the RPA industry exists because so much business software is a legacy desktop app. Computer use is the LLM-native successor to that niche, which is why it belongs in your interview vocabulary even if you rarely deploy it.
 
 🛡️ Note the security gradient too: a computer-use agent holds *the whole machine* — every pillar of Constrained Autonomy (Module 12) matters more. Run it in a disposable VM, never on your own desktop session, and treat everything it reads on screen as untrusted input.
 
@@ -185,8 +188,9 @@ Defenses layered:
 
 **Dockerize** your Week 17 agent:
 ```dockerfile
-# Use the current Playwright version — check https://playwright.dev/docs/docker for latest tag
-FROM mcr.microsoft.com/playwright:v1.50.0-noble
+# Replace <version> with the Playwright version in package.json.
+# Copy the tag from https://playwright.dev/docs/docker — do not reuse an old one.
+FROM mcr.microsoft.com/playwright:v<version>-noble
 
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -197,7 +201,7 @@ COPY . .
 RUN useradd -m agent && chown -R agent /app
 USER agent
 
-CMD ["node", "dist/agent.js"]
+CMD ["npx", "tsx", "src/agent.ts"]
 ```
 
 Then:
@@ -227,7 +231,7 @@ You've just built **AI-powered synthetic monitoring**. This is a product compani
 ## Daily 15-min tasks
 
 - **Mon:** Try your Week 17 agent on a new website you've never tested. Where does it break first?
-- **Tue:** Watch one [Stagehand demo on YouTube](https://www.youtube.com/@browserbasehq)
+- **Tue:** Re-read one section of the [Playwright MCP getting-started page](https://playwright.dev/docs/getting-started-mcp) and note one tool your loop does not have yet
 - **Wed:** Read one thread in [r/automation](https://www.reddit.com/r/automation/) or [r/webscraping](https://www.reddit.com/r/webscraping/) about browser agent problems
 - **Thu:** Reduce your agent's cost by 20% — try: smaller page representation, cheaper model for verification, prompt caching
 - **Fri:** Look at your Langfuse traces. Find one session where the agent did something wasteful. Fix it next weekend.

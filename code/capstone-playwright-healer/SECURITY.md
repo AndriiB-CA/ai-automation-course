@@ -33,7 +33,7 @@ production source, CI configuration).
 
 When the healer captures page state to send to the model, it:
 
-- Uses the **ARIA accessibility snapshot** (`page.locator("body").ariaSnapshot()`)
+- Uses the **ARIA accessibility snapshot** (`page.locator("body").ariaSnapshot({ boxes: true })`)
   rather than raw HTML. ARIA snapshots contain structural/semantic information
   only — they do not include input values, passwords, tokens, or hidden form
   fields.

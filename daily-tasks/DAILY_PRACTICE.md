@@ -87,7 +87,7 @@ Each weekday has a micro-task drawn from your current module. **Rotate through t
 - One frontier-lab research post ([Anthropic](https://www.anthropic.com/research), [OpenAI](https://openai.com/research/), [DeepMind](https://deepmind.google/research/)) or one [MCP blog post](https://modelcontextprotocol.io/blog)
 
 **Tue — Experiment**
-- Run your agent with the cheapest model (Haiku). Where does quality break?
+- Run your agent with `LLM_MODEL_SMALL`. Where does quality break?
 
 **Wed — Refactor**
 - Rewrite one tool description to be clearer. Measure tool-call accuracy.
@@ -147,7 +147,7 @@ Each weekday has a micro-task drawn from your current module. **Rotate through t
 - Enable prompt caching on one more prompt. Measure savings over 10 calls.
 
 **Wed — Refactor**
-- Swap one Sonnet call to Haiku. Run evals. If pass rate holds, keep it.
+- Swap one `LLM_MODEL` call to `LLM_MODEL_SMALL`. Run evals. If the pass rate holds, keep it.
 
 **Thu — Explore**
 - Read one [Latent Space post](https://www.latent.space/) on LLM ops

@@ -102,13 +102,14 @@
 | Tool | Approach | Best for |
 |---|---|---|
 | **Playwright** (raw) | Selectors + API | Your existing superpower |
-| **Playwright Agents** | NL test-gen + self-healing built into Playwright (v1.56+) | If you already use Playwright, start here |
-| **Stagehand** | LLM-driven wrapper over Playwright | Week 17's starting point |
+| **Playwright MCP** | Official browser tools over the accessibility tree (`@playwright/mcp`, `npx playwright mcp`) | Week 17, before you write a loop |
+| **Playwright Test Agents** | Planner, generator, healer (`npx playwright init-agents`). [Docs](https://playwright.dev/docs/test-agents) | Module 6 — tests, not a general browser agent |
+| **Stagehand** | DOM-driven Playwright library. Pin the major you read; v4 is not the v2 snippet | Optional. Not the Week 17 path |
 | **Browser-Use** | Python, LLM-first | Reference reading |
 | **Computer-use agents** | Vision + OS-level coordinates | When there is no DOM at all — desktop apps, Citrix, legacy ERP |
 | **Browserbase** | Hosted, headless, sandboxed | Production scale |
 
-**Recommendation:** Playwright + Stagehand in dev. Move to Browserbase when you need scale or anti-bot resilience.
+**Recommendation:** Playwright MCP plus the hand-rolled loop in `code/week-18-browser-agent` while you are learning. Browserbase when you need hosted scale. Stagehand only at a pinned version.
 
 ---
 
@@ -120,7 +121,7 @@
 - **[Official servers](https://github.com/modelcontextprotocol/servers)** — GitHub, Slack, Postgres, Puppeteer, filesystem, …
 - **[Awesome MCP servers](https://github.com/punkpeye/awesome-mcp-servers)** — community catalog
 
-> **2026 status:** MCP is now an industry standard — the spec was donated to the Linux Foundation (Dec 2025), and OpenAI, Google, and Microsoft all ship MCP support. Teach it as the default integration layer, not an experiment.
+> **Status:** MCP is the default integration layer. The spec is under the Linux Foundation (donated Dec 2025). The **2026-07-28** revision made Streamable HTTP stateless and tightened OAuth for remote servers. Stdio is still the right first server. Don't quote an unsourced adoption percentage.
 
 ---
 

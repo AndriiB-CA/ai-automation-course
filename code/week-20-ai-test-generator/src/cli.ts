@@ -62,7 +62,7 @@ async function main(): Promise<void> {
     // ariaSnapshot() returns the accessibility tree as YAML. It replaced the
     // removed page.accessibility API, and the YAML happens to be far cheaper
     // in tokens than the old JSON tree — the same information at ~half the cost.
-    const snapshot = await page.locator("body").ariaSnapshot();
+    const snapshot = await page.locator("body").ariaSnapshot({ boxes: true });
     a11ySnapshot = snapshot?.trim()
       ? snapshot
       : "(empty — page may be fully JS-rendered or behind auth)";

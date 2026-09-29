@@ -11,10 +11,11 @@ Build this during Weeks 14–15. Full guidance in [module 4](../../modules/04-ag
 
 Recommended: **Test-Run MCP** (aligned with your QA track)
 
+The project in this folder is already scaffolded.
+
 ```bash
-npm init -y
-npm install @modelcontextprotocol/sdk zod
-npm install -D tsx typescript @types/node
+npm install
+npm run server
 ```
 
 Tools to expose:
@@ -26,18 +27,19 @@ See [MCP TypeScript SDK README](https://github.com/modelcontextprotocol/typescri
 
 ## Part 2 — Research Agent
 
-Recommended framework: **Mastra** (TypeScript-first, MCP-native)
+The starter **is** the agent: `npm run agent`. It is the portable loop, not a framework. Mastra (or another framework) is optional after this runs and you can say what it would replace.
+
+`web_search` is a local mock. Its snippets are not facts. Say so if you cite them.
 
 ```bash
-npm install @mastra/core openai
+npm run agent
+npm run eval          # 10 tasks × N=3, tool allow-list, step cap, cost ceiling
+EVAL_N=1 npm run eval # while you are iterating
 ```
 
-Your agent needs:
-- 5 tools (web_search, web_fetch, summarize, save_note, list_notes)
-- Persistent memory (SQLite or local JSON)
-- Budget cap (stops if cost > $0.50)
-- Max iterations cap (default 15)
-- Streaming console output with `[think]`, `[act]`, `[observe]` tags
+The eval grades the path. Module 11 is where you add an outcome judge and the adversarial suite.
+
+Budget ceiling: `BUDGET_CAP_USD` (default `0.50`). Dollars apply only when `LLM_PRICE_*_PER_MTOK` are set. The token cap always applies.
 
 ## Wiring MCP → an MCP-capable client
 
@@ -57,12 +59,17 @@ the shape they share. For Claude Desktop that file is
 }
 ```
 
+That config is **stdio**: the client spawns the process. It is the right first server.
+
+A server other people can call is a different transport. The spec dated 2026-07-28 made Streamable HTTP stateless and requires OAuth 2.1 with the token audience bound to that server. Read Module 4 before you bind a port. Do not put this test runner on the network because the JSON above worked locally.
+
 Restart the client. Your tools appear in its tool menu.
 
 ## Success criteria
 
 - [ ] MCP server starts without errors
 - [ ] Your MCP client lists your tools
-- [ ] Agent completes a 500-word research task end-to-end
+- [ ] Agent completes a research task end-to-end, and you did not treat the mock search snippets as facts
+- [ ] `npm run eval` printed a pass rate, and you can explain one failure
 - [ ] Budget cap fires when deliberately exceeded
 - [ ] Langfuse traces show every tool call

@@ -5,7 +5,9 @@
   "scripts": {
     "ingest": "tsx src/ingest.ts",
     "search": "tsx src/search.ts",
+    "explore": "tsx src/explore.ts",
     "eval": "tsx src/eval.ts",
+    "compare": "tsx src/compare.ts",
     "check-provider": "tsx src/check-provider.ts"
   },
   "dependencies": {

@@ -71,7 +71,9 @@ Starter in [`/code/week-15-mcp-agent/react-agent.ts`](../code/week-15-mcp-agent/
 
 Before MCP, every AI client had its own tool plugin system. You wrote the same tool 5 times for 5 different products. With MCP, you write it once, it runs everywhere.
 
-**MCP is now the industry standard (2026).** It originated at Anthropic, which donated the spec to the Linux Foundation in December 2025; OpenAI, Google, and Microsoft all ship MCP support. It is model-agnostic by design — that vendor-neutrality is precisely why it won. There are 9,400+ active MCP servers in the public registry and 78% of enterprise AI teams report at least one MCP-backed agent in production. This is no longer "emerging" — teach it as the default integration layer.
+**MCP is the default way to give an agent tools.** It originated at Anthropic. The spec is stewarded by the Agentic AI Foundation under the Linux Foundation, which took it in December 2025. OpenAI, Google, and Microsoft ship clients. It is model-agnostic, which is why a provider-neutral course teaches it as the integration layer.
+
+Public server counts and "percent of enterprises" move fast and get mis-quoted. When you need a number, read the registry and cite it. Do not memorize one from this page.
 
 ### Reading (2 hours)
 - ⭐ [Model Context Protocol — official docs](https://modelcontextprotocol.io/)
@@ -123,7 +125,21 @@ MCP servers run with *your* permissions. If an LLM can call your `run_shell_comm
 - Every tool has a scope (`read_only`, `restricted_paths`, etc.)
 - Destructive operations require explicit confirmation
 - Log every tool invocation with full inputs
-- Never wire an MCP server to production until you've read [MCP Security Best Practices](https://modelcontextprotocol.io/specification/draft/basic/security_best_practices)
+- Never wire an MCP server to production until you've read the current spec's security and authorization sections: [2026-07-28 authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)
+
+### Two transports, on purpose
+
+The weekend project is **stdio**: your client spawns a process, the server runs as you, and nothing is listening on a port. That is the right first server.
+
+The spec dated **2026-07-28** is the shape for a server other people call. Streamable HTTP is stateless: no protocol session id, one self-contained request per call. Clients send `Mcp-Method` and, for tool calls, `Mcp-Name`, so a gateway can route and rate-limit without parsing the JSON body. Remote auth is OAuth 2.1 with the token audience bound to that server. Dynamic client registration is deprecated. The write-up of the change is the [2026-07-28 spec post](https://blog.modelcontextprotocol.io/posts/2026-07-28/).
+
+| | stdio | stateless Streamable HTTP |
+|---|---|---|
+| Who can call it | The user who launched the process | Anyone who can reach the URL |
+| Auth | The OS user. Keep secrets in the environment. | OAuth 2.1, audience-bound tokens |
+| This course | Week 14 project | Read it now. Build it when the server leaves your laptop. |
+
+The starter SDK speaks the current `registerTool` API. Re-check [VERSIONS.md](../VERSIONS.md) before you bump it on your own — the protocol moved in 2026, and an old tutorial's `server.tool(...)` sample is the thing that breaks.
 
 ---
 
@@ -156,9 +172,17 @@ For your QA track, I recommend **Mastra** — its `Workflow` primitive maps clea
 - Persistent memory between runs (local JSON or SQLite)
 - Streaming output to the console with `think|act|observe` tags
 - Retry with backoff on tool errors
-- **Budget cap**: stops if cost > $0.50 per task
+- **Budget cap**: stops if cost exceeds the ceiling in `BUDGET_CAP_USD` (the starter defaults to `0.50`, and the ceiling only becomes dollars once `LLM_PRICE_*_PER_MTOK` are set)
 
-Give it a real task: "Research the current state of MCP adoption in 2026 and save a 500-word note with 5 sources."
+The starter in [`/code/week-15-mcp-agent`](../code/week-15-mcp-agent/) is this loop, with a local mock for `web_search`. Give it a real task once you replace that mock. Until then, do not cite its search snippets as facts.
+
+### Trajectory eval — do this before you call the agent done
+
+Single-call evals from Week 7 do not grade a path. Add a small one now. The deep version, including adversarial cases, stays in Module 11. This is the minimum that should exist before Week 16's dashboard.
+
+The starter's `npm run eval` runs **10 tasks, N=3** (override with `EVAL_N`). Each task declares required tools, forbidden tools, and a step cap. Every call must be on the allow-list. Each run must stay under the token cap and, when prices are set, the cost ceiling. A failure names the tool rule that broke. It does not grade the prose.
+
+Read the misses before you edit the system prompt. Then keep going — Week 27 is where you add an outcome judge and a safety suite. This file is not that suite.
 
 ### Anti-patterns to avoid
 - ❌ Giving the agent 20 tools — LLM gets confused. Start with 3, add only when needed.
@@ -219,13 +243,14 @@ Your Langfuse dashboard is to LLMs what your Playwright HTML reporter is to brow
 - [ ] Your research agent has completed 20+ tasks with full traces
 - [ ] You've spotted at least one optimization from looking at your dashboard
 - [ ] You have a personal opinion on Mastra vs Vercel AI SDK vs LangGraph
+- [ ] `npm run eval` has printed a pass rate for the 10-task trajectory set, and you can explain one failure
 
 ---
 
 ## Daily 15-min tasks
 
 - **Mon:** Browse one new MCP server in the [official servers repo](https://github.com/modelcontextprotocol/servers). Understand what it exposes.
-- **Tue:** Run one old task through your agent with a smaller model (Haiku). Note quality/cost tradeoff.
+- **Tue:** Run one old task through your agent with `LLM_MODEL_SMALL`. Note where quality breaks and what the cost did.
 - **Wed:** Read one research post from a frontier lab ([Anthropic](https://www.anthropic.com/research), [OpenAI](https://openai.com/research/), [Google DeepMind](https://deepmind.google/research/))
 - **Thu:** Refactor one agent tool description — make it tighter
 - **Fri:** Open your Langfuse dashboard. Look at it for 5 minutes. Write down one pattern you notice.

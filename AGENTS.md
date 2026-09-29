@@ -37,8 +37,8 @@ There is no single build. Run whichever applies to what you touched:
 # Every starter with a package.json + lockfile + tsconfig (what CI runs).
 # The full list lives in .github/workflows/starters-typecheck.yml.
 for d in code/capstone-playwright-healer code/module-12-multi-agent code/module-14-idp \
-         code/week-02-first-api-call code/week-10-rag-pgvector code/week-15-mcp-agent \
-         code/week-20-ai-test-generator; do
+ code/week-02-first-api-call code/week-10-rag-pgvector code/week-15-mcp-agent \
+ code/week-18-browser-agent code/week-20-ai-test-generator; do
   ( cd "$d" && npm ci --silent && npx tsc --noEmit ) || echo "FAILED: $d"
 done
 
@@ -58,7 +58,7 @@ grep -rnE '(claude|gpt|gemini|grok|llama)-[0-9]' --include="*.ts" --include="*.m
   --include="*.yaml" --exclude-dir=node_modules .
 ```
 
-`code/week-06-structured-tools`, `code/week-07-promptfoo-evals` and `code/week-18-browser-agent` are illustrative snippets without a package.json — do not add CI for them without being asked.
+`code/week-06-structured-tools` and `code/week-07-promptfoo-evals` are illustrative snippets without a package.json — do not add CI for them without being asked. `code/week-18-browser-agent` is a real starter and is in the typecheck list.
 
 ## Conventions that matter
 

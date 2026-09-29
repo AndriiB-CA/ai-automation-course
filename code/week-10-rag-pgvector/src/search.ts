@@ -10,6 +10,7 @@
  *   const results = await semanticSearch("What is RAG?", 5);
  */
 import "dotenv/config";
+import { pathToFileURL } from "node:url";
 import { pool, embed, toVectorLiteral } from "./db.js";
 
 // ---------------------------------------------------------------------------
@@ -41,6 +42,58 @@ export async function semanticSearch(query: string, k = 5): Promise<SearchResult
      ORDER BY embedding <=> $1::vector
      LIMIT $2`,
     [vectorLiteral, k]
+  );
+
+  return result.rows;
+}
+
+/**
+ * Hybrid search: vector nearest neighbours fused with Postgres full-text rank.
+ *
+ * Raw cosine similarity and ts_rank are not on the same scale, so this does
+ * not multiply them by 0.7 and 0.3. It uses reciprocal rank fusion: each hit
+ * contributes 1/(60 + rank) from whichever lists it appears in. Requires the
+ * content_tsvector column created by ingest.
+ */
+export async function hybridSearch(query: string, k = 5): Promise<SearchResult[]> {
+  const embedding = await embed(query);
+  const vectorLiteral = toVectorLiteral(embedding);
+
+  const result = await pool.query<SearchResult>(
+    `WITH vector_ranked AS (
+       SELECT id, ROW_NUMBER() OVER (ORDER BY dist) AS vrank
+       FROM (
+         SELECT id, embedding <=> $1::vector AS dist
+         FROM chunks
+         ORDER BY dist
+         LIMIT 50
+       ) nearest
+     ),
+     keyword_ranked AS (
+       SELECT id, ROW_NUMBER() OVER (ORDER BY kw DESC) AS krank
+       FROM (
+         SELECT id, ts_rank_cd(content_tsvector, plainto_tsquery('english', $2)) AS kw
+         FROM chunks
+         WHERE content_tsvector @@ plainto_tsquery('english', $2)
+         ORDER BY kw DESC
+         LIMIT 50
+       ) lexical
+     )
+     SELECT
+       c.id::text,
+       c.document_id,
+       c.content,
+       (
+         COALESCE(1.0 / (60 + v.vrank), 0) +
+         COALESCE(1.0 / (60 + k.krank), 0)
+       )::float AS similarity
+     FROM chunks c
+     LEFT JOIN vector_ranked v ON v.id = c.id
+     LEFT JOIN keyword_ranked k ON k.id = c.id
+     WHERE v.id IS NOT NULL OR k.id IS NOT NULL
+     ORDER BY similarity DESC
+     LIMIT $3`,
+    [vectorLiteral, query, k],
   );
 
   return result.rows;
@@ -82,7 +135,15 @@ async function main(): Promise<void> {
   await pool.end();
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+function isDirectRun(): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return import.meta.url === pathToFileURL(entry).href;
+}
+
+if (isDirectRun()) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

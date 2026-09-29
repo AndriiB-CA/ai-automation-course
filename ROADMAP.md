@@ -2,7 +2,24 @@
 
 > Each week targets **5–7 focused hours**: three 30-min weekday sessions + one 3–4 hr weekend build. **Don't skip weekends.** The weekend session is where the real learning compounds.
 
-> 📎 **Companion & career modules.** Four modules (12–15) aren't extra weeks — they weave into the journey to close the gap between "AI engineer" and "AI **automation** engineer." Each is flagged at the right point below, and summarized in the [README](./README.md#-companion--career-modules-woven-into-the-journey-not-extra-weeks).
+> 📎 **Companion & career modules.** Modules 12–16 aren't extra weeks on the calendar — they weave into the journey. They **are** extra hours. A core week is 5–7 hours. Adding a companion on top of a full weekend is how people fall behind. The table under the phase diagram says which project to slide.
+
+### Code folders don't share the week's number
+
+The starter directory is named for when it was added, not for the roadmap week. Use this map. Don't rename the folders — links and CI point at them.
+
+| You are on | Code |
+|---|---|
+| Week 2 | `code/week-02-first-api-call` |
+| Weeks 3–4 | `code/week-06-structured-tools` (snippet) |
+| Week 7 | `code/week-07-promptfoo-evals` (snippet) |
+| Weeks 9–11 | `code/week-10-rag-pgvector` |
+| Weeks 14–15 | `code/week-15-mcp-agent` |
+| Week 15 companion | `code/module-12-multi-agent` |
+| Weeks 11–12 companion | `code/module-14-idp` |
+| Weeks 17–19 | `code/week-18-browser-agent` |
+| Week 20 | `code/week-20-ai-test-generator` |
+| Weeks 21 and 24 | `code/capstone-playwright-healer` |
 
 ---
 
@@ -28,7 +45,18 @@
    [ ] = companion module woven in, not a separate week
 ```
 
-> 💡 **Read [Module 13 — Business Translation](./modules/13-business-translation.md) now (skim).** Process mapping, ROI, and stakeholder communication are a thread you'll apply in every project from here on — and the #1 thing that distinguishes an automation engineer from a pure builder. Deep-read it before the capstone.
+> 💡 **Read [Module 13 — Business Translation](./modules/13-business-translation.md) now (skim, about an hour).** Process mapping, ROI, and stakeholder communication are a thread you'll apply in every project from here on — and the thing that distinguishes an automation engineer from a pure builder. The deep read (~the rest of its ~5 hours) waits until the week before the capstone.
+
+### Hours, with companions
+
+| If you do this | Time | When the week is already full |
+|---|---|---|
+| A core week, no companion | 5–7 hours | This is the default. |
+| [Module 16](./modules/16-ai-coding-agents.md) in weeks 1–2 | ~4 hours, once | Do parts 1–2 in week 1. The exercise can slide to week 2. Don't skip the module. |
+| [Module 14](./modules/14-document-processing.md) around weeks 11–12 | ~6 hours | **Skippable.** Move it to after week 19. The starter stays put. |
+| [Module 12](./modules/12-multi-agent-orchestration.md) in week 15 | ~8 hours | Not a second project. Do the Module 12 weekend project **instead of** extending the research agent further. |
+| [Module 13](./modules/13-business-translation.md) | ~5 hours, spread out | Phase-1 skim is about an hour. Deep read waits until the week before the capstone. |
+| [Module 15](./modules/15-interview-prep.md) | ~8 hours | After week 24. It is not inside a core week. |
 
 ---
 
@@ -117,7 +145,7 @@
 **Goal:** Know when to use fixed-size, semantic, or recursive chunking. Know when hybrid search beats pure vector.
 - Read: [Chunking Strategies for LLM Applications (Pinecone)](https://www.pinecone.io/learn/chunking-strategies/)
 - Read: [Hybrid search explained (Weaviate)](https://weaviate.io/blog/hybrid-search-explained)
-- **Project:** Take your Week 10 setup. Try 3 chunking strategies, measure retrieval quality on 20 queries using `Precision@5`. Write up results.
+- **Project:** Take your Week 10 setup. Compare chunking strategies, then measure Recall@5 for vector search, hybrid reciprocal-rank fusion, and hybrid plus a `LLM_MODEL_SMALL` rerank on the same 20 queries. `npm run compare` in the starter. Write the deltas you measured.
 
 ### 🟨 Week 12 — Ship a RAG App
 **Goal:** Deployed URL you can share. Real data, real users (even if only you).
@@ -146,9 +174,9 @@
 **Goal:** An agent with 5+ tools, memory, and error handling.
 - Framework options: Vercel AI SDK (TypeScript) or Mastra (TypeScript-native agent framework)
 - Read: [Mastra docs](https://mastra.ai/docs)
-- **Project:** "Research agent" with tools: `web_search`, `web_fetch`, `summarize`, `save_to_notion` (or `save_to_file`). Handles its own failures with retry logic.
+- **Project:** "Research agent" with tools: `web_search`, `web_fetch`, `summarize`, `save_to_notion` (or `save_to_file`). Handles its own failures with retry logic. Then run the starter's trajectory eval (`npm run eval`: 10 tasks, N=3, tool allow-list, cost ceiling). The adversarial suite stays in Week 28.
 
-> 📎 **Read now — [Module 12: Multi-Agent Orchestration](./modules/12-multi-agent-orchestration.md).** This is the biggest 2026 skill upgrade in the whole course: manager/worker systems, the **Constrained Autonomy** production pattern (tool whitelists, output validation, human-in-the-loop, audit logging), the current framework landscape, the MCP/A2A/AGENTS.md protocols, and multi-agent cost control. Its weekend project upgrades this very research agent into a multi-agent system. **Do not skip it** — it's where single-agent tinkering becomes production architecture. Starter code: [`/code/module-12-multi-agent`](./code/module-12-multi-agent).
+> 📎 **Read now — [Module 12: Multi-Agent Orchestration](./modules/12-multi-agent-orchestration.md).** Manager/worker systems, the **Constrained Autonomy** pattern, the framework landscape, MCP / A2A / AGENTS.md, and multi-agent cost. Its weekend project is the production upgrade of this research agent. It is about 8 hours. If this week is already full, **do that project instead of extending the single agent further** — don't stack both. Starter code: [`/code/module-12-multi-agent`](./code/module-12-multi-agent).
 
 ### 🟧 Week 16 — Observability for Agents
 **Goal:** You can see every LLM call, cost, and decision path.
@@ -160,9 +188,9 @@
 
 ### 🟥 Week 17 — Playwright Meets LLMs
 **Goal:** Make an LLM drive a browser via Playwright through natural language.
-- Code along: [`/code/week-18-browser-agent`](./code/week-18-browser-agent)
-- Read: [Stagehand docs (Browserbase)](https://docs.stagehand.dev/)
-- **Project:** "Book an appointment" agent. Given a URL and a task description, it navigates, fills forms, and reports success/failure.
+- Code along: [`/code/week-18-browser-agent`](./code/week-18-browser-agent) — Playwright MCP first, then `npm run agent`
+- Read: [Playwright MCP](https://playwright.dev/docs/getting-started-mcp) and [Test agents](https://playwright.dev/docs/test-agents) (the healer is Week 21, not this loop)
+- **Project:** Run one TodoMVC task through Playwright MCP, then through the hand-rolled loop. Host allow-list on. No live selector rewrite.
 
 ### 🟥 Week 18 — Vision-Based Automation
 **Goal:** Use a vision-capable model to interact with pages that resist selectors.
@@ -189,7 +217,7 @@
 
 ### 🟥 Week 21 — Self-Healing Selectors ⭐ (Your Track)
 **Goal:** When a test fails because the DOM changed, an LLM proposes a fix, you review the PR.
-- **Project:** A Playwright `Locator` wrapper that, on failure, captures the DOM, asks the model "given this test intent, find the new selector," and emits a suggested patch
+- **Project:** A Playwright `Locator` wrapper that, on failure, captures an ARIA snapshot, asks the model for a verdict (`locator-drift` or `product-bug`) and a patch, and **does not click the new selector**. The patch goes to a PR. Fill the mutation table — include a product bug the healer must not "fix".
 - 🧪 This is directly leading to your capstone — save all this code
 - 📎 **Tip:** Apply Module 12 here — a small manager/worker split (one agent locates the broken element, one proposes + validates the fix) makes the healer notably more robust.
 

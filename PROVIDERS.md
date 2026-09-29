@@ -191,6 +191,22 @@ You do not need one model for everything. A useful default:
 
 ---
 
+## Responses API: an OpenAI-only escape hatch
+
+Chat Completions is the course default because it is the request shape other vendors, gateways, and local runtimes implement. OpenAI's own docs recommend a different endpoint for new **OpenAI** projects: the [Responses API](https://developers.openai.com/api/docs/guides/migrate-to-responses).
+
+Take it when you have chosen OpenAI and you want something Chat Completions does not give you:
+
+- hosted conversation state, instead of resending the thread yourself
+- built-in tools (web search, file search, code interpreter, remote MCP) inside one request
+- reasoning continuity across turns
+
+Leave it when the same code has to run on Groq, Ollama, another vendor, or a gateway. Those speak Chat Completions. A Responses call is a vendor SDK choice, same rule as prompt caching: portable path stays, native call sits behind one function, and you write down what the coupling buys.
+
+The Assistants API was sunset on 26 August 2026. Do not start anything on it. Responses is the migration target, and only if you are staying on OpenAI.
+
+---
+
 ## Verifying your setup
 
 From any starter directory:

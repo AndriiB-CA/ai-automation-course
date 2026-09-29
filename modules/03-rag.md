@@ -6,7 +6,7 @@
 
 ## Why this module matters
 
-**Retrieval-Augmented Generation (RAG)** is the #1 production AI pattern in 2026. "Chat with your docs", "semantic search over our Confluence", "support agent that knows our product" — these are all RAG. If you can build, evaluate, and deploy a RAG system, you can ship 80% of the AI features companies need.
+**Retrieval is the grounding layer inside an agent.** "Chat with your docs" is still how a lot of teams start, and you will build one, because bad chunks, bad recall, and a stale index are the same failures an agent hits when search is a tool. The shape people ship now is usually that agent: it decides when to retrieve, blends keyword and vector search, reranks, and cites. Long context does not replace retrieval. It changes how much retrieved text you can hand over. If you can measure retrieval and put it behind a tool, you can ground most of the AI features a team actually asks for.
 
 ### Sidebar — "But the context window is 1M tokens now. Why not just paste everything in?"
 
@@ -52,7 +52,7 @@ An embedding is a function that maps text → a vector of floats (e.g., 1024 num
 4. Run t-SNE or UMAP → plot in 2D → manually label the clusters
 5. Try to break it: craft two texts that mean the same thing in different words. Do they land near each other? Craft two that look similar but mean opposite things. Do they land apart?
 
-Starter notebook: `/code/week-10-rag-pgvector/embedding-explorer.ipynb` (Python).
+Starter: [`/code/week-10-rag-pgvector`](../code/week-10-rag-pgvector/) — `npm run explore` embeds a fixed corpus and writes `similarities.csv`. Plot it if you want a picture; the script is the assignment. There is no notebook in that folder.
 
 ### Debugging embeddings
 Things to notice:
@@ -67,7 +67,7 @@ Embedding size is a knob, not a constant. More dimensions capture finer semantic
 | Dimensions | Typical use |
 |---|---|
 | 256–512 | High-volume, latency-sensitive search; noticeably cheaper indexes; small accuracy drop |
-| **1024** | **The production sweet spot** — what `voyage-3-large` defaults to and why Week 10's schema says `vector(1024)` |
+| **1024** | **A common production width** — Week 10's schema uses `vector(1024)` only when you set `EMBEDDING_DIMS=1024`. Match the column to your model, not to this table. |
 | 1536–3072 | Marginal recall gains; index size and query cost grow linearly — justify with a benchmark, not a hunch |
 
 Two practical notes:
@@ -136,27 +136,35 @@ Write an eval for your search function. Given 10 queries with known-good expecte
 
 ### Weekend project (4 hours)
 
-Take your Week 10 setup. Implement **three chunking strategies**:
+Take your Week 10 setup. The measurement that matters is three retrieval stacks on the **same** 20 queries, not chunking alone.
+
+**Chunking** — ingest the same documents three ways:
 1. **Fixed-size** — 512 tokens per chunk, 50-token overlap
 2. **Recursive** — split on `\n\n`, then `\n`, then sentence, falling back to fixed size
-3. **Semantic** — split when adjacent-sentence embeddings differ above a threshold (use `langchain`'s `SemanticChunker` or roll your own)
+3. **Semantic** — split when adjacent-sentence embeddings differ above a threshold (roll your own, or a library you can explain)
 
-For each strategy:
-- Ingest the same 500 documents
-- Run 20 queries (curate these manually, know the expected answer)
-- Measure: `Precision@5`, `Recall@5`, `MRR`
-- Record token cost per query (retrieval + generation)
-- Record p95 latency
+**Retrieval** — for the chunking strategy you keep, measure `Recall@5` three ways. The starter does this in [`code/week-10-rag-pgvector`](../code/week-10-rag-pgvector/) with `npm run compare`:
+1. **Vector only** — `semanticSearch`
+2. **Hybrid** — vector neighbours fused with Postgres full-text search
+3. **Hybrid + rerank** — the hybrid list, reordered by `LLM_MODEL_SMALL`
 
-Deliverable: a markdown report with a table of results + a recommendation for your dataset.
+Also record `Precision@5`, `MRR`, token cost, and p95 latency for the stack you ship.
 
-### Hybrid search — now the production default
-Pure vector similarity is no longer considered sufficient. Every production team in 2026 combines vector search with BM25 (keyword). In Postgres:
+Deliverable: a markdown report with both tables and a recommendation for *your* dataset. Write the delta you measured. Do not paste a recall lift from a blog post.
+
+### Hybrid search and a reranker
+
+Keyword match and vector similarity fail on different queries. Exact error strings, IDs, and function names favor full text. Paraphrase favors vectors. Production retrieval runs both.
+
+`ingest` adds a generated `tsvector` column and a GIN index. Do not blend cosine similarity with `ts_rank` by a fixed 0.7/0.3. Those numbers are not on the same scale. The starter uses **reciprocal rank fusion**: a hit in a list contributes `1 / (60 + rank)`, summed across the lists it appears in.
+
+Then rerank. A hosted reranker is the usual production upgrade — cheaper and trained for this one job. The portable exercise uses `LLM_MODEL_SMALL` so it runs on the provider you already configured. Put that call behind one function (`src/rerank.ts`) so you can swap in a dedicated endpoint after you have a number that says it wins.
+
 ```sql
-ALTER TABLE chunks ADD COLUMN content_tsvector tsvector GENERATED ALWAYS AS (to_tsvector('english', content)) STORED;
-CREATE INDEX ON chunks USING GIN(content_tsvector);
+ALTER TABLE chunks ADD COLUMN IF NOT EXISTS content_tsvector tsvector
+  GENERATED ALWAYS AS (to_tsvector('english', content)) STORED;
+CREATE INDEX IF NOT EXISTS chunks_content_tsv_idx ON chunks USING GIN (content_tsvector);
 ```
-Blend scores: `final_score = 0.7 * vector_score + 0.3 * bm25_score`. Include this in your benchmark — teams consistently see 10–20% recall improvement over pure vector.
 
 ### Advanced: GraphRAG
 For document corpora with complex entity relationships (e.g., legal docs, codebases, research papers), consider **GraphRAG** (open-sourced by Microsoft): it extracts entity-relationship graphs and builds community summaries for multi-hop reasoning. Overkill for simple Q&A, powerful for "who approved X and why?" queries. [GraphRAG docs](https://microsoft.github.io/graphrag/).
@@ -189,7 +197,7 @@ A real URL you can share. Even if only you use it. Shipping forces you to confro
 ### Suggested stack
 - **Frontend:** Next.js 15 (App Router)
 - **LLM orchestration:** Vercel AI SDK
-- **Embeddings:** Voyage AI or OpenAI
+- **Embeddings:** whatever you set in `EMBEDDING_*` — a chat provider often does not serve them. See [PROVIDERS.md](../PROVIDERS.md)
 - **DB:** Supabase (Postgres + pgvector, free tier)
 - **Deploy:** Vercel (free tier)
 - **Observability:** Langfuse Cloud (free 50k events/mo)
@@ -236,7 +244,7 @@ Dataset ideas:
 
 - [ ] You have a public URL for your RAG app
 - [ ] You can explain the RAG Triad in one minute
-- [ ] You have measurements of retrieval quality for at least two chunking strategies
+- [ ] You have Recall@5 for vector, hybrid, and hybrid+rerank on the same queries, plus at least two chunking strategies
 - [ ] You've logged a real query to Langfuse and seen the full trace
 - [ ] You know the cost per query of your app within 20%
 - [ ] You can sketch the index update strategy: hash-diff sync, transactional chunk replacement, staleness evals

@@ -30,7 +30,7 @@ The capstone is complete when **every box** below is checked:
 - [ ] `npx playwright-healer watch` monitors test runs and proposes heals on failures
 - [ ] GitHub Action that auto-opens PRs on self-heals
 - [ ] At least 80% test coverage of the tool's own TypeScript code (meta — Playwright Healer has tests)
-- [ ] Eval suite for the healer's heal-suggestion quality (≥70% pass on 20 synthetic mutations)
+- [ ] A mutation table in the README: 20 rows, expected verdict, healer verdict, whether the fix was correct, and whether the patch would have hidden a real bug. No filled-in percentages you did not measure.
 - [ ] Langfuse integration with traces visible in README screenshot
 - [ ] Cost cap enforced; README states expected cost per heal
 
@@ -116,7 +116,7 @@ Week 24 is dedicated to polish, not new learning. You've built all the parts; th
 │        ▼                                                │
 │  ┌────────────────────────────────────────────────┐   │
 │  │          Playwright integration layer          │   │
-│  │   • Accessibility tree extraction              │   │
+│  │   • ariaSnapshot({ boxes: true })              │   │
 │  │   • Screenshot capture                         │   │
 │  │   • HealingLocator drop-in wrapper             │   │
 │  └────────────────────────────────────────────────┘   │
@@ -153,7 +153,7 @@ Add a short **"Operations"** section to your README with the workflow diagram. I
 2. **Demo (GIF + 2 paragraphs)** — show, then explain
 3. **Architecture (with diagram)** — the stack, why each piece
 4. **The interesting bit** — the one genuinely non-obvious engineering decision you made
-5. **Results** — metrics: heal success rate, cost per heal, false-positive rate
+5. **Results** — the mutation table: heal success on locator drift, false fixes that would have hidden a product bug, cost per heal from your own runs
 6. **Limitations** — honesty wins. What it can't do yet.
 7. **Roadmap** — what v0.2 looks like
 8. **Try it** — install command, link to repo
@@ -173,7 +173,7 @@ Add a short **"Operations"** section to your README with the workflow diagram. I
 > 
 > Every piece reflects something I learned along the way — structured outputs, tool use, evals, MCP, browser agents, prompt caching, and AI security.
 > 
-> Honest numbers from my test runs: 78% auto-heal success on synthetic mutations, ~$0.04 per heal with prompt caching.
+> Honest numbers from my mutation table: __ / 20 locator-drift cases healed correctly, __ product-bug cases correctly left unfixed, $__ per heal (from LLM_PRICE_* on the runs I actually did).
 > 
 > Open to questions, PRs, and conversations about AI Automation Engineering roles.
 > 

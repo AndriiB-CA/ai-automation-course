@@ -58,7 +58,7 @@ Every major lab publishes short, high-quality explainers. Watch your own provide
 - [**Building Browser Agents with Stagehand — Browserbase**](https://www.youtube.com/@browserbasehq) (channel)
 - [**Computer use — official demo**](https://www.youtube.com/watch?v=vh9tDq1EZBU) (15m)
 - [**Browser-Use walkthrough**](https://www.youtube.com/watch?v=rz51-dCzKQA) (25m) — Python reference impl (50k+ stars)
-- 🆕 [**Playwright Agents — official docs & talks**](https://playwright.dev/docs/playwright-agents) (v1.56+) — NL test-gen + self-healing built directly into Playwright; start here if you already use it
+- 🆕 [**Playwright Test Agents**](https://playwright.dev/docs/test-agents) — planner, generator, and healer. Start here if you already use Playwright. The old `/docs/playwright-agents` path 404s.
 
 ---
 

@@ -1,79 +1,58 @@
-# Week 17–18 — Browser Agents (Stagehand + Vision)
+# Weeks 17–19 — Browser agent
 
 Full guidance in [module 5](../../modules/05-browser-agents.md).
 
-## What you'll build
+This folder is a runnable loop on the course's provider contract (`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`). It is the thing to read. Playwright MCP is the thing to run first, because that is the integration a coding agent already speaks.
 
-- **Week 17:** A selector-based browser agent using Stagehand
-- **Week 18:** A vision-based variant using screenshots + coordinates
-- **Week 19:** The production version — Dockerized, observability, retries
+## 1. Playwright MCP (do this first)
 
-## Setup
+Add the official server to the MCP client you already use. The config shape is from the [Playwright MCP getting-started page](https://playwright.dev/docs/getting-started-mcp):
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--headless"]
+    }
+  }
+}
+```
+
+Recent Playwright builds also expose `npx playwright mcp`. Prefer the getting-started page if the two disagree — it is the page that moves with the package.
+
+Ask the client to do one task on [TodoMVC](https://demo.playwright.dev/todomvc): add three grocery todos and mark the middle one complete. Then come back and run the loop below. You want to see the same job done by a server you did not write, and by a loop you can debug.
+
+Playwright's own planner, generator, and healer are a different feature. They live at [Test agents](https://playwright.dev/docs/test-agents) (`npx playwright init-agents`). Week 20 is where those matter. Don't confuse them with this browser loop.
+
+## 2. The hand-rolled loop
 
 ```bash
-npm init -y
-npm install @browserbasehq/stagehand openai zod
-npm install -D tsx typescript @types/node @playwright/test
+npm install
 npx playwright install chromium
+cp .env.example .env   # then fill LLM_* from PROVIDERS.md
+npm run check-provider
+npm run agent
 ```
 
-## Starter: selector-based agent
+`src/agent.ts` shows the page to the model as `locator.ariaSnapshot({ boxes: true })` and clicks by role and accessible name. The host allow-list is `ALLOWED_HOSTS`. A failed action comes back as text. The loop does not invent a new selector and click it.
 
-Create `stagehand-agent.ts`:
-
-```ts
-import { Stagehand } from "@browserbasehq/stagehand";
-
-const stagehand = new Stagehand({
-  env: "LOCAL",
-  modelName: process.env.LLM_MODEL,
-  modelClientOptions: {
-    apiKey: process.env.LLM_API_KEY,
-    baseURL: process.env.LLM_BASE_URL,   // any OpenAI-compatible provider
-  }
-});
-
-await stagehand.init();
-const page = stagehand.page;
-
-await page.goto("https://demo.playwright.dev/todomvc");
-await page.act({ action: "Add three todos about grocery shopping" });
-await page.act({ action: "Mark the middle todo as complete" });
-
-const result = await page.extract({
-  instruction: "Return the completed todo text",
-  schema: z.object({ completedText: z.string() })
-});
-console.log(result);
-
-await stagehand.close();
+```bash
+npm run agent -- "Add a todo named milk and mark it complete"
 ```
 
-## Vision-based variant (Week 18)
+## 3. Vision variant (Week 18)
 
-Replace Stagehand's DOM-based actions with:
-1. `page.screenshot()` → full-page image
-2. Send to a vision-capable model with task + image
-3. The model returns `{ action: "click", x: 400, y: 300 }` or `{ action: "type", text: "..." }`
-4. Your code executes via Playwright coordinates
-5. Loop
+```bash
+npm run vision
+```
 
-Screenshots travel as an `image_url` part with a `data:image/png;base64,...` URI — that encoding is
-the portable one across OpenAI-compatible providers. Check your provider supports vision first; text-only
-models return a 400 rather than silently ignoring the image.
+Same task, screenshot in, coordinates out. Run both and fill the comparison table in the module. If your model is text-only, this command fails with a 400. That is the signal to switch `LLM_MODEL` to one that accepts images, not to delete the image part and pretend it worked.
 
-## Evaluation
+## Stagehand, pinned aside
 
-Run both variants on 5 real tasks. Record:
+Stagehand is a real library and its API has broken across major versions. The old shape (`new Stagehand({ modelName, modelClientOptions })`, `page.act({ action })`) does not match [Stagehand v4](https://docs.stagehand.dev/v4/migrations/v3). If you install it, pin the version you actually read the docs for, and keep it out of this loop. The portable path is the file in `src/`.
 
-| Task | Selector success/10 | Vision success/10 | Cost (sel / vis) | Time (sel / vis) |
-|------|---------------------|-------------------|------------------|------------------|
+## Week 19
 
-Write findings in `COMPARISON.md` — this is great blog-post material.
-
-## 🛡️ Security for browser agents
-
-- Whitelist allowed domains — never navigate to arbitrary URLs from agent input
-- Strip hidden elements (`display:none`, `visibility:hidden`) from page-state sent to LLM
-- Wrap scraped text in XML tags: `<web_content>...</web_content>` so the LLM knows not to follow instructions from it
-- Never put session tokens or API keys in the agent's system prompt
+Dockerize `src/agent.ts`. The image tag must match the Playwright version in `package.json` — copy the tag from the [Playwright Docker docs](https://playwright.dev/docs/docker), don't reuse an old one from a blog. Run as a non-root user. Keep the host allow-list.
