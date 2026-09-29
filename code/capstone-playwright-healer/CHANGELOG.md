@@ -8,6 +8,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Changed
+- **No live retry.** `HealingLocator` records a proposal with a verdict
+  (`locator-drift`, `product-bug`, or `unknown`) and rethrows the original
+  failure. Clicking the suggested selector during the test can hide a real bug.
+- Page state sent to the model is `locator.ariaSnapshot({ boxes: true })`.
 - **Provider-neutral rewrite.** The healer now talks to any OpenAI-compatible
   endpoint via `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` instead of a single
   vendor SDK. Cost estimation reads per-token prices from the environment
@@ -43,7 +47,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     optionally patches the spec file (requires `--yes`)
 - `schemas.ts` — Zod schemas for `TestSpec`, `HealProposal`, and `HealRecord`
 - `llm.ts` — pre-configured Anthropic client with prompt-caching opt-in and
-  `computeCost()` for per-call USD estimation (Sonnet, Opus, Haiku pricing)
+  `computeCost()` for per-call USD estimation from prices in the environment
 - `package.json` — ESM package with `bin`, `start`, `test`, and `typecheck` scripts
 - `tsconfig.json` — strict ESM (ES2022 / NodeNext)
 - `.env.example` — documents `ANTHROPIC_API_KEY` and optional configuration

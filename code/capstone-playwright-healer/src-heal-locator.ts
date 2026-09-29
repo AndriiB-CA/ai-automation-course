@@ -24,6 +24,9 @@ const HealProposal = z.object({
     .describe("Preferred selector type — role > testid > text > css > xpath"),
   confidence: z.number().min(0).max(1),
   rationale: z.string().describe("Why this selector matches the intent"),
+  verdict: z
+    .enum(["locator-drift", "product-bug", "unknown"])
+    .describe("locator-drift if the same control moved; product-bug if the behavior is gone; unknown if you cannot tell"),
 });
 export type HealProposal = z.infer<typeof HealProposal>;
 
@@ -43,8 +46,8 @@ export interface HealRecord {
 // ---- Config ---------------------------------------------------------------
 interface HealConfig {
   intent: string;
-  confidenceThreshold?: number; // default 0.75: auto-retry above this
-  maxRetries?: number; // default 1
+  confidenceThreshold?: number; // default 0.75: below this, the record is flagged for review
+  maxRetries?: number; // retained for callers; live retry is intentionally unused
   emitRecordsDir?: string; // default .healer/ in cwd
   model?: string;
 }
@@ -94,19 +97,14 @@ export class HealingLocator {
       const proposal = await this.proposeHeal(String(firstErr));
       await this.recordProposal(String(firstErr), proposal);
 
-      if (proposal.confidence < this.threshold) {
-        console.warn(
-          `[healer] Low confidence (${proposal.confidence.toFixed(2)}): ${
-            proposal.suggestedSelector
-          }. Not auto-retrying.`,
-        );
-        throw firstErr;
-      }
-
-      console.log(
-        `[healer] Auto-retrying with ${proposal.selectorType} selector: ${proposal.suggestedSelector} (confidence: ${proposal.confidence.toFixed(2)})`,
+      const review =
+        proposal.confidence < this.threshold || proposal.verdict !== "locator-drift"
+          ? "needs human review"
+          : "candidate patch — still do not apply it unattended";
+      console.warn(
+        `[healer] ${proposal.verdict} (${proposal.confidence.toFixed(2)}, ${review}): ${proposal.suggestedSelector}. Not clicking it. A live retry can hide a real product bug.`,
       );
-      return await action(this.page.locator(proposal.suggestedSelector));
+      throw firstErr;
     }
   }
 
@@ -126,7 +124,7 @@ export class HealingLocator {
 
   private async proposeHeal(errorMsg: string): Promise<HealProposal> {
     // Capture current page state (trimmed to fit context window)
-    const ariaSnapshot = await this.page.locator("body").ariaSnapshot();
+    const ariaSnapshot = await this.page.locator("body").ariaSnapshot({ boxes: true });
     const screenshot = await this.page.screenshot({ fullPage: false, type: "png" });
     const base64Image = screenshot.toString("base64");
 
@@ -145,8 +143,9 @@ export class HealingLocator {
             },
             confidence: { type: "number", minimum: 0, maximum: 1 },
             rationale: { type: "string" },
+            verdict: { type: "string", enum: ["locator-drift", "product-bug", "unknown"] },
           },
-          required: ["suggestedSelector", "selectorType", "confidence", "rationale"],
+          required: ["suggestedSelector", "selectorType", "confidence", "rationale", "verdict"],
         },
       },
     };
@@ -165,7 +164,9 @@ Be CONSERVATIVE with confidence:
 - 0.7–0.9 = likely match, risk of false positive
 - <0.7 = speculative guess — human must review
 
-Never suggest a selector for a destructive action (delete, submit) with confidence >0.9 unless the match is unambiguous.`;
+Never suggest a selector for a destructive action (delete, submit) with confidence >0.9 unless the match is unambiguous.
+
+Set verdict to locator-drift only when the same control is still on the page under a different locator. Set product-bug when the control or the behavior is gone. Set unknown when you cannot tell. A product bug must not be described as a successful heal.`;
 
     const userText = `<intent>${this.config.intent}</intent>
 

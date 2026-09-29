@@ -29,7 +29,7 @@ LLM-as-Judge        =  an oracle for fuzzy assertions
 1. [Anthropic Prompt Engineering Overview](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview) — written for one model family, but ~90% of it is general craft
 2. Work through every chapter of [Anthropic's Prompt Engineering Interactive Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial) — a Jupyter notebook, ~3 hours. Run it against **your** provider by changing the client setup in the first cell; where a technique works less well, you have learned something worth writing down
 3. [OpenAI's prompt engineering guide](https://platform.openai.com/docs/guides/prompt-engineering) — read straight after, and note where the two vendors' advice disagrees
-3. Skim: [Lilian Weng — Prompt Engineering](https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/)
+4. Skim: [Lilian Weng — Prompt Engineering](https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/)
 
 ### Key patterns to internalize
 | Pattern | When to use | Example |

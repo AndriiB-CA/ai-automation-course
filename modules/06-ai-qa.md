@@ -78,7 +78,7 @@ Build the tool. See starter in [`/code/week-20-ai-test-generator/`](../code/week
 
 **Required features:**
 - [ ] Takes a URL
-- [ ] Uses Playwright's `page.accessibility.snapshot()` to extract structured page info (beats raw HTML)
+- [ ] Captures page state with `locator.ariaSnapshot({ boxes: true })` (or `page.ariaSnapshot()`). `page.accessibility` was removed in Playwright 1.57. The `boxes` option appends `[box=x,y,width,height]`, which is the snapshot you want when a later step needs coordinates.
 - [ ] Calls the model with a carefully crafted system prompt
 - [ ] Uses structured output (Zod-validated TestSpec)
 - [ ] Emits valid TypeScript to disk
@@ -122,27 +122,25 @@ What if:
 That's your self-healer.
 
 ### Reading (90 min)
-- [Testim AI — self-healing tests explainer](https://www.testim.ai/blog/ai-based-automated-testing/) — competitor research, understand the landscape
-- Your coding agent's docs on editing existing files
+- [Playwright Test Agents — healer](https://playwright.dev/docs/test-agents) — what Playwright already ships. Your project is the part it does not: a mutation eval, a human-reviewed PR, and an explicit split between locator drift and a real product bug
+- [Testim AI — self-healing tests explainer](https://www.testim.ai/blog/ai-based-automated-testing/) — competitor research
 - [Octokit.js — programmatic GitHub PRs](https://github.com/octokit/octokit.js)
 
 ### Architecture sketch
 ```ts
-// Drop-in wrapper for Playwright's Locator
+// The healer proposes a patch. It does not click the new selector.
+// A live retry turns a product bug into a green test.
 class HealingLocator {
-  constructor(private page: Page, private intent: string, private fallback?: string) {}
+  constructor(private page: Page, private intent: string) {}
 
   async click() {
     try {
-      await this.page.getByRole(this.intent).click();
+      await this.page.getByRole("button", { name: this.intent }).click();
     } catch (err) {
-      const dom = await this.page.content();
-      const screenshot = await this.page.screenshot();
-      const fix = await llmProposeFix({ intent: this.intent, dom, screenshot, error: err });
-      // Option A: retry live
-      await this.page.locator(fix.suggestedSelector).click();
-      // Option B: open PR
-      await createPullRequest({ file: fix.testFile, line: fix.lineNumber, newSelector: fix.suggestedSelector });
+      const aria = await this.page.locator("body").ariaSnapshot({ boxes: true });
+      const fix = await llmProposeFix({ intent: this.intent, aria, error: err });
+      // fix.verdict is locator-drift | product-bug | unknown
+      await recordForPullRequest(fix); // human applies it, or rejects it
       throw err;
     }
   }
@@ -168,15 +166,19 @@ class HealingLocator {
 
 See starter code in [`/code/capstone-playwright-healer/`](../code/capstone-playwright-healer/) — you'll keep building on this for the capstone.
 
-### Evaluation: is it actually better?
-Before shipping, **prove it works** with evals:
-- Take 20 real test files with working selectors
-- Programmatically mutate each (rename an ID, move a class, swap tags)
-- Run your healer
-- Measure: what % of mutations did it correctly identify + fix?
-- Of the correct fixes, what % needed zero human review?
+### Evaluation: the mutation table
+Before shipping, **prove it** on mutations you can explain. Take 20 working tests. Mutate each one. Include both kinds:
 
-Target: 70% auto-fix rate with <5% false positives. Realistic for a v1.
+- **Locator drift** — rename an id, move a class, swap a tag. The behavior is still there. A correct heal proposes a new locator.
+- **Product bug** — remove the control, or change what the click does. A correct heal says the product broke and does **not** propose a selector that makes the test pass.
+
+Fill this table. Empty cells are the assignment. A lower measured rate you can defend beats a round number you did not measure.
+
+| # | Mutation | Expected verdict | Healer verdict | Correct fix? | Would the patch have hidden a real bug? |
+|---|---|---|---|---|---|
+| 1 | | locator-drift or product-bug | | yes/no | yes/no |
+
+The starter records `verdict` and does not click the suggestion. That is the behavior this table is about.
 
 ### 🛡️ Security callout
 Your healer reads DOMs, including potentially sensitive pages. Rules:
@@ -193,9 +195,10 @@ You have just built something real QA teams at every company struggle with. Comp
 ## Self-check before moving on
 
 - [ ] You have a working test generator that produces valid tests for ≥3 sites
-- [ ] You have a self-healing locator that recovers from ≥70% of synthetic mutations
-- [ ] You can explain the failure modes of both to another engineer
-- [ ] You have comparative cost data (Sonnet vs Haiku, with/without prompt caching)
+- [ ] You have a self-healing locator that records a proposal and does not click it
+- [ ] The mutation table has 20 rows, including at least one product-bug row the healer did not "fix"
+- [ ] You can explain the failure modes of both tools to another engineer
+- [ ] You have cost data for `LLM_MODEL` vs `LLM_MODEL_SMALL`, with and without prompt caching on a provider that supports it
 
 ---
 

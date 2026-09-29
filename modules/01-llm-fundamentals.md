@@ -10,6 +10,8 @@ Before you can build agents, RAG systems, or AI-powered test tools, you need to 
 
 **One API, any vendor.** This course uses the **OpenAI-compatible Chat Completions API**, which nearly every provider now speaks — OpenAI, xAI, Groq, Google, Anthropic, Ollama, and dozens more. You write against one request shape and change vendors by editing `.env`. Set yours up now: **[PROVIDERS.md](../PROVIDERS.md)**. The three primitives below are the same everywhere; where a provider differs, this course says so explicitly.
 
+OpenAI also ships a newer **Responses API** and recommends it for new OpenAI-only projects. Chat Completions stays the default here because it is the shape the other vendors implement. The fork, and when to take Responses on purpose, is an escape hatch in [PROVIDERS.md](../PROVIDERS.md#responses-api-an-openai-only-escape-hatch).
+
 ## Learning objectives
 
 By the end of this module you will:
@@ -43,7 +45,7 @@ You'll say "token" fifty times a day in this job, so spend 30 minutes making it 
 - **Code, JSON, and non-English text tokenize worse.** The same content in Japanese or as deeply-nested JSON can cost 1.5–3× the tokens of plain English. This is why "just send everything as JSON" quietly inflates your bill.
 - **The model sees tokens, not letters.** The famous "how many r's in strawberry" failure is a tokenization artifact — the model never saw the individual characters. When output seems weirdly blind to spelling or exact character positions, this is why.
 - **Every model family has its own tokenizer.** The same text produces *different counts* on GPT vs. Claude vs. Llama vs. Grok. The practical trap: **`tiktoken` is OpenAI's tokenizer** — using it to estimate another vendor's tokens can be off by 15–20%, worse on code. Two ways to get a real number: the `usage` block that comes back on every response (always available, but after the fact), or your provider's own token-counting endpoint if it has one (before the fact — Anthropic and Google both offer one; many providers don't).
-- **Tokenizers change *between generations of the same family*.** This is not hypothetical: Claude's Opus 4.7 generation shipped a new tokenizer producing roughly 30% more tokens for identical text than its predecessor — a 30% cost increase at unchanged per-token prices. Any hardcoded "this prompt is ~3K tokens" assumption silently breaks on a model upgrade. Count, never estimate, in production code.
+- **Tokenizers change *between generations of the same family*.** The same prompt can become substantially more tokens after an upgrade, which raises the bill even when the per-token price does not move. A documented case, and the vendor page to re-check it, lives in [VERSIONS.md](../VERSIONS.md). Any hardcoded "this prompt is ~3K tokens" assumption silently breaks on a model upgrade. Count, never estimate, in production code.
 
 **Exercise (15 min):** Take three inputs — an English paragraph, that same paragraph as a JSON object, and a code snippet. Paste each into a [tokenizer playground](https://platform.openai.com/tokenizer) for GPT-family intuition, then send each to *your* provider and read `usage.prompt_tokens` off the response. Note both the JSON tax and the gap between the playground's count and your provider's. That 15 minutes permanently calibrates your cost instincts — and teaches you not to trust one vendor's tokenizer for another's bill.
 
@@ -66,7 +68,7 @@ You'll say "token" fifty times a day in this job, so spend 30 minutes making it 
 See the starter in [`/code/week-02-first-api-call/`](../code/week-02-first-api-call/).
 
 **Stretch goals:**
-- Add `--model=haiku|sonnet|opus` and print cost at the end
+- Add a `--model` flag that selects `LLM_MODEL` or `LLM_MODEL_SMALL` and print cost at the end
 - Add `--language=en|fr|es` (bonus: detect source language automatically)
 
 ### 🧪 QA bridge

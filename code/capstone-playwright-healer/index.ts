@@ -64,7 +64,7 @@ async function generate(url: string, outFile: string): Promise<void> {
 
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
-    const ariaSnapshot = await page.locator("body").ariaSnapshot();
+    const ariaSnapshot = await page.locator("body").ariaSnapshot({ boxes: true });
 
     console.log("Asking the model to generate a TestSpec …");
 

@@ -19,8 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         # Every starter that has a package.json + lockfile + tsconfig.
-        # Starters without one (week-06, week-07, week-18) are illustrative
-        # snippets, not installable projects.
+        # Starters without one (week-06, week-07) are illustrative snippets.
         project:
           - code/capstone-playwright-healer
           - code/module-12-multi-agent
@@ -28,10 +27,14 @@ jobs:
           - code/week-02-first-api-call
           - code/week-10-rag-pgvector
           - code/week-15-mcp-agent
+          - code/week-18-browser-agent
           - code/week-20-ai-test-generator
     defaults:
       run:
         working-directory: ${{ matrix.project }}
+    env:
+      # tsc does not launch a browser. Skip the Playwright download.
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

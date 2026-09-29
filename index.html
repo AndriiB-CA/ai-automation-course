@@ -698,7 +698,7 @@
       <span class="hero-eyebrow" id="dashEyebrow">Week — of 28</span>
       <h1 class="hero-title">Your <em>main roadmap.</em><br>In one place.</h1>
       <p class="hero-sub" id="dashSubtitle">
-        A 24-week core + 4 bonus-week plan (5–7 hours/week) from Playwright/TypeScript QA engineer to AI Automation Engineer.
+        A 24-week core + 4 bonus-week plan (5–7 hours for a core week; companion projects add hours — see the roadmap) from Playwright/TypeScript QA engineer to AI Automation Engineer.
         Capstone: ship an open-source AI-powered Playwright test healer.
       </p>
     </div>
@@ -1059,7 +1059,8 @@ const COURSE = {
         { id: "w11-read", label: "Read Pinecone chunking guide + hybrid search explainer", time: "1h" },
         { id: "w11-three", label: "Implement 3 chunking strategies", time: "2h" },
         { id: "w11-measure", label: "Measure Precision@5 / Recall@5 / MRR for each", time: "1.5h" },
-        { id: "w11-hybrid", label: "Add tsvector for hybrid search, blend scores", time: "1h" },
+        { id: "w11-hybrid", label: "Add tsvector and reciprocal-rank-fusion hybrid search", time: "1h" },
+        { id: "w11-rerank", label: "Rerank hybrid hits with LLM_MODEL_SMALL and compare Recall@5", time: "1h" },
         { id: "w11-report", label: "Write markdown report with a recommendation", time: "30m" }
       ],
       resources: [
@@ -1069,7 +1070,7 @@ const COURSE = {
       ],
       project: "Bench report comparing 3 chunking strategies on real data",
       module_link: "modules/03-rag.md",
-      companion: { label: "Module 14 — Intelligent Document Processing", file: "modules/14-document-processing.md", note: "Now that you have RAG + structured outputs, this is the #1 real-world automation use case — do it as an extra weekend project." }
+      companion: { label: "Module 14 — Intelligent Document Processing", file: "modules/14-document-processing.md", note: "About 6 extra hours. Skippable when this week is already full — move it to after week 19." }
     },
     {
       n: 12, module: 3, moduleTitle: "RAG Systems",
@@ -1090,7 +1091,7 @@ const COURSE = {
       ],
       project: "Public URL — RAG chatbot over your chosen dataset with RAG Triad evals",
       module_link: "modules/03-rag.md",
-      companion: { label: "Module 14 — Intelligent Document Processing", file: "modules/14-document-processing.md", note: "The IDP pipeline (invoice → validated JSON) is a flagship portfolio piece for automation roles. Build it now or after Week 19." }
+      companion: { label: "Module 14 — Intelligent Document Processing", file: "modules/14-document-processing.md", note: "About 6 hours. Build it now, or after week 19 if this week is full." }
     },
     {
       n: 13, module: 4, moduleTitle: "Agents & MCP",
@@ -1138,7 +1139,8 @@ const COURSE = {
         { id: "w15-fw", label: "Pick framework (Mastra recommended for TS), read docs", time: "1.5h" },
         { id: "w15-impl", label: "Research agent with 5 tools + retry logic", time: "3h" },
         { id: "w15-mem", label: "Add persistent memory (SQLite/JSON)", time: "1h" },
-        { id: "w15-cap", label: "Budget cap + rate limit per task", time: "45m" }
+        { id: "w15-cap", label: "Budget cap + rate limit per task", time: "45m" },
+        { id: "w15-traj", label: "Run the 10-task trajectory eval (N=3, tool allow-list, cost ceiling)", time: "1h" }
       ],
       resources: [
         { kind: "read", label: "Mastra docs", url: "https://mastra.ai/docs" },
@@ -1146,7 +1148,7 @@ const COURSE = {
       ],
       project: "Research agent that handles a '500 word note with 5 sources' task end-to-end",
       module_link: "modules/04-agents.md",
-      companion: { label: "Module 12 — Multi-Agent Orchestration", file: "modules/12-multi-agent-orchestration.md", note: "The biggest 2026 skill upgrade: manager/worker systems, Constrained Autonomy, the framework landscape. Its weekend project upgrades this agent into a multi-agent system." }
+      companion: { label: "Module 12 — Multi-Agent Orchestration", file: "modules/12-multi-agent-orchestration.md", note: "About 8 hours. If this week is already full, do the Module 12 project instead of extending the research agent further — don't stack both." }
     },
     {
       n: 16, module: 4, moduleTitle: "Agents & MCP",
@@ -1172,14 +1174,15 @@ const COURSE = {
       goal: "An LLM drives Playwright via natural language through tool use",
       phase: 2,
       tasks: [
-        { id: "w17-stagehand", label: "Read Stagehand docs", time: "45m" },
+        { id: "w17-stagehand", label: "Wire Playwright MCP and complete one TodoMVC task with it", time: "45m" },
         { id: "w17-cu", label: "Skim a computer-use overview", time: "30m" },
         { id: "w17-build", label: "Build appointment-booker agent (5+ step flow)", time: "3h" },
         { id: "w17-verify", label: "Add LLM-based action verification step", time: "1h" }
       ],
       resources: [
         { kind: "build", label: "Starter: week-18-browser-agent", url: "code/week-18-browser-agent/" },
-        { kind: "read", label: "Stagehand docs", url: "https://docs.stagehand.dev/" },
+        { kind: "read", label: "Playwright MCP", url: "https://playwright.dev/docs/getting-started-mcp" },
+        { kind: "read", label: "Playwright Test Agents", url: "https://playwright.dev/docs/test-agents" },
         { kind: "read", label: "Computer use overview", url: "https://www.anthropic.com/news/3-5-models-and-computer-use" }
       ],
       project: "Agent that completes a 5-step browser task with self-verification",
@@ -1229,7 +1232,7 @@ const COURSE = {
       phase: 3,
       tasks: [
         { id: "w20-cc", label: "Read your coding agent's docs + Playwright best practices", time: "1h" },
-        { id: "w20-a11y", label: "Use page.accessibility.snapshot() instead of raw HTML", time: "45m" },
+        { id: "w20-a11y", label: "Capture page state with ariaSnapshot({ boxes: true }), not page.accessibility", time: "45m" },
         { id: "w20-gen", label: "Build generator with Zod-validated TestSpec schema", time: "2.5h" },
         { id: "w20-cache", label: "Add prompt caching on system prompt + best-practices", time: "45m" },
         { id: "w20-retry", label: "Self-heal on first run: if fails, retry with error", time: "1h" },
@@ -1252,7 +1255,7 @@ const COURSE = {
         { id: "w21-wrap", label: "Build HealingLocator wrapper with confidence threshold", time: "2.5h" },
         { id: "w21-emit", label: "Emit JSON diff records with before/after + screenshot", time: "1h" },
         { id: "w21-pr", label: "Octokit integration: open PR per heal record", time: "2h" },
-        { id: "w21-eval", label: "Synthetic-mutation eval: target ≥70% auto-fix rate", time: "2h" }
+        { id: "w21-eval", label: "Fill the 20-row mutation table, including a product bug the healer must not fix", time: "2h" }
       ],
       resources: [
         { kind: "build", label: "Starter: capstone-playwright-healer", url: "code/capstone-playwright-healer/" },
@@ -1324,7 +1327,7 @@ const COURSE = {
       ],
       project: "🚀 Public release of Playwright Healer v0.1.0",
       module_link: "modules/09-capstone.md",
-      companion: { label: "Module 13 — Business Translation", file: "modules/13-business-translation.md", note: "Before you start: add a quantified Impact section to your capstone README (heal success rate, cost/heal, time saved). This is what hiring managers screen for." }
+      companion: { label: "Module 13 — Business Translation", file: "modules/13-business-translation.md", note: "Before you start: add an Impact section whose numbers come from your mutation table. Do not invent a success rate." }
     },
     {
       n: 25, module: 10, moduleTitle: "n8n Automation",
@@ -1433,7 +1436,7 @@ const COURSE = {
     { tag: "Module 14", title: "Invoice IDP Pipeline", desc: "Ingest → extract → validate → route, with vision fallback", url: "code/module-14-idp/" },
     { tag: "Week 15", title: "MCP Agent", desc: "Custom MCP server + multi-tool agent", url: "code/week-15-mcp-agent/" },
     { tag: "Module 12", title: "Multi-Agent Manager/Worker", desc: "Constrained autonomy: tool whitelists, budget caps, audit log", url: "code/module-12-multi-agent/" },
-    { tag: "Week 18", title: "Browser Agent", desc: "Stagehand + Playwright LLM automation", url: "code/week-18-browser-agent/" },
+    { tag: "Week 18", title: "Browser Agent", desc: "Playwright MCP, then a hand-rolled ARIA-snapshot loop", url: "code/week-18-browser-agent/" },
     { tag: "Week 20", title: "AI Test Generator", desc: "URL → valid Playwright spec", url: "code/week-20-ai-test-generator/" },
     { tag: "Capstone", title: "Playwright Healer", desc: "Self-healing test framework", url: "code/capstone-playwright-healer/" }
   ],

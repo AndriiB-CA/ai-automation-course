@@ -1,18 +1,17 @@
 {
-  "name": "week-15-mcp-agent",
+  "name": "week-18-browser-agent",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "server": "tsx src/server.ts",
-    "agent": "tsx src/react-agent.ts",
-    "eval": "tsx src/trajectory-eval.ts",
+    "agent": "tsx src/agent.ts",
+    "vision": "tsx src/vision.ts",
     "check-provider": "tsx src/check-provider.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.31.0",
+    "@playwright/test": "^1.63.0",
     "dotenv": "^17.4.2",
-    "openai": "^7.15.0",
-    "zod": "^3.24.0"
+    "openai": "^7.15.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

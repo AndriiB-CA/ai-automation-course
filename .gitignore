@@ -29,6 +29,8 @@ promptfoo-output.html
 
 # LLM traces / agent state (local only)
 .healer/
+code/week-15-mcp-agent/notes/
+code/week-10-rag-pgvector/similarities.csv
 .langfuse/
 traces/
 *.trace.json

@@ -58,6 +58,8 @@ For repeated system prompts, examples, and context windows. **This is provider-n
 
 
 ```ts
+// Anthropic's native SDK (client.messages) — not the openai client the starters use.
+// It will not run against LLM_BASE_URL. Keep the portable path, and put this behind one function.
 const msg = await client.messages.create({
   model: process.env.LLM_MODEL,
   max_tokens: 1024,
@@ -76,7 +78,7 @@ First call: full price. Cached reads: roughly 10% of the original input price, w
 ### 3. Batch API
 For anything that doesn't need real-time response (evals, bulk ingestion, async processing):
 ```ts
-// Submit batch
+// Same caveat: this is one vendor's batch endpoint, not chat.completions.
 const batch = await client.messages.batches.create({
   requests: myRequests  // up to 10,000
 });
@@ -121,12 +123,14 @@ Add a simple LRU cache keyed by normalized query. For RAG, key by `(query, top_k
 **Step 5 (30 min) — Measure & report**
 Re-run the benchmark. Write a markdown report:
 ```
-| Metric           | Before   | After    | Delta  |
-|------------------|----------|----------|--------|
-| Cost (50 reqs)   | $2.14    | $0.31    | -86%   |
-| Median latency   | 3.2s     | 1.1s     | -66%   |
-| p95 latency      | 8.7s     | 2.4s     | -72%   |
+| Metric           | Before | After | Delta |
+|------------------|--------|-------|-------|
+| Cost (50 reqs)   |        |       |       |
+| Median latency   |        |       |       |
+| p95 latency      |        |       |       |
 ```
+
+Fill it with your measurements. A blank table you measured is the portfolio piece.
 
 🎯 **This report is portfolio material.** Tweet it. It proves you can take something to production.
 
@@ -153,12 +157,14 @@ Every major provider has a spend cap and a usage alert. Find both today — this
 ### Your code
 Wrap every LLM call in a cost-logger:
 ```ts
+// Shape only. On the course client this is client.chat.completions.create,
+// and cost comes from estimateCost() plus LLM_PRICE_*_PER_MTOK — not a hardcoded table.
 async function trackedMessage(params) {
   const start = Date.now();
-  const msg = await client.messages.create(params);
-  const cost = computeCost(msg.usage, params.model);
-  logger.info({ cost, tokens: msg.usage, latency_ms: Date.now() - start });
-  if (cost > 0.50) logger.warn("Expensive call", { params, cost });
+  const msg = await client.chat.completions.create(params);
+  const { usd } = estimateCost(msg.usage); // null until LLM_PRICE_*_PER_MTOK are set
+  logger.info({ usd, tokens: msg.usage, latency_ms: Date.now() - start });
+  if (usd !== null && usd > 0.50) logger.warn("Expensive call", { usd });
   return msg;
 }
 ```
